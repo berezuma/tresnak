@@ -38,6 +38,18 @@ Bertsio irekian **ez** daude: saio-hasiera, taldeak, denbora errealeko lankidetz
 irakaslearen panela eta irakaslearen ariketak. Horren ordez, proiektuak eta piezak
 **esportatu eta inportatu** daitezke (`.json` fitxategia).
 
+## Tresna berri bat gehitzeko
+
+Orri guztiek goian barra bat dute: **⌂ Tresnak** (hasiera) eta tresna guztietarako
+estekak. Tresna berri bat (adibidez, makina sinpleak) gehitzeko:
+
+1. Tresnaren fitxategiak `docs/IZENA/` karpetan jartzeko lerro bat `build.sh`-en
+   (`copy_app` bezala, edo `cp -r`).
+2. `overlay/nav.js` → `TOOLS` zerrendan lerro bat: `{ id: "IZENA", name: "…", desc: "…" }`.
+   Orri guztietako barran agertuko da.
+3. `overlay/index.html` → hasierako orrian txartel bat.
+4. `./build.sh` → `build.sh`-ek barra automatikoki txertatzen du orri guztietan.
+
 ## Zure ordenagailuan probatu
 
 ```bash

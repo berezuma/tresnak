@@ -20,7 +20,6 @@ export function renderHeader(user, current){
       h("nav",{class:"topnav"}, nav.map(([href,label]) =>
         h("a",{href, class: current===href ? "on" : "", text:label}))),
       h("span",{class:"spacer"}),
-      h("a",{class:"btn sm ghost hide-sm", href:"../"}, "← Tresna guztiak"),
       h("a",{class:"tag", href:"pribatutasuna.html", style:{textDecoration:"none"},
         title:"Zure lana nabigatzaile honetan bakarrik gordetzen da"}, "gailu honetan gordeta")
     )

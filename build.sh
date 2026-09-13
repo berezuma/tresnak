@@ -37,7 +37,29 @@ copy_app "$SRC_PT" proiektu-taula admin.html taldeak.html js/admin.js js/teams.j
 copy_app "$SRC_MK" marrazketa admin.html taldeak.html proba.html js/admin.js js/teams.js js/proba.js js/firebase.js
 
 cp overlay/index.html "$OUT/index.html"
+cp overlay/nav.js "$OUT/nav.js"
 touch "$OUT/.nojekyll"
+
+# Orri guztietan tresnen nabigazioa (etxera eta beste tresnetara).
+# Bide erlatiboa orriaren sakoneraren arabera: docs/x.html → "", docs/a/x.html → "../"
+while IFS= read -r -d '' f; do
+  rel="${f#"$OUT"/}"
+  depth=$(awk -F/ '{print NF-1}' <<<"$rel")
+  pre=""
+  for ((i=0; i<depth; i++)); do pre+="../"; done
+  tag="<script src=\"${pre}nav.js\" data-root=\"${pre:-./}\"></script>"
+  # </body> eta </html> aukerakoak dira HTMLn: lehena dagoena erabili, bestela amaieran
+  if grep -qi "</body>" "$f"; then
+    sed -i "0,/<\/body>/Is##${tag}\n</body>#" "$f"
+  elif grep -qi "</html>" "$f"; then
+    sed -i "0,/<\/html>/Is##${tag}\n</html>#" "$f"
+  else
+    printf '\n%s\n' "$tag" >> "$f"
+  fi
+done < <(find "$OUT" -name "*.html" -print0)
+
+missing=$(grep -rL --include=*.html 'nav.js" data-root=' "$OUT" || true)
+if [ -n "$missing" ]; then echo "ERROREA: nabigaziorik gabeko orriak:"; echo "$missing"; exit 1; fi
 
 # Egiaztapena: eskolako daturik eta Firebase-ren arrastorik ez
 # (sortzailearen izena bai; eskolako posta ez)
