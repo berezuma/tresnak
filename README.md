@@ -1,4 +1,6 @@
-# Gelarako tresna irekiak
+# Tresnak
+
+Teknologia gelarako tresna irekiak, euskaraz.
 
 Euskarazko bi web tresna bigarren hezkuntzarako, **saio-hasierarik gabe** eta
 **daturik bidali gabe** (lana nabigatzailean gordetzen da):
