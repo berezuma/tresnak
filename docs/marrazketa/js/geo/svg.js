@@ -188,8 +188,8 @@ export function standaloneSVG(svg){
     .sv-hid{stroke:#0c1723;stroke-width:.04;stroke-dasharray:.2 .13;fill:none}
     .sv-ext,.sv-dline{stroke:#2a78d6;stroke-width:.025;fill:none}
     .sv-arrow{fill:#2a78d6}
-    .sv-dtext{fill:#2a78d6;font:500 .42px 'IBM Plex Mono',monospace}
-    .sv-label{fill:#7b8896;font:600 .32px 'IBM Plex Mono',monospace;letter-spacing:.04em}
+    .sv-dtext{fill:#315eff;font:700 .44px Lato,Arial,sans-serif}
+    .sv-label{fill:#666666;font:700 .32px Lato,Arial,sans-serif}
     .sv-dhit,.sv-snap,.sv-grid{display:none}`;
   clone.insertBefore(style, clone.firstChild);
   const vb = clone.getAttribute("viewBox").split(" ").map(Number);

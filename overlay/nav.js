@@ -1,8 +1,8 @@
 /* ============================================================
    TRESNEN NABIGAZIOA
-   Orri guztietan barra bat: etxera (tresna guztiak) eta beste
-   tresnetara joateko. build.sh-ek orri guztietan txertatzen du:
-     <script src="…/nav.js" data-root="…/"></script>
+   Orri guztietan barra bat: etxera (tresna guztiak), beste
+   tresnetara eta berezuma.com-era. build.sh-ek orri guztietan
+   txertatzen du:  <script src="…/nav.js" data-root="…/"></script>
 
    TRESNA BERRI BAT GEHITZEKO: gehitu lerro bat TOOLS zerrendan
    (id = docs/ barruko karpetaren izena).
@@ -12,6 +12,7 @@
     { id: "proiektu-taula", name: "Proiektu Taula",      desc: "Gantt diagramak eta Kanban taulak" },
     { id: "marrazketa",     name: "Marrazketa Lantegia", desc: "Bistak, akotazioa eta 3D ikuspegia" }
   ];
+  var SITE = { href: "https://berezuma.com", name: "berezuma.com" };
 
   var me = document.currentScript;
   var root = (me && me.getAttribute("data-root")) || "./";
@@ -40,28 +41,28 @@
 
     var style = document.createElement("style");
     style.textContent =
-      "#tresnak-nav{display:flex;align-items:center;gap:8px;padding:5px 14px;" +
-        "background:var(--ink,#0c1723);color:var(--sheet,#fff);" +
-        "font:500 12.5px/1.3 'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;" +
+      "#tresnak-nav{display:flex;align-items:center;gap:6px 20px;padding:9px 20px;" +
+        "background:#f9f8f5;color:#000;border-bottom:1px solid #dedede;" +
+        "font:400 15px/1.3 Lato,system-ui,-apple-system,'Segoe UI',sans-serif;" +
         "position:relative;z-index:45}" +
-      "#tresnak-nav a{color:inherit;text-decoration:none;padding:3px 9px;white-space:nowrap;" +
-        "border:1px solid transparent;opacity:.8}" +
-      "#tresnak-nav a:hover{opacity:1;border-color:color-mix(in srgb,currentColor 40%,transparent)}" +
-      "#tresnak-nav a.on{opacity:1;font-weight:600;border-color:color-mix(in srgb,currentColor 60%,transparent)}" +
-      "#tresnak-nav .tn-home{font-weight:600;opacity:1;flex:0 0 auto}" +
-      "#tresnak-nav .tn-sep{width:1px;align-self:stretch;margin:2px 2px;background:color-mix(in srgb,currentColor 35%,transparent);flex:0 0 auto}" +
-      "#tresnak-nav .tn-links{display:flex;gap:4px;overflow-x:auto;min-width:0;scrollbar-width:none}" +
+      "#tresnak-nav a{color:inherit;text-decoration:none;padding:2px 0;white-space:nowrap;border-bottom:1px solid transparent}" +
+      "#tresnak-nav a:hover{border-bottom-color:#000}" +
+      "#tresnak-nav a.on{font-weight:700;border-bottom-color:#000}" +
+      "#tresnak-nav .tn-home{font-family:'DM Serif Display',Georgia,serif;font-size:19px;flex:0 0 auto}" +
+      "#tresnak-nav .tn-home.on{font-weight:400}" +
+      "#tresnak-nav .tn-links{display:flex;gap:20px;overflow-x:auto;min-width:0;scrollbar-width:none}" +
       "#tresnak-nav .tn-links::-webkit-scrollbar{display:none}" +
+      "#tresnak-nav .tn-site{margin-left:auto;color:#666;flex:0 0 auto}" +
+      "@media (prefers-color-scheme:dark){#tresnak-nav{background:#141412;color:#f4f3ef;border-bottom-color:#3a3a36}" +
+        "#tresnak-nav a:hover,#tresnak-nav a.on{border-bottom-color:#f4f3ef}#tresnak-nav .tn-site{color:#9d9c95}}" +
+      "@media (max-width:560px){#tresnak-nav{padding:8px 16px;gap:4px 16px}#tresnak-nav .tn-site{display:none}}" +
       "@media print{#tresnak-nav{display:none}}";
     document.head.appendChild(style);
 
     var nav = document.createElement("nav");
     nav.id = "tresnak-nav";
     nav.setAttribute("aria-label", "Tresnak");
-    nav.appendChild(link(root, "⌂ Tresnak", !cur, "tn-home", "Hasiera: tresna guztiak"));
-    var sep = document.createElement("span");
-    sep.className = "tn-sep";
-    nav.appendChild(sep);
+    nav.appendChild(link(root, "Tresnak", !cur, "tn-home", "Hasiera: tresna guztiak"));
     var list = document.createElement("div");
     list.className = "tn-links";
     for (var i = 0; i < TOOLS.length; i++){
@@ -69,6 +70,7 @@
       list.appendChild(link(root + t.id + "/", t.name, t.id === cur, "tn-tool", t.desc));
     }
     nav.appendChild(list);
+    nav.appendChild(link(SITE.href, SITE.name, false, "tn-site"));
 
     document.body.insertBefore(nav, document.body.firstChild);
 

@@ -36,6 +36,20 @@ copy_app(){
 copy_app "$SRC_PT" proiektu-taula admin.html taldeak.html js/admin.js js/teams.js
 copy_app "$SRC_MK" marrazketa admin.html taldeak.html proba.html js/admin.js js/teams.js js/proba.js js/firebase.js
 
+# Proiektu Taula: Marrazketa Lantegiaren diseinu bera (iturri bakarra: app.css, letra-tipoak)
+# eta Gantt, Kanban eta ikasgaiaren egokitzapena (overlay/proiektu-taula/css/diseinua*.css).
+PT="$OUT/proiektu-taula"
+rm -f "$PT/fonts/"*
+cp "$SRC_MK/fonts/"*.woff2 "$PT/fonts/"
+cp "$SRC_MK/css/app.css" "$SRC_MK/css/fonts.css" "$PT/css/"
+for f in "$PT/"*.html; do
+  sed -i 's#</head>#<link rel="stylesheet" href="css/diseinua.css">\n</head>#' "$f"
+  grep -q 'href="css/diseinua.css"' "$f" || { echo "ERROREA: diseinua.css ez da txertatu: $f"; exit 1; }
+done
+LESSON="$PT/ikasgaiak/gantt-diagrama.html"
+sed -i '0,/<div class="wrap">/s##<link rel="stylesheet" href="../css/diseinua-ikasgaia.css">\n<div class="wrap">#' "$LESSON"
+grep -q 'diseinua-ikasgaia.css' "$LESSON" || { echo "ERROREA: ikasgaiaren diseinua ez da txertatu"; exit 1; }
+
 cp overlay/index.html "$OUT/index.html"
 cp overlay/nav.js "$OUT/nav.js"
 touch "$OUT/.nojekyll"

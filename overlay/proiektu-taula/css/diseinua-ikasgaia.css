@@ -1,0 +1,57 @@
+/* ============================================================
+   Gantt ikasgaia (bertsio irekia) — Tresnak bildumaren diseinua
+   Ikasgaiaren <style>-aren ondoren kargatzen da (build.sh).
+   berezuma.com: paper beroa, tinta beltza, DM Serif Display + Lato.
+   ============================================================ */
+
+:root{
+  color-scheme: light;
+  --paper:#f9f8f5; --sheet:#ffffff; --grid:#eeede8; --rule:#dedede; --chip:#f3f2ee;
+  --ink:#000000; --ink2:#444444; --ink3:#666666;
+  --s1:#315eff; --s2:#e5a21a; --s3:#1d9a63; --s4:#d85c8a;
+  --danger:#cf2e2e; --link:#666666;
+  --shadow:none;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#141412; --sheet:#1c1c1a; --grid:#262623; --rule:#3a3a36; --chip:#23231f;
+    --ink:#f4f3ef; --ink2:#c9c8c2; --ink3:#9d9c95;
+    --s1:#7a93ff; --s2:#f0b83f; --s3:#3cc285; --s4:#e57fab;
+    --danger:#f06b6f; --link:#9d9c95;
+  }
+}
+
+body{
+  font-family:"Lato", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:16px; line-height:1.6;
+  background-image:none;
+}
+h1, h2, h3, .tb-name, .kv dt, .kv b{
+  font-family:"DM Serif Display", Georgia, "Times New Roman", serif;
+  font-weight:400; letter-spacing:0;
+}
+
+/* etiketa txiki guztiak: Lato, maiuskularik gabe (baita lerroko estiloetan ere) */
+.mono, .tb-id, .tb-meta, .tb-back, .eyebrow, .g-corner, .g-axis span, .g-vline b, .kv small,
+.qmark, .steps li::before, .chip, .anat .tag, .btn, .tick b, .counter, footer,
+.stage [class^="g-"], .stage [class*=" g-"]{
+  font-family:"Lato", system-ui, sans-serif !important;
+  letter-spacing:normal !important;
+  text-transform:none !important;
+}
+.tb-id{font-size:14px}
+.tb-name{font-size:22px}
+.tb-meta{font-size:14px}
+.eyebrow{font-size:15px; font-weight:700}
+.kv small{font-size:13px}
+.g-corner, .g-axis span, .tick b, .counter{font-size:12.5px}
+footer{font-size:14px}
+
+/* izenburu-koadroa eta botoiak: berezuma.com-eko ertz beltza */
+.titleblock{border-color:var(--rule); box-shadow:none}
+.tb-back{border-color:var(--ink); box-shadow:2px 2px 0 var(--ink); font-size:15px}
+.tb-back:active{transform:translate(2px, 2px); box-shadow:none}
+.btn{border-radius:0; box-shadow:2px 2px 0 var(--ink3); font-size:14px; font-weight:700}
+.btn:active{transform:translate(2px, 2px); box-shadow:none}
+.chip{border-radius:0; font-size:13.5px}

@@ -333,7 +333,7 @@ function textSprite(text, color){
   c.width = 256; c.height = 64;
   const ctx = c.getContext("2d");
   ctx.fillStyle = color;
-  ctx.font = "600 36px 'IBM Plex Mono', monospace";
+  ctx.font = "700 36px Lato, Arial, sans-serif";
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(text, 128, 34);
   const tex = new THREE.CanvasTexture(c);

@@ -20,11 +20,6 @@ const slug = (s) => (String(s || "pieza").normalize("NFD").replace(/[̀-ͯ]/g, "
   const fileIn = h("input",{type:"file", accept:".json,application/json", hidden:true, onchange:(e)=>importFile(user, e)});
 
   clear(app).appendChild(h("div",{class:"wrap", style:{paddingBottom:"40px"}},
-    h("div",{class:"titleblock"},
-      h("span",{class:"tb-id", text:"MARRAZKETA LANTEGIA"}),
-      h("span",{class:"tb-name", text:"Bistak, akotazioa eta 3D ikuspegia"}),
-      h("span",{class:"spacer"}),
-      h("span",{class:"tb-meta", text: t.done + " / " + t.total + " ariketa eginda"})),
 
     /* 1. hurrengo ariketa */
     nextCard(progress),
@@ -34,7 +29,8 @@ const slug = (s) => (String(s || "pieza").normalize("NFD").replace(/[̀-ͯ]/g, "
       h("h2",{text:"Mailak"}),
       h("span",{class:"muted", style:{fontSize:"13.5px"}, text:"Hasiberritik adituraino, zure erritmoan"}),
       h("span",{class:"spacer"}),
-      h("a",{class:"btn sm", href:"ariketak.html"}, "Ariketa guztiak →")),
+      h("span",{class:"tb-meta", text: t.done + " / " + t.total + " ariketa eginda"}),
+      h("a",{class:"btn sm", href:"ariketak.html"}, "Ariketa guztiak")),
     h("div",{class:"levels", style:{marginTop:0}}, LEVELS.map(L => levelCard(L, progress, "ariketak.html"))),
 
     /* 3. piezak (bigarren mailan) */

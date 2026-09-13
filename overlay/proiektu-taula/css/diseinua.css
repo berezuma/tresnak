@@ -1,0 +1,36 @@
+/* ============================================================
+   Proiektu Taula (bertsio irekia) — Tresnak bildumaren diseinua
+   app.css Marrazketa Lantegiarena da (build.sh-ek kopiatzen du).
+   Fitxategi honek gantt.css eta kanban.css egokitzen ditu:
+   Lato eta DM Serif Display, maiuskularik gabe, ertz zuzenak.
+   ============================================================ */
+
+/* letra-tipo zaharrak (IBM Plex Mono, Archivo) → Lato */
+[class^="g-"], [class*=" g-"], [class^="k-"], [class*=" k-"], .swatches button, .pri-pick button{
+  font-family:var(--font-body);
+  letter-spacing:normal;
+  text-transform:none;
+}
+.g-head-label{font-size:13px; font-weight:700; color:var(--ink3)}
+.g-month{font-family:var(--font-display); font-weight:400; font-size:15px; color:var(--ink)}
+.g-day{font-size:11.5px; font-variant-numeric:tabular-nums}
+.g-num{font-size:12px; font-variant-numeric:tabular-nums}
+.g-name{font-size:15px}
+.g-mini button{font-size:13px}
+.g-drag-ghost{font-size:13px; font-weight:700}
+.k-count{font-size:12.5px; font-weight:700}
+.k-due{font-size:12.5px; font-variant-numeric:tabular-nums}
+.k-stats{font-size:14px}
+
+/* ertz zuzenak (berezuma.com) */
+.g-dot, .g-legend i, .swatches button{border-radius:0}
+
+/* edukiontziak: ertz finak; txartelak: ertz beltza itzal txikiarekin */
+.g-shell{box-shadow:none}
+.k-col{box-shadow:none}
+/* ezkerreko ertzak lehentasunaren kolorea gordetzen du */
+.k-card{box-shadow:1px 1px 0 var(--ink); border-top-color:var(--ink); border-right-color:var(--ink); border-bottom-color:var(--ink)}
+
+/* bertsio irekian ez dago talderik: "bakarka" etiketak ez du zentzurik */
+.tag.solo{display:none}
+.k-col.over{border-color:var(--s1); box-shadow:3px 3px 0 var(--s1)}
