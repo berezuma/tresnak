@@ -53,7 +53,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
       retry ? h("button", { class: "btn", onclick: retry }, "Berriro saiatu") : null,
       done && onNext ? h("button", { class: "btn primary", onclick: onNext }, "Hurrengo ariketa →") : null
     ].filter(Boolean));
-    try { const p = await onResult(score); if (p) setProg(p); } catch(e){ /* onResult-ek erakusten du */ }
+    try { const p = await onResult(score, { solved: done }); if (p) setProg(p); } catch(e){ /* onResult-ek erakusten du */ }
   }
 
   function pieceViewer(host, cells, { colors = true, hint = true } = {}){
@@ -117,7 +117,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
       pieceViewer(host, ex.cells, { colors: ex.level <= 2 });
       const svgs = sameScale(ex.options.map(o => o.pv), ex.hidden);
       grid.append(h("div", {}, choice(ex.options.map((o, i) => ({ el: svgs[i], correct: o.correct })), (score, tries) =>
-        result(score, tries === 1 ? "Oso ondo! Lehen saiakeran asmatu duzu." : "Zuzena da, baina " + tries + " saiakera behar izan dituzu."))));
+        result(score, tries === 1 ? "Oso ondo! Lehen saiakeran asmatu duzu." : "Zuzena da, baina " + tries + " saiakera behar izan dituzu.", { done: true }))));
       break;
     }
 
@@ -126,7 +126,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
       grid.append(sheetBox(ex.solid, ex.hidden));
       const items = ex.options.map(o => ({ el: isoSVG(o.cells, { pad: 0.3 }), correct: o.correct }));
       grid.append(h("div", {}, choice(items, (score, tries) =>
-        result(score, tries === 1 ? "Bikain! Bistak ondo irakurri dituzu." : "Zuzena. Hurrengoan, alderatu bista bakoitza aukerarekin banan-banan."))));
+        result(score, tries === 1 ? "Bikain! Bistak ondo irakurri dituzu." : "Zuzena. Hurrengoan, alderatu bista bakoitza aukerarekin banan-banan.", { done: true }))));
       break;
     }
 
@@ -312,7 +312,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
       const items = ex.options.map(o => ({ el: placedSheet(ex.solid, o.place, ex.hidden), correct: o.correct }));
       grid.append(h("div", {}, choice(items, (score, tries) => result(score, ex.ask === "E"
         ? "Sistema europarrean oinplanoa altxaeraren <b>azpian</b> dago eta ezkerreko profila <b>eskuinean</b>."
-        : "Sistema amerikarrean oinplanoa altxaeraren <b>gainean</b> dago eta eskuineko profila <b>eskuinean</b>."))));
+        : "Sistema amerikarrean oinplanoa altxaeraren <b>gainean</b> dago eta eskuineko profila <b>eskuinean</b>.", { done: true }))));
       break;
     }
   }

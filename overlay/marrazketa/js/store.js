@@ -125,9 +125,10 @@ export function watchMyPieces(user, teamIds, cb){
 
 export async function getProgress(){ return read("progress", {}); }
 
-export async function recordAttempt(user, exKey, score, prev = {}){
+/* solved: ariketa azkenean asmatu da (saiakera batzuen ondoren ere) → eginda. */
+export async function recordAttempt(user, exKey, score, prev = {}, { solved = false } = {}){
   const best = Math.max(prev.best || 0, score);
-  const entry = { best, tries: (prev.tries || 0) + 1, done: best >= 100 || !!prev.done, last: score, at: Date.now() };
+  const entry = { best, tries: (prev.tries || 0) + 1, done: solved || best >= 100 || !!prev.done, last: score, at: Date.now() };
   const all = read("progress", {});
   all[exKey] = entry;
   write("progress", all);

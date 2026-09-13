@@ -51,8 +51,8 @@ const app = qs("#app");
 
   renderExercise(body, ex, {
     progress: progress[key],
-    onResult: async (score) => {
-      try { progress[key] = await S.recordAttempt(USER, key, score, progress[key]); return progress[key]; }
+    onResult: async (score, info = {}) => {
+      try { progress[key] = await S.recordAttempt(USER, key, score, progress[key], info); return progress[key]; }
       catch(e){ toast("Emaitza ez da gorde: " + errMessage(e), "err"); throw e; }
     },
     onNext: () => { location.href = next; }
