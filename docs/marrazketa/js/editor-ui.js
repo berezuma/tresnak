@@ -120,7 +120,7 @@ export function mountEditor(root, piece, backend, { isAdmin = false, backHref = 
       h("span", { class: "spacer" }), countEl, saveEl,
       isAdmin ? h("button", { class: "btn sm", onclick: publishDialog }, "Ariketa gisa…") : null,
       h("button", { class: "btn sm", onclick: exportDialog }, "Esportatu"),
-      h("a", { class: "btn sm", href: backHref }, "← Piezak")),
+      h("a", { class: "btn sm", href: backHref }, "← Hasiera")),
     toolbar,
     h("div", { class: "editor" }, v3dHost, sheet));
 

@@ -192,6 +192,41 @@
 .piece-thumb{height:130px; display:flex; align-items:center; justify-content:center; padding:10px; border-bottom:1px solid var(--grid); background:var(--chip)}
 .piece-thumb .sv{max-height:110px; max-width:80%}
 
+/* ---------- hasierako orria: ariketak lehenik ---------- */
+.hero-next{
+  display:grid; grid-template-columns:minmax(150px, 230px) minmax(0, 1fr); gap:22px; align-items:center;
+  border:1px solid var(--rule); border-left:5px solid var(--s1); background:var(--sheet); box-shadow:var(--shadow);
+  padding:20px 24px; margin-top:14px;
+}
+.hero-next.all-done{grid-template-columns:1fr; border-left-color:var(--ok)}
+.hero-next h2{font-size:clamp(20px, 3vw, 26px); margin:6px 0 8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.hn-num{
+  display:inline-grid; place-items:center; width:36px; height:36px; border:1.5px solid var(--ink);
+  font-family:"Archivo",sans-serif; font-weight:800; font-size:19px; flex:0 0 auto;
+}
+.hn-art{display:flex; justify-content:center}
+.hn-art .sv{max-height:160px; max-width:220px}
+.hn-ex{font-size:15px; color:var(--ink2); margin:0 0 12px}
+.hn-ex b{color:var(--ink)}
+.hn-prog{display:flex; flex-direction:column; gap:5px; max-width:460px}
+.hn-prog .mono{font-size:11.5px}
+.btn.big{font-size:16px; padding:11px 20px}
+@media (max-width:640px){
+  .hero-next{grid-template-columns:1fr; padding:16px}
+  .hn-art .sv{max-height:120px}
+}
+.section-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:34px 0 10px}
+.section-head h2{font-size:19px}
+.section-head.minor{margin-top:44px; padding-top:16px; border-top:1px solid var(--rule)}
+.section-head.minor h2{font-size:15px; color:var(--ink2)}
+.pieces-compact{grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px}
+.pieces-compact .proj{min-height:0}
+.pieces-compact .piece-thumb{height:86px; padding:6px}
+.pieces-compact .piece-thumb .sv{max-height:72px}
+.pieces-compact .proj-top{padding:9px 11px 8px}
+.pieces-compact .proj-top h3{font-size:14px}
+.pieces-compact .proj-foot a{padding:6px}
+
 @media print{
   .v3d, .toolbar, .palette{display:none !important}
   .editor{grid-template-columns:1fr}

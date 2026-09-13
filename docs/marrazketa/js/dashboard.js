@@ -1,11 +1,12 @@
-/* Hasierako orria (bertsio irekia): piezen zerrenda, saio-hasierarik gabe. */
+/* Hasierako orria (bertsio irekia): ariketak lehenik, piezak bigarren mailan. */
 
 import { requireAuth, renderHeader, errMessage } from "./auth.js";
 import { h, qs, clear, toast, modal, field, confirmBox, fmtWhen, download } from "./ui.js";
 import * as S from "./store.js";
 import { isoSVG } from "./geo/svg.js";
 import { toCellMap, volume } from "./geo/solid.js";
-import { LEVELS, parseCellString, levelProgress } from "./levels.js";
+import { LEVELS, parseCellString } from "./levels.js";
+import { levelCard, nextCard, totals } from "./progress-ui.js";
 
 const app = qs("#app");
 const slug = (s) => (String(s || "pieza").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\w]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "pieza");
@@ -14,70 +15,69 @@ const slug = (s) => (String(s || "pieza").normalize("NFD").replace(/[̀-ͯ]/g, "
   const user = await requireAuth();
   renderHeader(user, "index.html");
   app.className = "";
+  const progress = await S.getProgress(user);
+  const t = totals(progress);
   const fileIn = h("input",{type:"file", accept:".json,application/json", hidden:true, onchange:(e)=>importFile(user, e)});
-  clear(app).appendChild(h("div",{class:"wrap"},
+
+  clear(app).appendChild(h("div",{class:"wrap", style:{paddingBottom:"40px"}},
     h("div",{class:"titleblock"},
-      h("span",{class:"tb-id", text:"PIEZAK"}),
+      h("span",{class:"tb-id", text:"MARRAZKETA LANTEGIA"}),
       h("span",{class:"tb-name", text:"Bistak, akotazioa eta 3D ikuspegia"}),
       h("span",{class:"spacer"}),
-      h("span",{class:"tb-meta", id:"pcount", text:"—"}),
-      h("button",{class:"btn", onclick:()=>fileIn.click()}, "Inportatu"),
-      h("button",{class:"btn primary", onclick:()=>newPieceDialog(user)}, "+ Pieza berria")),
-    h("section",{class:"card", style:{marginTop:"12px", padding:"12px 14px"}},
-      h("div",{class:"row"},
-        h("span",{class:"eyebrow", text:"Nire aurrerapena ariketetan"}),
-        h("span",{class:"spacer"}),
-        h("a",{class:"btn sm primary", href:"ariketak.html"}, "Ariketetara →")),
-      h("div",{id:"lvstrip", class:"row", style:{marginTop:"8px", gap:"8px"}})),
-    h("div",{class:"notice", style:{marginTop:"12px"}, html:
-      "Piezak eta emaitzak <b>nabigatzaile honetan</b> gordetzen dira: ez dira Internetera bidaltzen. " +
-      "Pieza bat beste ordenagailu batera eramateko edo irakasleari bidaltzeko, erabili <b>⋯ → Esportatu</b> eta gero <b>Inportatu</b>."}),
-    fileIn,
-    h("div",{id:"list", style:{marginTop:"14px", marginBottom:"40px"}},
-      h("div",{class:"loading", style:{minHeight:"180px"}}, h("div",{class:"spin"})))));
+      h("span",{class:"tb-meta", text: t.done + " / " + t.total + " ariketa eginda"})),
 
-  renderLevelStrip(await S.getProgress(user));
+    /* 1. hurrengo ariketa */
+    nextCard(progress),
+
+    /* 2. mailak */
+    h("div",{class:"section-head"},
+      h("h2",{text:"Mailak"}),
+      h("span",{class:"muted", style:{fontSize:"13.5px"}, text:"Hasiberritik adituraino, zure erritmoan"}),
+      h("span",{class:"spacer"}),
+      h("a",{class:"btn sm", href:"ariketak.html"}, "Ariketa guztiak →")),
+    h("div",{class:"levels", style:{marginTop:0}}, LEVELS.map(L => levelCard(L, progress, "ariketak.html"))),
+
+    /* 3. piezak (bigarren mailan) */
+    h("div",{class:"section-head minor"},
+      h("h2",{text:"Nire piezak"}),
+      h("span",{class:"muted", style:{fontSize:"13px"}, text:"Eraiki zure piezak 3Dn: bistak berez marrazten dira."}),
+      h("span",{class:"spacer"}),
+      h("span",{class:"tb-meta", id:"pcount", text:""}),
+      h("button",{class:"btn sm ghost", onclick:()=>fileIn.click()}, "Inportatu"),
+      h("button",{class:"btn sm", onclick:()=>newPieceDialog(user)}, "+ Pieza berria")),
+    fileIn,
+    h("div",{id:"list"}, h("div",{class:"loading", style:{minHeight:"120px"}}, h("div",{class:"spin"}))),
+    h("p",{class:"muted", style:{fontSize:"12.5px", marginTop:"14px"}, html:
+      "Piezak eta emaitzak <b>nabigatzaile honetan</b> gordetzen dira: ez dira Internetera bidaltzen. " +
+      "Pieza bat beste ordenagailu batera eramateko edo irakasleari bidaltzeko, erabili <b>⋯ → Esportatu</b> eta gero <b>Inportatu</b>."})
+  ));
+
   S.watchMyPieces(user, [], list => renderPieces(user, list));
 })();
 
-function renderLevelStrip(progress){
-  const strip = clear(qs("#lvstrip"));
-  LEVELS.forEach(L => {
-    const p = levelProgress(L.n, progress);
-    strip.appendChild(h("a",{href:"ariketak.html#maila-"+L.n, style:{textDecoration:"none", color:"inherit", flex:"1 1 140px", minWidth:"130px"}},
-      h("div",{class:"row", style:{gap:"6px", fontSize:"12px"}},
-        h("b",{text:L.code}), h("span",{class:"spacer"}), h("span",{class:"mono dim", text:p.done+"/"+p.total})),
-      h("div",{class:"pbar"+(p.pct>=100?" done":""), style:{marginTop:"4px"}}, h("i",{style:{width:p.pct+"%"}}))));
-  });
-}
-
 function renderPieces(user, list){
   const box = clear(qs("#list"));
-  qs("#pcount").textContent = list.length + " pieza";
+  qs("#pcount").textContent = list.length ? list.length + " pieza" : "";
   if (!list.length){
-    box.appendChild(h("div",{class:"empty"},
-      h("h3",{text:"Oraindik ez duzu piezarik"}),
-      h("p",{text:"Sortu pieza bat 3Dn kuboekin eraikitzeko: bistak berez marrazten dira, eta kotak jar ditzakezu."}),
-      h("div",{class:"row", style:{justifyContent:"center", marginTop:"12px"}},
-        h("button",{class:"btn primary", onclick:()=>newPieceDialog(user)}, "+ Pieza berria"),
-        h("a",{class:"btn", href:"ariketak.html"}, "Ariketak egin"))));
+    box.appendChild(h("p",{class:"muted", style:{fontSize:"13.5px", margin:"4px 0 0"}},
+      "Oraindik ez duzu piezarik. ",
+      h("a",{href:"#", onclick:(e)=>{ e.preventDefault(); newPieceDialog(user); }}, "Sortu lehena")));
     return;
   }
-  box.appendChild(h("div",{class:"grid grid-3"}, list.map(p => pieceCard(user, p))));
+  box.appendChild(h("div",{class:"grid pieces-compact"}, list.map(p => pieceCard(p))));
 }
 
-function pieceCard(user, p){
+function pieceCard(p){
   const cells = toCellMap(p.cells);
   return h("article",{class:"proj"},
     h("a",{class:"piece-thumb", href:"pieza.html?p="+p.id}, cells.size ? isoSVG(cells, { pad: 0.2 }) : h("span",{class:"eyebrow", text:"hutsik"})),
     h("div",{class:"proj-top"},
-      h("div",{class:"row", style:{gap:"6px", marginBottom:"7px"}},
+      h("div",{class:"row", style:{gap:"6px"}},
         h("h3",{text:p.name, style:{flex:"1 1 auto"}}),
         h("button",{class:"btn icon ghost sm", title:"Aukerak", onclick:(e)=>pieceMenu(e, p)}, "⋯")),
-      p.description ? h("p",{class:"proj-desc", text:p.description}) : null,
-      h("p",{class:"mono", style:{fontSize:"11px", color:"var(--ink3)", margin:"8px 0 0"},
+      h("p",{class:"mono", style:{fontSize:"10.5px", color:"var(--ink3)", margin:"4px 0 0"},
         text: volume(cells) + " kubo · " + Object.keys(p.dims||{}).length + " kota · " + fmtWhen(p.updatedAt)})),
-    h("div",{class:"proj-foot"}, h("a",{href:"pieza.html?p="+p.id}, "Ireki editorea")));
+    h("div",{class:"proj-foot"}, h("a",{href:"pieza.html?p="+p.id}, "Ireki")));
 }
 
 function exportPiece(p){

@@ -13,7 +13,7 @@ export function brandGlyph(){
 
 export function renderHeader(user, current){
   const nav = [
-    ["index.html", "Piezak"],
+    ["index.html", "Hasiera"],
     ["ariketak.html", "Ariketak"]
   ];
   const bar = h("header",{class:"topbar no-print"},

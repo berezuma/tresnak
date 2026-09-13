@@ -6,6 +6,7 @@ import * as S from "./store.js";
 import { isoSVG, sheetSVG } from "./geo/svg.js";
 import { buildSolid, toCellMap } from "./geo/solid.js";
 import { LEVELS, TYPES, levelByN, levelExercises, levelProgress, parseCellString } from "./levels.js";
+import { levelCard, totals } from "./progress-ui.js";
 
 const app = qs("#app");
 let USER, PROGRESS = {}, TEACHER = [];
@@ -23,39 +24,20 @@ let USER, PROGRESS = {}, TEACHER = [];
 })();
 
 function render(){
-  const total = LEVELS.reduce((s, L) => s + levelProgress(L.n, PROGRESS).total, 0);
-  const done = LEVELS.reduce((s, L) => s + levelProgress(L.n, PROGRESS).done, 0);
+  const t = totals(PROGRESS);
   clear(app).appendChild(h("div",{class:"wrap", style:{paddingBottom:"40px"}},
     h("div",{class:"titleblock"},
       h("span",{class:"tb-id", text:"ARIKETAK"}),
       h("span",{class:"tb-name", text:"Hasiberritik adituraino"}),
       h("span",{class:"spacer"}),
-      h("span",{class:"tb-meta", text: done + " / " + total + " eginda"})),
+      h("span",{class:"tb-meta", text: t.done + " / " + t.total + " eginda"})),
     h("div",{class:"notice", style:{marginTop:"12px"}, html:
-      "Maila bakoitzak <b>teoria laburra</b> eta ariketa <b>autozuzenduak</b> ditu. Ariketa bat %100ean egiten duzunean «eginda» geratzen da; nahi adina aldiz errepika dezakezu. " +
+      "Maila bakoitzak <b>teoria laburra</b> eta ariketa <b>autozuzenduak</b> ditu. Ariketa bat asmatzen duzunean «eginda» geratzen da; nahi adina aldiz errepika dezakezu. " +
       "Ariketak ikasle guztientzat <b>berdinak</b> dira: gelan elkarrekin komentatu ditzakezue."}),
-    h("div",{class:"levels"}, LEVELS.map(levelCard)),
+    h("div",{class:"levels"}, LEVELS.map(L => levelCard(L, PROGRESS))),
     h("div",{id:"detail", style:{marginTop:"22px"}}),
     teacherSection()));
   renderDetail();
-}
-
-function levelCard(L){
-  const p = levelProgress(L.n, PROGRESS);
-  const sample = isoSVG(parseCellString(L.sample), { pad: 0.2 });
-  return h("article",{class:"level", id:"card-"+L.n},
-    h("div",{class:"level-top"},
-      h("div",{class:"level-num", text:String(L.n)}),
-      h("div",{},
-        h("div",{class:"eyebrow", text:L.code}),
-        h("h3",{text:L.title}),
-        h("ul",{}, L.goals.map(g => h("li",{text:g}))))),
-    h("div",{class:"level-sample"}, sample),
-    h("div",{class:"level-foot"},
-      h("div",{class:"row", style:{fontSize:"12px"}},
-        h("span",{class:"mono dim", text: p.done + " / " + p.total + " eginda"}), h("span",{class:"spacer"}),
-        h("a",{class:"btn sm" + (p.pct < 100 ? " primary" : ""), href:"#maila-"+L.n}, p.done ? "Jarraitu" : "Hasi")),
-      h("div",{class:"pbar"+(p.pct>=100?" done":"")}, h("i",{style:{width:p.pct+"%"}}))));
 }
 
 function renderDetail(){
