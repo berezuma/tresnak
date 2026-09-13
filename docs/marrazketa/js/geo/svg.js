@@ -123,7 +123,7 @@ export function sheetSVG(solid, { system = "E", hidden = true, dims = [], unit =
     if (hidden) V.pv.hid.forEach(([a, b, c, d]) => { add(a, b, true); add(c, d, true); });
     for (const p of pts.values()) snaps.push({ view: V.id, ...p, x: p.u + V.ox, y: p.v + V.oy });
     if (labels){
-      gLabels.appendChild(s("text", { x: r3(V.box.minU + V.ox), y: r3(-(V.box.maxV + V.oy) - 0.35), class: "sv-label", text: VIEWS[V.id].name.toUpperCase() }));
+      gLabels.appendChild(s("text", { x: r3(V.box.minU + V.ox), y: r3(-(V.box.maxV + V.oy) - 0.35), class: "sv-label", text: VIEWS[V.id].name }));
     }
   }
 

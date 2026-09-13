@@ -36,6 +36,11 @@ copy_app(){
 copy_app "$SRC_PT" proiektu-taula admin.html taldeak.html js/admin.js js/teams.js
 copy_app "$SRC_MK" marrazketa admin.html taldeak.html proba.html js/admin.js js/teams.js js/proba.js js/firebase.js
 
+# Marrazketa Lantegia: bertsio irekian ez dago talderik → "bakarka" etiketa kendu editorean
+PZ="$OUT/marrazketa/js/pieza.js"
+sed -i 's#h("span",{class:"tag solo", text:"bakarka"})#null#' "$PZ"
+if grep -q '"bakarka"' "$PZ"; then echo "ERROREA: bakarka etiketa ez da kendu: $PZ"; exit 1; fi
+
 # Proiektu Taula: Marrazketa Lantegiaren diseinu bera (iturri bakarra: app.css, letra-tipoak)
 # eta Gantt, Kanban eta ikasgaiaren egokitzapena (overlay/proiektu-taula/css/diseinua*.css).
 PT="$OUT/proiektu-taula"

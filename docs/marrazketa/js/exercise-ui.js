@@ -141,7 +141,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
       hsvg.append(s("text", { x: cols / 2, y: 0.55, "text-anchor": "middle", class: "front", text: "▲ AURREA" }));
       grid.append(h("section", { class: "sheet" }, h("div", { class: "sheet-head" }, h("span", { class: "eyebrow vT", text: "Oinplano zenbakidua (goitik ikusita)" })),
         h("div", { style: { padding: "20px" } }, hsvg)));
-      const col = h("div", { class: "stack", style: { gap: "8px" } });
+      const col = h("section", { class: "sheet panel" });
       const host = h("div", { class: "v3d" });
       const b = bounds(ex.cells);
       const size = { x: b.size[0] + 2, y: b.size[1] + 2, z: b.size[2] + 1 };
@@ -157,7 +157,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
         h("button", { onclick: (e) => { v.setTool("remove"); mark(e); } }, "Kendu"),
         h("button", { onclick: (e) => { v.setTool("orbit"); mark(e); } }, "Biratu"));
       const mark = (e) => tools.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === e.currentTarget));
-      col.append(h("div", { class: "row" }, tools, h("span", { class: "spacer" }),
+      col.append(h("div", { class: "sheet-head" }, tools, h("span", { class: "spacer" }),
         h("button", { class: "btn sm", onclick: () => { built.clear(); v.setCells(built); } }, "Hustu"),
         h("button", { class: "btn primary", onclick: () => {
           if (!built.size){ result(0, "Oraindik ez duzu kuborik jarri.", { done: false }); return; }
@@ -199,8 +199,8 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
         h("button", { class: m === "vis" ? "on" : "", onclick: (e) => { dg.setMode(m); modeSeg.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === e.currentTarget)); } }, label)));
       const legend = h("div", { class: "legend", hidden: true },
         h("span", {}, h("i", { class: "m" }), "falta da"), h("span", {}, h("i", { class: "x" }), "soberan"), ex.hidden ? h("span", {}, h("i", { class: "w" }), "marra mota okerra") : null);
-      grid.append(h("div", { class: "stack", style: { gap: "8px" } },
-        h("div", { class: "row" }, modeSeg, h("span", { class: "spacer" }),
+      grid.append(h("section", { class: "sheet panel" },
+        h("div", { class: "sheet-head" }, modeSeg, h("span", { class: "spacer" }),
           h("button", { class: "btn sm", onclick: () => dg.undo() }, "↶"),
           h("button", { class: "btn sm", onclick: () => { dg.clear(); legend.hidden = true; } }, "Garbitu"),
           h("button", { class: "btn primary", onclick: () => {
@@ -223,7 +223,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
       task.innerHTML = "Eraiki bista hauei dagokien pieza. " + (ex.hidden ? "Marra etenek <b>ezkutuko ertzak</b> adierazten dituzte. " : "") +
         "Bistak berdinak badira, ontzat emango da (pieza bat baino gehiago egon daitezke).";
       grid.append(sheetBox(ex.solid, ex.hidden));
-      const col = h("div", { class: "stack", style: { gap: "8px" } });
+      const col = h("section", { class: "sheet panel" });
       const host = h("div", { class: "v3d" });
       const b = bounds(ex.cells);
       const size = { x: b.size[0] + 2, y: b.size[1] + 2, z: b.size[2] + 1 };
@@ -241,7 +241,7 @@ export function renderExercise(root, ex, { onResult = async () => {}, onNext = n
       const tools = h("span", { class: "seg" }, TOOLS.map(([t, l]) => h("button", { class: t === "add" ? "on" : "", onclick: (e) => { v.setTool(t); tools.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === e.currentTarget)); } }, l)));
       const pal = hasW ? h("div", { class: "palette" }, ["c", "w000", "w010", "w100", "w110", "w001", "w011", "w101", "w111", "w200", "w210", "w201", "w211"].map(sh =>
         h("button", { class: sh === "c" ? "on" : "", title: SHAPE_NAMES[sh], onclick: (e) => { shape = sh; pal.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === e.currentTarget)); } }, shapeIcon(sh)))) : null;
-      col.append(h("div", { class: "row" }, tools, h("span", { class: "spacer" }),
+      col.append(h("div", { class: "sheet-head" }, tools, h("span", { class: "spacer" }),
         h("button", { class: "btn sm", onclick: () => { built.clear(); v.setCells(built); mine.hidden = true; } }, "Hustu"),
         h("button", { class: "btn primary", onclick: () => {
           if (!built.size){ result(0, "Oraindik ez duzu ezer eraiki.", { done: false }); return; }

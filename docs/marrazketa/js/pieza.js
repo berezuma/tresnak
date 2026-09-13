@@ -26,7 +26,7 @@ const PID = param("p");
     update:     (p) => S.updatePiece(PID, p, USER),
     subscribe:  (cb) => S.watchPiece(PID, cb, err => toast(errMessage(err), "err"))
   };
-  const teamLabel = piece.teamId ? h("span",{class:"tag team", text:"taldea " + piece.teamId}) : h("span",{class:"tag solo", text:"bakarka"});
+  const teamLabel = piece.teamId ? h("span",{class:"tag team", text:"taldea " + piece.teamId}) : null;
   mountEditor(wrap, piece, backend, { isAdmin: USER.admin, teamLabel });
 })();
 
