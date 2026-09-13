@@ -1,0 +1,11 @@
+{
+  "name": "gelarako-tresna-irekiak",
+  "private": true,
+  "type": "module",
+  "description": "Proiektu Taula eta Marrazketa Lantegia, bertsio irekiak. Build-ik gabe: docs/ karpeta argitaratzen da.",
+  "author": "Beñat Erezuma (https://berezuma.com)",
+  "scripts": {
+    "build": "./build.sh",
+    "test": "node test/stores.test.js"
+  }
+}

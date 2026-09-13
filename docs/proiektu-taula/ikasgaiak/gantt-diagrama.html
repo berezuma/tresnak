@@ -1,0 +1,668 @@
+<title>Gantt diagrama martxan</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+:root{
+  color-scheme: light;
+  --paper:#eceff5; --sheet:#ffffff; --grid:#dde4ee; --rule:#c8d2df; --chip:#f1f4f9;
+  --ink:#0c1723; --ink2:#465666; --ink3:#7b8896;
+  --s1:#2a78d6; --s2:#eda100; --s3:#008300; --s4:#e87ba4;
+  --danger:#d13b34; --link:#8d9aa8; --shadow:0 1px 2px rgba(12,23,35,.06), 0 8px 24px -16px rgba(12,23,35,.35);
+  --row-h:34px; --labw:158px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0e1522; --sheet:#141c2a; --grid:#1e2c42; --rule:#2c3d55; --chip:#1b2433;
+    --ink:#eaf1fb; --ink2:#a8b8cc; --ink3:#7688a0;
+    --s1:#3987e5; --s2:#c98500; --s3:#008300; --s4:#d55181;
+    --danger:#e66767; --link:#54687f; --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px #000;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0e1522; --sheet:#141c2a; --grid:#1e2c42; --rule:#2c3d55; --chip:#1b2433;
+  --ink:#eaf1fb; --ink2:#a8b8cc; --ink3:#7688a0;
+  --s1:#3987e5; --s2:#c98500; --s3:#008300; --s4:#d55181;
+  --danger:#e66767; --link:#54687f; --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px #000;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:15px; line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:28px 28px, 28px 28px;
+}
+h1,h2,h3{font-family:"Archivo", system-ui, sans-serif; text-wrap:balance; margin:0; letter-spacing:-.02em}
+.mono{font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums}
+
+.wrap{max-width:1080px; margin:0 auto; padding-block:18px 0; padding-left:16px; padding-right:16px}
+
+/* ---- title block (marrazketa teknikoko izenburu-koadroa) ---- */
+.titleblock{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px;
+  border:1px solid var(--rule); background:var(--sheet); box-shadow:var(--shadow);
+  padding:10px 14px;
+}
+.tb-id{font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3)}
+.tb-name{font-family:"Archivo",sans-serif; font-weight:700; font-size:15px}
+.tb-spacer{flex:1 1 40px}
+.tb-meta{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink2); letter-spacing:.04em}
+
+/* ---- stage ---- */
+.stage{position:relative; margin-top:14px; min-height:clamp(420px, 66vh, 640px)}
+.scene{display:none}
+.scene.is-on{display:block}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--s1); margin-bottom:10px}
+.scene h2{font-size:clamp(22px, 3.4vw, 33px); line-height:1.12; font-weight:800}
+.lead{color:var(--ink2); max-width:62ch; margin-top:10px; font-size:16px}
+.scene-head{margin-bottom:18px}
+
+.panel{background:var(--sheet); border:1px solid var(--rule); box-shadow:var(--shadow); padding:16px}
+.cols{display:grid; gap:16px; grid-template-columns:1fr}
+@media (min-width:760px){ .cols.two{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)} .cols.side{grid-template-columns:minmax(0,1fr) 264px} }
+
+/* ---- gantt ---- */
+.gantt{--total:8; font-size:13px}
+.g-head{display:flex; align-items:flex-end; border-bottom:1px solid var(--rule); padding-bottom:6px; margin-bottom:8px}
+.g-corner{width:var(--labw); flex:none; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink3); padding-right:10px}
+.g-axis{flex:1; min-width:0; display:grid; grid-template-columns:repeat(var(--total), 1fr)}
+.g-axis span{display:flex; flex-direction:column; gap:1px; font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink3); padding-left:4px; border-left:1px solid var(--grid); line-height:1.25}
+.g-axis b{color:var(--ink2); font-weight:600; font-size:11px}
+.g-axis em{font-style:normal}
+.g-body{display:flex; position:relative; margin-bottom:26px}
+.g-labels{width:var(--labw); flex:none; padding-right:10px}
+.g-lab{height:var(--row-h); display:flex; align-items:center; justify-content:flex-end; gap:8px; text-align:right; color:var(--ink); font-size:12.5px; line-height:1.15;
+  opacity:0; transform:translateX(-6px); transition:opacity .35s ease var(--d,0s), transform .35s ease var(--d,0s)}
+.is-live .g-lab{opacity:1; transform:none}
+.g-lab i{font-style:normal; width:6px; height:6px; flex:none; border-radius:1px; background:var(--c)}
+.g-plot{flex:1; min-width:0; position:relative;
+  background-image:repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px calc(100% / var(--total)));
+}
+.g-row{height:var(--row-h); position:relative}
+.g-row + .g-row{box-shadow:0 -1px 0 var(--grid) inset}
+.g-bar{position:absolute; top:50%; transform:translateY(-50%); height:16px; border-radius:4px; background:var(--c);
+  left:calc(var(--s) / var(--total) * 100%); width:0; overflow:hidden;
+  transition:width .5s cubic-bezier(.2,.75,.25,1) var(--d,0s), left .5s cubic-bezier(.2,.75,.25,1)}
+.is-live .g-bar{width:calc(var(--w) / var(--total) * 100% - 2px)}
+.g-bar .fill{position:absolute; inset:0 auto 0 0; width:calc(var(--p,0) * 1%); background:rgba(0,0,0,.34); border-right:1px solid rgba(255,255,255,.5)}
+:root[data-theme="dark"] .g-bar .fill, :root:not([data-theme="light"]) .g-bar .fill{background:rgba(0,0,0,.42)}
+.g-note{position:absolute; top:50%; transform:translateY(-50%); left:calc((var(--s) + var(--w)) / var(--total) * 100%); margin-left:7px;
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink2); white-space:nowrap; opacity:0; transition:opacity .3s ease calc(var(--d,0s) + .35s)}
+.is-live .g-note{opacity:1}
+.g-note.flip{left:auto; right:calc(100% - var(--s) / var(--total) * 100%); margin:0 7px 0 0}
+
+.g-link{position:absolute; width:2px; background:var(--link); left:calc(var(--x) / var(--total) * 100%);
+  top:calc(var(--a) * var(--row-h) + var(--row-h) / 2); height:calc((var(--b) - var(--a)) * var(--row-h));
+  opacity:0; transition:opacity .4s ease var(--d,0s)}
+.is-live .g-link{opacity:1}
+.g-link::after{content:""; position:absolute; left:1px; bottom:-4px; border-top:4px solid transparent; border-bottom:4px solid transparent; border-left:7px solid var(--link)}
+.g-link.hot{background:var(--danger); z-index:3}
+.g-link.hot::after{border-left-color:var(--danger)}
+
+.g-vline{position:absolute; top:-6px; bottom:-2px; width:0; border-left:2px dashed var(--ink); left:calc(var(--x) / var(--total) * 100%); z-index:2;
+  opacity:0; transition:opacity .4s ease var(--d,0s)}
+.is-live .g-vline{opacity:1}
+.g-vline.deadline{border-left:2px solid var(--danger)}
+.g-vline b{position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em;
+  background:var(--ink); color:var(--sheet); padding:2px 5px; border-radius:2px; white-space:nowrap}
+.g-vline.deadline b{background:var(--danger); color:#fff}
+.g-mile{position:absolute; z-index:3; left:calc(var(--x) / var(--total) * 100%); top:calc(var(--a) * var(--row-h) + var(--row-h) / 2);
+  width:12px; height:12px; margin:-6px 0 0 -6px; background:var(--ink); transform:rotate(45deg) scale(0); border:2px solid var(--sheet);
+  transition:transform .35s cubic-bezier(.3,1.5,.5,1) var(--d,0s)}
+.is-live .g-mile{transform:rotate(45deg) scale(1)}
+.g-slice{position:absolute; top:0; bottom:0; left:calc(var(--s) / var(--total) * 100%); width:calc(var(--w) / var(--total) * 100%);
+  background:color-mix(in srgb, var(--s1) 12%, transparent); border-inline:1px dashed var(--s1); opacity:0; transition:opacity .4s ease var(--d,0s)}
+.is-live .g-slice{opacity:1}
+
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:14px; padding-top:12px; border-top:1px solid var(--grid)}
+.legend span{display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--ink2)}
+.legend i{width:10px; height:10px; border-radius:2px; background:var(--c); font-style:normal}
+
+/* ---- small bits ---- */
+.kv{display:flex; gap:22px; flex-wrap:wrap; margin-top:16px}
+.kv div{display:flex; flex-direction:column}
+.kv dt, .kv b{font-family:"Archivo",sans-serif; font-size:24px; font-weight:700; line-height:1}
+.kv small{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink3); margin-top:5px}
+.callout{border-left:3px solid var(--s1); background:var(--chip); padding:12px 14px; margin-top:16px; font-size:14px}
+.callout strong{font-weight:600}
+.callout.warn{border-left-color:var(--danger)}
+.tasklist{list-style:none; margin:0; padding:0; font-size:14px}
+.tasklist li{display:flex; gap:10px; align-items:center; padding:7px 0; border-bottom:1px solid var(--grid); color:var(--ink2)}
+.tasklist li::before{content:"☐"; color:var(--ink3); font-size:15px}
+.tasklist li:last-child{border-bottom:0}
+.qmark{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--danger)}
+.steps{list-style:none; counter-reset:s; margin:0; padding:0; display:grid; gap:10px}
+.steps li{counter-increment:s; display:grid; grid-template-columns:30px 1fr; gap:12px; align-items:start; padding:11px 0; border-top:1px solid var(--grid)}
+.steps li::before{content:counter(s,decimal-leading-zero); font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--s1); padding-top:3px}
+.steps b{font-weight:600; display:block}
+.steps span{color:var(--ink2); font-size:13.5px}
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+.chip{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.04em; border:1px solid var(--rule); background:var(--chip); padding:5px 9px; border-radius:2px; color:var(--ink2)}
+.chip.ok{border-color:color-mix(in srgb, var(--s3) 50%, var(--rule)); color:var(--s3)}
+.chip.late{border-color:color-mix(in srgb, var(--danger) 50%, var(--rule)); color:var(--danger)}
+.anat{position:relative; padding:34px 0 8px}
+.anat-bar{position:relative; height:22px; border-radius:5px; background:var(--s3); width:46%; margin-left:22%}
+.anat .tag{position:absolute; font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink2); white-space:nowrap}
+.anat .tag::before{content:""; position:absolute; background:var(--ink3)}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
+button{font:inherit; cursor:pointer}
+.btn{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.03em; padding:9px 14px; border:1px solid var(--ink); background:var(--ink); color:var(--paper); border-radius:2px}
+.btn.ghost{background:transparent; color:var(--ink)}
+.btn[aria-pressed="true"]{background:var(--danger); border-color:var(--danger); color:#fff}
+.btn:focus-visible, .navbtn:focus-visible, .tick:focus-visible{outline:2px solid var(--s1); outline-offset:2px}
+
+/* ---- player: Gantt-itxurako nabigazioa ---- */
+.player{position:sticky; bottom:0; z-index:20; margin-top:22px; padding-block:10px 14px;
+  background:color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter:blur(8px); border-top:1px solid var(--rule)}
+.player-in{display:flex; align-items:center; gap:12px}
+.navbtn{width:34px; height:34px; flex:none; border:1px solid var(--rule); background:var(--sheet); color:var(--ink); border-radius:2px; display:grid; place-items:center; font-size:13px}
+.navbtn:hover{border-color:var(--ink3)}
+.track{flex:1; min-width:0; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:2px}
+.tick{position:relative; border:0; padding:0; background:transparent; text-align:left}
+.tick i{display:block; height:6px; background:var(--rule); border-radius:1px}
+.tick.done i{background:var(--ink3)}
+.tick.now i{background:var(--s1)}
+.tick b{display:block; font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.06em; color:var(--ink3); margin-top:5px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:400}
+.tick.now b{color:var(--ink); font-weight:600}
+@media (max-width:700px){ .tick b{display:none} }
+.counter{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink3); flex:none}
+footer{color:var(--ink3); font-size:11.5px; font-family:"IBM Plex Mono",monospace; padding:16px 0 26px; text-align:center}
+
+@media (max-width:640px){
+  :root{--row-h:31px; --labw:104px}
+  .g-lab{font-size:11px; gap:5px}
+  .g-note{font-size:9.5px}
+  .g-axis span{font-size:9px; padding-left:2px}
+  .g-axis b{font-size:10px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition-duration:.001s !important; animation-duration:.001s !important}
+}
+</style>
+
+<div class="wrap">
+  <div class="titleblock">
+    <span class="tb-id">Teknologia · 1. Batxilergoa</span>
+    <span class="tb-name">Gantt diagrama martxan</span>
+    <span class="tb-spacer"></span>
+    <span class="tb-meta" id="tbmeta">Proiektua: haize-sorgailu txikia · 8 aste · 4 kide</span>
+  </div>
+
+  <div class="stage" id="stage">
+
+    <!-- 1 -->
+    <section class="scene is-on" data-title="Hasiera" data-ms="11000">
+      <div class="scene-head">
+        <p class="eyebrow">Zer da eta zertarako balio du</p>
+        <h2>Zortzi aste. Bederatzi ataza. Lau lagun.<br>Zer egin behar duzu gaur?</h2>
+        <p class="lead">Teknologiako proiektua taldeka egingo duzue: haize-sorgailu txiki bat, LED bat piztuko duena. Gantt diagrama batek zortzi aste horiek orri bakarrean jartzen ditu, eta ataza bakoitzari lekua ematen dio denboran.</p>
+      </div>
+      <div class="panel"><div class="gantt" data-gantt="mini"></div></div>
+      <div class="kv">
+        <div><b class="mono">8</b><small>Aste</small></div>
+        <div><b class="mono">9</b><small>Ataza</small></div>
+        <div><b class="mono">4</b><small>Kide</small></div>
+        <div><b class="mono">aza. 27</b><small>Entrega</small></div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="scene" data-title="Arazoa" data-ms="12000">
+      <div class="scene-head">
+        <p class="eyebrow">01 · Arazoa</p>
+        <h2>Zerrenda batek ez dizu denbora erakusten</h2>
+        <p class="lead">Egitekoen zerrendak zer egin behar duzuen esaten dizu. Ez dizu esaten noiz hasi, zenbat iraungo duen, ezta zerk itxaron behar duen ere.</p>
+      </div>
+      <div class="cols two">
+        <div class="panel">
+          <p class="eyebrow" style="color:var(--ink3)">Egitekoen zerrenda</p>
+          <ul class="tasklist" id="plainlist"></ul>
+          <p class="callout warn" style="margin-top:14px"><strong>Emaitza ohikoena:</strong> dena azken astean pilatzea, eta memoria bezperan idaztea.</p>
+        </div>
+        <div class="panel">
+          <p class="eyebrow" style="color:var(--ink3)">Ataza berak, denboran</p>
+          <div class="gantt" data-gantt="plain"></div>
+          <p class="callout" style="margin-top:14px">Barra bakoitzak <strong>noiz</strong> hasten den eta <strong>zenbat</strong> irauten duen erakusten du. Begiratu bakarrean ikusten da zein astetan pilatzen den lana.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="scene" data-title="Anatomia" data-ms="13000">
+      <div class="scene-head">
+        <p class="eyebrow">02 · Anatomia</p>
+        <h2>Barra bat, sei datu</h2>
+        <p class="lead">Gantt diagrama bat barra horizontalen grafikoa da: ardatz horizontalean denbora dago, bertikalean atazak. Barra bakoitzak ataza baten hasiera, iraupena eta amaiera adierazten ditu.</p>
+      </div>
+      <div class="panel">
+        <div class="anat">
+          <div class="mono" style="font-size:10px;color:var(--ink3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px">Denbora-ardatza &rarr;</div>
+          <div style="display:flex;gap:12px;align-items:flex-end">
+            <span style="flex:none;width:var(--labw)"></span>
+            <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(8,1fr);border-bottom:1px solid var(--rule)">
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A1</span>
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A2</span>
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A3</span>
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A4</span>
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A5</span>
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A6</span>
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A7</span>
+              <span class="mono" style="font-size:10px;color:var(--ink3);border-left:1px solid var(--grid);padding-left:4px">A8</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;margin-top:16px">
+            <span class="mono" style="flex:none;width:var(--labw);text-align:right;font-size:12px">Memoria idatzi</span>
+            <div style="flex:1;min-width:0;position:relative;height:22px">
+              <div style="position:absolute;left:25%;width:68.75%;height:22px;border-radius:5px;background:var(--s4)"></div>
+              <span class="mono" style="position:absolute;left:25%;top:3px;margin-left:8px;font-size:11px;color:#fff">Maider</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:6px">
+            <span style="flex:none;width:var(--labw)"></span>
+            <div style="flex:1;min-width:0;position:relative;height:46px">
+              <div style="position:absolute;left:25%;width:68.75%;top:0;height:12px;border:1px dashed var(--ink3);border-bottom:0"></div>
+              <span class="mono" style="position:absolute;left:25%;top:16px;transform:translateX(-40%);font-size:10.5px;color:var(--ink2);line-height:1.35">hasiera<br>A3</span>
+              <span class="mono" style="position:absolute;left:59%;top:16px;transform:translateX(-50%);text-align:center;font-size:10.5px;color:var(--ink2);line-height:1.35">iraupena<br>5,5 aste</span>
+              <span class="mono" style="position:absolute;left:93.75%;top:16px;transform:translateX(-60%);font-size:10.5px;color:var(--ink2);line-height:1.35">amaiera<br>A8 erdian</span>
+            </div>
+          </div>
+        </div>
+        <div class="legend" style="gap:6px 22px">
+          <span style="--c:var(--s1)"><i></i>Ataza: zer egin behar den</span>
+          <span style="--c:var(--s2)"><i></i>Barraren luzera: zenbat denbora</span>
+          <span style="--c:var(--s3)"><i></i>Barraren tokia: noiz</span>
+          <span style="--c:var(--s4)"><i></i>Ondoan: nor den arduraduna</span>
+        </div>
+      </div>
+      <p class="callout"><strong>Nondik dator izena?</strong> Henry Gantt ingeniari estatubatuarrak 1910eko hamarkadan zabaldu zuen tresna hau lantegietan. Karol Adamiecki poloniarrak antzeko zerbait erabili zuen lehenago, 1896an, «harmonogram» izenarekin.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="scene" data-title="Proiektua" data-ms="14000">
+      <div class="scene-head">
+        <p class="eyebrow">03 · Zure proiektua</p>
+        <h2>Haize-sorgailua, astez aste</h2>
+        <p class="lead">Hona hemen proiektu osoa diagraman jarrita. Kolore bakoitza fase bat da: ikertu, diseinatu, eraiki eta komunikatu.</p>
+      </div>
+      <div class="panel">
+        <div class="gantt" data-gantt="full"></div>
+        <div class="legend" id="legend4"></div>
+      </div>
+      <p class="callout">Atazak zatitu egin behar dira lehenengo. «Haize-sorgailua egin» ez da ataza bat: hori proiektua da. «PVC hodia moztu eta hiru pala lixatu» bai, hori ataza bat da — badakizu noiz dagoen amaituta.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="scene" data-title="Mendekotasunak" data-ms="14000">
+      <div class="scene-head">
+        <p class="eyebrow">04 · Mendekotasunak</p>
+        <h2>Ataza batzuk besteen zain daude</h2>
+        <p class="lead">Ezin dituzu palak moztu PVC hodia erosi aurretik, eta ezin duzu neurketarik egin muntaia amaitu gabe. Gezi bakoitzak mendekotasun bat markatzen du: aurrekoa bukatu arte, hurrengoa ezin da hasi.</p>
+      </div>
+      <div class="panel">
+        <div class="gantt" data-gantt="links"></div>
+        <div class="legend" id="legend5"></div>
+      </div>
+      <p class="callout warn"><strong>Bide kritikoa:</strong> gezien kate gorriak entregara daraman biderik luzeena markatzen du. Kate horretako ataza bat atzeratzen bada, proiektu osoa atzeratzen da. Memoria idaztea, aldiz, katetik kanpo dago: astebete berandu hasita ere, entrega ez litzateke mugituko.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="scene" data-title="Lan-banaketa" data-ms="14000">
+      <div class="scene-head">
+        <p class="eyebrow">05 · Lan-banaketa</p>
+        <h2>Lau kide, lau zeregin aldi berean</h2>
+        <p class="lead">Barra bat baino gehiago aldi berean egoteak esan nahi du taldeko kide guztiek badutela zer egin. Ardura bat idatzi ataza bakoitzaren ondoan: horrela inork ez du esaten «nik uste nuen zuk egingo zenuela».</p>
+      </div>
+      <div class="panel">
+        <div class="gantt" data-gantt="owners"></div>
+        <div class="legend" id="legend6"></div>
+      </div>
+      <p class="callout"><strong>Begiratu 5. astea:</strong> Jonek palak lixatzen ditu, Anek eta Ikerrek egitura muntatzen dute, eta Maiderrek memoria idazten du. Hiru barra zutabe berean = hiru lan paraleloan. Memoria ez da azken asteko lana: 3. astetik aurrera idazten da, gauzak egiten diren neurrian, argazkiak eta neurketak freskoak daudenean.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="scene" data-title="Jarraipena" data-ms="15000">
+      <div class="scene-head">
+        <p class="eyebrow">06 · Jarraipena</p>
+        <h2>Non zaudete gaur?</h2>
+        <p class="lead">Diagrama ez da hasieran egin eta ahazteko papera. Astero margotu ataza bakoitzaren aurrerapena, eta marraztu gaurko lerroa. Lerroaren ezkerrean margotu gabe dagoen guztia atzerapena da.</p>
+      </div>
+      <div class="panel">
+        <div class="gantt" data-gantt="track"></div>
+        <div class="legend" id="legend7"></div>
+      </div>
+      <div class="chips">
+        <span class="chip ok">◆ Mugarria: diseinua onartuta · A4</span>
+        <span class="chip ok">Palak eraiki · %60 · garaiz</span>
+        <span class="chip late">Memoria idatzi · %30 · atzeratuta</span>
+        <span class="chip">Gaur: 5. astea</span>
+      </div>
+      <p class="callout"><strong>Mugarriak (◆)</strong> ez dute iraupenik: uneak dira, ez atazak. «Diseinua irakasleak onartuta», «prototipoak biratzen du», «entrega». Data horiek dira taldearen benetako kontrol-puntuak.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="scene" data-title="Atzerapena" data-ms="20000">
+      <div class="scene-head">
+        <p class="eyebrow">07 · Proba ezazu</p>
+        <h2>Zer gertatzen da zerbait atzeratzen denean?</h2>
+        <p class="lead">Denda itxita zegoen eta materialak astebete berandu iritsi dira. Sakatu botoia eta begiratu diagramari: atzerapena ez da ataza bakarrean gelditzen, kate osoan zehar hedatzen da.</p>
+      </div>
+      <div class="panel">
+        <div class="gantt" data-gantt="sim"></div>
+        <div class="legend" id="legend8"></div>
+        <div class="btnrow">
+          <button class="btn" id="btn-delay" aria-pressed="false">Materialak astebete berandu</button>
+          <button class="btn ghost" id="btn-fix">Konponbidea aplikatu</button>
+          <button class="btn ghost" id="btn-reset">Hasierako plana</button>
+        </div>
+        <p class="callout" id="sim-msg" style="margin-bottom:0">Egoera: hasierako plana. Dena entrega-egunerako prest, azaroaren 27rako.</p>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="scene" data-title="Nola egin" data-ms="16000">
+      <div class="scene-head">
+        <p class="eyebrow">08 · Orain zuk</p>
+        <h2>Zure diagrama, bost urratsetan</h2>
+        <p class="lead">Ordu erdi behar da lehen bertsioa egiteko, eta astero bost minutu eguneratzeko. Proiektuaren memorian sartu: ebaluazio-irizpideetan «plangintza» beti dago.</p>
+      </div>
+      <div class="cols side">
+        <div class="panel">
+          <ol class="steps">
+            <li><b>Zatitu proiektua atazatan</b><span>10 eta 15 ataza artean. Bakoitza esaldi batean, aditzarekin: «palak moztu», «zirkuitua soldatu». Amaituta dagoela argi ikusi behar da.</span></li>
+            <li><b>Marraztu denbora-ardatza</b><span>Gelako saioetan neurtu, ez egun naturaletan: astean bi saio badituzue, hori da zuen benetako denbora. Markatu entrega-eguna lehenengo.</span></li>
+            <li><b>Kalkulatu iraupenak eta lotu atazak</b><span>Ataza bakoitzari zenbat saio? Marraztu geziak: zerk itxaron behar dio zeri. Hor agertuko da bide kritikoa.</span></li>
+            <li><b>Banatu ardurak eta jarri mugarriak</b><span>Izen bat ataza bakoitzeko. Hiru edo lau mugarri nahikoa dira. Utzi azken astea libre: beti agertzen da ustekabekoren bat.</span></li>
+            <li><b>Eguneratu astero</b><span>Margotu egindakoa, mugitu atzeratutakoa. Diagrama zaharkitua kalte hutsa da; eguneratua, taldearen akta.</span></li>
+          </ol>
+        </div>
+        <div class="panel">
+          <p class="eyebrow" style="color:var(--ink3)">Zerekin egin</p>
+          <ul class="tasklist" style="font-size:13.5px">
+            <li style="color:var(--ink)">Paper koadrikuladuna eta arkatza</li>
+            <li style="color:var(--ink)">Kalkulu-orria (Google Sheets, Excel)</li>
+            <li style="color:var(--ink)">GanttProject, ProjectLibre (doakoak)</li>
+            <li style="color:var(--ink)">Trello, Notion (denbora-lerroarekin)</li>
+          </ul>
+          <p class="callout" style="font-size:13.5px"><strong>Aholkua:</strong> lehen bertsioa eskuz, arkatzez. Diagramaren balioa pentsatzean dago, ez tresnan.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="player">
+    <div class="player-in">
+      <button class="navbtn" id="prev" aria-label="Aurrekoa">◀</button>
+      <button class="navbtn" id="play" aria-label="Erreproduzitu / gelditu">❙❙</button>
+      <button class="navbtn" id="next" aria-label="Hurrengoa">▶</button>
+      <nav class="track" id="track" aria-label="Ataleak"></nav>
+      <span class="counter" id="counter">1/9</span>
+    </div>
+  </div>
+
+  <footer>Teknologia · Batxilergoa · Proiektuen plangintza</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var PHASES = [
+    {id:0, name:"Ikertu", c:"var(--s1)"},
+    {id:1, name:"Diseinatu", c:"var(--s2)"},
+    {id:2, name:"Eraiki", c:"var(--s3)"},
+    {id:3, name:"Komunikatu", c:"var(--s4)"}
+  ];
+
+  // ataza: [izena, hasiera (astetan), iraupena, fasea, arduraduna, aurrerapena %]
+  var TASKS = [
+    {n:"Gaia aukeratu",        s:0,   w:0.5, p:0, who:"Talde osoa", done:100},
+    {n:"Informazioa bildu",    s:0.5, w:1.5, p:0, who:"Ane · Jon",  done:100},
+    {n:"Diseinua eta planoak", s:2,   w:1.5, p:1, who:"Maider",     done:100},
+    {n:"Materialak erosi",     s:3.5, w:0.5, p:1, who:"Iker",       done:100},
+    {n:"Palak eraiki",         s:4,   w:1,   p:2, who:"Jon",        done:60},
+    {n:"Muntaia eta zirkuitua",s:5,   w:1.5, p:2, who:"Ane · Iker", done:0},
+    {n:"Probak eta neurketak", s:6.5, w:1,   p:2, who:"Talde osoa", done:0},
+    {n:"Memoria idatzi",       s:2,   w:5.5, p:3, who:"Maider",     done:30},
+    {n:"Aurkezpena prestatu",  s:7.5, w:0.5, p:3, who:"Talde osoa", done:0}
+  ];
+  // mendekotasunak: [aurrekoa, hurrengoa]  (aurrekoaren amaieran hasten da hurrengoa)
+  var LINKS = [[0,1],[1,2],[1,7],[2,3],[3,4],[4,5],[5,6],[6,8],[7,8]];
+  var CRITICAL = "0-1,1-2,2-3,3-4,4-5,5-6,6-8";
+  var MILES = [{x:3.5, row:3, t:"Diseinua onartuta"},{x:7.5, row:6, t:"Prototipoa martxan"},{x:8, row:8, t:"Entrega"}];
+  var WEEKS = ["urr. 5","urr. 12","urr. 19","urr. 26","aza. 2","aza. 9","aza. 16","aza. 23","aza. 30"];
+
+  function el(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+
+  function renderGantt(host, o){
+    o = o || {};
+    var total = o.total || 8, tasks = o.tasks || TASKS;
+    host.style.setProperty("--total", total);
+    host.innerHTML = "";
+
+    var head = el("div","g-head");
+    head.appendChild(el("div","g-corner", o.compact ? "Ataza" : "Ataza / arduraduna"));
+    var axis = el("div","g-axis");
+    for(var w=0; w<total; w++){
+      var cell = el("span");
+      var b = el("b", null, "A"+(w+1)); cell.appendChild(b);
+      if(!o.compact) cell.appendChild(el("em", null, WEEKS[w]));
+      axis.appendChild(cell);
+    }
+    head.appendChild(axis); host.appendChild(head);
+
+    var body = el("div","g-body");
+    var labs = el("div","g-labels");
+    var plot = el("div","g-plot");
+
+    tasks.forEach(function(t, i){
+      var d = (i * 0.09).toFixed(2) + "s";
+      var lab = el("div","g-lab");
+      lab.style.setProperty("--d", d);
+      lab.style.setProperty("--c", PHASES[t.p].c);
+      lab.appendChild(el("span", null, t.n));
+      lab.appendChild(el("i"));
+      labs.appendChild(lab);
+
+      var row = el("div","g-row");
+      var bar = el("div","g-bar");
+      bar.style.setProperty("--s", t.s); bar.style.setProperty("--w", t.w);
+      bar.style.setProperty("--c", PHASES[t.p].c); bar.style.setProperty("--d", d);
+      if(o.progress){ var f = el("div","fill"); f.style.setProperty("--p", t.done); bar.appendChild(f); }
+      row.appendChild(bar);
+
+      if(o.owners || o.progress){
+        var flip = (t.s + t.w) / total > 0.78;
+        var note = el("div","g-note" + (flip ? " flip" : ""), o.progress ? ("%"+t.done) : t.who);
+        note.style.setProperty("--s", t.s); note.style.setProperty("--w", t.w); note.style.setProperty("--d", d);
+        row.appendChild(note);
+      }
+      plot.appendChild(row);
+    });
+
+    if(o.links){
+      LINKS.forEach(function(L, k){
+        var a = Math.min(L[0], L[1]), b = Math.max(L[0], L[1]);
+        var link = el("div","g-link" + (o.critical && CRITICAL.indexOf(L[0]+"-"+L[1]) > -1 ? " hot" : ""));
+        link.style.setProperty("--x", tasks[L[0]].s + tasks[L[0]].w);
+        link.style.setProperty("--a", a); link.style.setProperty("--b", b);
+        link.style.setProperty("--d", (0.8 + k*0.09).toFixed(2)+"s");
+        plot.appendChild(link);
+      });
+    }
+    if(o.slice){
+      var sl = el("div","g-slice");
+      sl.style.setProperty("--s", o.slice[0]); sl.style.setProperty("--w", o.slice[1]);
+      sl.style.setProperty("--d","1s");
+      plot.appendChild(sl);
+    }
+    if(o.miles){
+      MILES.forEach(function(m, k){
+        var dm = el("div","g-mile"); dm.title = m.t;
+        dm.style.setProperty("--x", m.x); dm.style.setProperty("--a", m.row);
+        dm.style.setProperty("--d",(1.1 + k*0.15).toFixed(2)+"s");
+        plot.appendChild(dm);
+      });
+    }
+    if(o.today != null){
+      var tl = el("div","g-vline");
+      tl.style.setProperty("--x", o.today); tl.style.setProperty("--d","1.3s");
+      tl.appendChild(el("b", null, "GAUR")); plot.appendChild(tl);
+    }
+    if(o.deadline != null){
+      var dl = el("div","g-vline deadline");
+      dl.style.setProperty("--x", o.deadline); dl.style.setProperty("--d","1.4s");
+      dl.appendChild(el("b", null, "ENTREGA")); plot.appendChild(dl);
+    }
+
+    body.appendChild(labs); body.appendChild(plot); host.appendChild(body);
+    if(o.rowH) host.style.setProperty("--row-h", o.rowH);
+  }
+
+  function legend(host, note){
+    if(!host) return;
+    host.innerHTML = "";
+    PHASES.forEach(function(p){
+      var s = el("span"); s.style.setProperty("--c", p.c);
+      s.appendChild(el("i")); s.appendChild(document.createTextNode(p.name));
+      host.appendChild(s);
+    });
+    if(note){ var n = el("span", null, note); n.style.color = "var(--ink3)"; host.appendChild(n); }
+  }
+
+  // --- eszenak eraiki ---
+  var G = {};
+  document.querySelectorAll("[data-gantt]").forEach(function(h){ G[h.dataset.gantt] = h; });
+
+  renderGantt(G.mini, {rowH:"26px", compact:true});
+  renderGantt(G.plain, {rowH:"28px", compact:true});
+  renderGantt(G.full, {});
+  renderGantt(G.links, {links:true, critical:true});
+  renderGantt(G.owners, {owners:true, slice:[4.5,1.5]});
+  renderGantt(G.track, {progress:true, miles:true, today:4.6, deadline:8});
+  legend(document.getElementById("legend4"));
+  legend(document.getElementById("legend5"), "→ mendekotasuna · ── bide kritikoa");
+  legend(document.getElementById("legend6"), "▭ 5. astea: hiru lan paraleloan");
+  legend(document.getElementById("legend7"), "◆ mugarria · ┆ gaur · │ entrega");
+  legend(document.getElementById("legend8"));
+
+  var pl = document.getElementById("plainlist");
+  ["Gaia aukeratu","Informazioa bildu","Diseinua eta planoak","Materialak erosi","Palak eraiki","Muntaia eta zirkuitua","Probak eta neurketak","Memoria idatzi","Aurkezpena prestatu"]
+    .forEach(function(t, i){
+      var li = el("li", null, t);
+      if(i===1) li.appendChild(el("span","qmark","noiz?"));
+      if(i===4) li.appendChild(el("span","qmark","nork?"));
+      if(i===7) li.appendChild(el("span","qmark","zenbat denbora?"));
+      pl.appendChild(li);
+    });
+
+  // --- simulazioa (8. eszena) ---
+  var SIM = {
+    base: TASKS.map(function(t){ return {n:t.n, s:t.s, w:t.w, p:t.p, who:t.who, done:t.done}; }),
+    delayed: null, fixed: null
+  };
+  SIM.delayed = SIM.base.map(function(t, i){
+    var c = {n:t.n, s:t.s, w:t.w, p:t.p, who:t.who, done:t.done};
+    if(i>=3 && i<=6) c.s += 1;            // materialak, palak, muntaia, probak
+    if(i===8) c.s += 1;                    // aurkezpena
+    return c;
+  });
+  SIM.fixed = SIM.delayed.map(function(t, i){
+    var c = {n:t.n, s:t.s, w:t.w, p:t.p, who:t.who, done:t.done};
+    if(i===5) c.w = 1;                     // muntaia laburtu: hiru kide batera
+    if(i===6){ c.s = 6.5; c.w = 1; }       // probak lehenago hasi
+    if(i===8) c.s = 7.5;                   // aurkezpena berriro epe barruan
+    return c;
+  });
+
+  var simMsg = document.getElementById("sim-msg");
+  var btnD = document.getElementById("btn-delay"), btnF = document.getElementById("btn-fix"), btnR = document.getElementById("btn-reset");
+  var simState = "base";
+
+  function drawSim(state){
+    simState = state;
+    var t = SIM[state];
+    renderGantt(G.sim, {tasks:t, total:9, links:true, critical:(state!=="base"), deadline:8, owners:true});
+    requestAnimationFrame(function(){ G.sim.classList.add("is-live"); });
+    btnD.setAttribute("aria-pressed", state==="delayed" ? "true" : "false");
+    if(state==="base"){
+      simMsg.className = "callout"; simMsg.style.marginBottom="0";
+      simMsg.innerHTML = "<strong>Hasierako plana:</strong> dena entrega-egunerako prest, azaroaren 27rako. 9. astea hutsik dago — hori da zuen segurtasun-tartea.";
+    } else if(state==="delayed"){
+      simMsg.className = "callout warn"; simMsg.style.marginBottom="0";
+      simHTML(simMsg, "Astebeteko atzerapena, lau ataza mugituta: aurkezpena entregatik kanpo gelditu da. Materialak erostea bide kritikoan zegoen, eta horregatik hedatu da atzerapena kate osora. Memoria, berriz, ez da mugitu: paraleloan doa.");
+    } else {
+      simMsg.className = "callout"; simMsg.style.marginBottom="0";
+      simHTML(simMsg, "Konponbidea: muntaia hiru kideren artean egin (astebete gutxiago) eta probak muntaiarekin batera hasi. Entrega salbu. Horretarako balio du diagramak — arazoa bezperan aurkitu beharrean, hiru aste lehenago ikusteko.");
+    }
+  }
+  function simHTML(node, txt){ node.textContent = txt; }
+  drawSim("base");
+  btnD.addEventListener("click", function(){ drawSim(simState==="delayed" ? "base" : "delayed"); });
+  btnF.addEventListener("click", function(){ drawSim("fixed"); });
+  btnR.addEventListener("click", function(){ drawSim("base"); });
+
+  // --- player ---
+  var scenes = Array.prototype.slice.call(document.querySelectorAll(".scene"));
+  var track = document.getElementById("track"), counter = document.getElementById("counter");
+  var playBtn = document.getElementById("play");
+  var cur = 0, timer = null, playing = !reduce;
+
+  scenes.forEach(function(s, i){
+    var b = el("button","tick");
+    b.type = "button";
+    b.appendChild(el("i"));
+    b.appendChild(el("b", null, (i+1)+". "+s.dataset.title));
+    b.setAttribute("aria-label", (i+1)+". "+s.dataset.title);
+    b.addEventListener("click", function(){ go(i, true); });
+    track.appendChild(b);
+  });
+  var ticks = Array.prototype.slice.call(track.children);
+
+  function animate(scene){
+    scene.querySelectorAll(".gantt").forEach(function(g){
+      if(g === G.sim){ g.classList.add("is-live"); return; }
+      g.classList.remove("is-live");
+      void g.offsetWidth;
+      g.classList.add("is-live");
+    });
+  }
+  function go(i, stop){
+    cur = (i + scenes.length) % scenes.length;
+    scenes.forEach(function(s, k){ s.classList.toggle("is-on", k === cur); });
+    ticks.forEach(function(t, k){
+      t.classList.toggle("now", k === cur);
+      t.classList.toggle("done", k < cur);
+    });
+    counter.textContent = (cur+1) + "/" + scenes.length;
+    animate(scenes[cur]);
+    if(stop) pause();
+    schedule();
+  }
+  function schedule(){
+    clearTimeout(timer);
+    if(!playing) return;
+    var ms = parseInt(scenes[cur].dataset.ms, 10) || 12000;
+    timer = setTimeout(function(){ go(cur + 1); }, ms);
+  }
+  function pause(){ playing = false; clearTimeout(timer); playBtn.textContent = "▶"; }
+  function play(){ playing = true; playBtn.textContent = "❙❙"; schedule(); }
+  playBtn.addEventListener("click", function(){ playing ? pause() : play(); });
+  document.getElementById("next").addEventListener("click", function(){ go(cur+1, true); });
+  document.getElementById("prev").addEventListener("click", function(){ go(cur-1, true); });
+  document.addEventListener("keydown", function(e){
+    if(e.target.closest("button") && e.key === " ") return;
+    if(e.key === "ArrowRight"){ go(cur+1, true); }
+    else if(e.key === "ArrowLeft"){ go(cur-1, true); }
+    else if(e.key === " "){ e.preventDefault(); playing ? pause() : play(); }
+  });
+
+  playBtn.textContent = playing ? "❙❙" : "▶";
+  go(0);
+  if(!playing) clearTimeout(timer);
+})();
+</script>

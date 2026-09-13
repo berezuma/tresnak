@@ -1,0 +1,268 @@
+/* ============================================================
+   Proiektu Taula — estilo orokorrak
+   Marrazketa teknikoko estetika: paper-sareta, izenburu-koadroak,
+   Archivo + IBM Plex. Argi/ilun automatikoa.
+   ============================================================ */
+
+:root{
+  color-scheme: light;
+  --paper:#eceff5; --sheet:#ffffff; --grid:#dde4ee; --rule:#c8d2df; --chip:#f1f4f9;
+  --ink:#0c1723; --ink2:#465666; --ink3:#7b8896;
+  --s1:#2a78d6; --s2:#eda100; --s3:#008300; --s4:#e87ba4; --s5:#7d5bd6; --s6:#00897b;
+  --danger:#d13b34; --ok:#008300; --link:#2a78d6;
+  --shadow:0 1px 2px rgba(12,23,35,.06), 0 8px 24px -16px rgba(12,23,35,.35);
+  --shadow-lg:0 2px 6px rgba(12,23,35,.08), 0 24px 60px -28px rgba(12,23,35,.55);
+  --row-h:36px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0e1522; --sheet:#141c2a; --grid:#1e2c42; --rule:#2c3d55; --chip:#1b2433;
+    --ink:#eaf1fb; --ink2:#a8b8cc; --ink3:#7688a0;
+    --s1:#3987e5; --s2:#c98500; --s3:#1a9e1a; --s4:#d55181; --s5:#8f6ee8; --s6:#00a08f;
+    --danger:#e66767; --ok:#3fbf3f; --link:#6fb0f5;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px #000;
+    --shadow-lg:0 1px 0 rgba(255,255,255,.04), 0 30px 70px -30px #000;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0e1522; --sheet:#141c2a; --grid:#1e2c42; --rule:#2c3d55; --chip:#1b2433;
+  --ink:#eaf1fb; --ink2:#a8b8cc; --ink3:#7688a0;
+  --s1:#3987e5; --s2:#c98500; --s3:#1a9e1a; --s4:#d55181; --s5:#8f6ee8; --s6:#00a08f;
+  --danger:#e66767; --ok:#3fbf3f; --link:#6fb0f5;
+  --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px #000;
+  --shadow-lg:0 1px 0 rgba(255,255,255,.04), 0 30px 70px -30px #000;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:15px; line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:28px 28px, 28px 28px;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Archivo", system-ui, sans-serif; margin:0; letter-spacing:-.02em; text-wrap:balance}
+a{color:var(--link)}
+.mono{font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3)}
+.muted{color:var(--ink2)}
+.dim{color:var(--ink3)}
+.center{text-align:center}
+[hidden]{display:none !important}
+
+/* ---------- egitura ---------- */
+.wrap{max-width:1180px; margin:0 auto; padding:0 16px}
+.wrap-wide{max-width:1600px; margin:0 auto; padding:0 16px}
+.stack{display:flex; flex-direction:column; gap:14px}
+.row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.spacer{flex:1 1 auto}
+
+/* ---------- goiburua ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  background:color-mix(in srgb, var(--sheet) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{display:flex; align-items:center; gap:10px 14px; padding:9px 14px; max-width:1600px; margin:0 auto; flex-wrap:wrap}
+.brand{display:flex; align-items:center; gap:9px; text-decoration:none; color:inherit; flex:0 0 auto}
+.brand .glyph{
+  width:26px; height:26px; border:1px solid var(--rule); background:var(--chip);
+  display:grid; place-items:center; flex:0 0 auto;
+}
+.brand .glyph i{display:block; width:12px; height:3px; background:var(--s1); box-shadow:0 5px 0 var(--s2), 0 -5px 0 var(--s3)}
+.brand b{font-family:"Archivo",sans-serif; font-weight:800; font-size:15px; letter-spacing:-.02em}
+.brand span{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3)}
+.topnav{display:flex; gap:2px; flex-wrap:wrap}
+.topnav a{
+  font-size:13px; text-decoration:none; color:var(--ink2); padding:5px 10px; border:1px solid transparent;
+}
+.topnav a:hover{color:var(--ink); background:var(--chip)}
+.topnav a.on{color:var(--ink); border-color:var(--rule); background:var(--chip); font-weight:600}
+.who{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink2)}
+.who img{width:26px; height:26px; border-radius:50%; border:1px solid var(--rule)}
+.badge-admin{
+  font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+  background:var(--s2); color:#1b1300; padding:2px 6px; font-weight:600;
+}
+
+/* ---------- izenburu-koadroa ---------- */
+.titleblock{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px;
+  border:1px solid var(--rule); background:var(--sheet); box-shadow:var(--shadow);
+  padding:11px 14px; margin-top:16px;
+}
+.tb-id{font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3)}
+.tb-name{font-family:"Archivo",sans-serif; font-weight:700; font-size:16px}
+.tb-meta{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink2); letter-spacing:.04em}
+
+/* ---------- txartelak ---------- */
+.card{border:1px solid var(--rule); background:var(--sheet); box-shadow:var(--shadow); padding:16px}
+.card h3{font-size:15px; margin-bottom:2px}
+.grid{display:grid; gap:14px}
+.grid-3{grid-template-columns:repeat(auto-fill, minmax(260px,1fr))}
+.grid-2{grid-template-columns:repeat(auto-fit, minmax(300px,1fr))}
+
+.proj{
+  border:1px solid var(--rule); background:var(--sheet); box-shadow:var(--shadow);
+  display:flex; flex-direction:column; min-height:150px; position:relative;
+}
+.proj:hover{border-color:var(--s1)}
+.proj-top{padding:13px 14px 10px; flex:1 1 auto}
+.proj-top h3{font-size:16px; line-height:1.25}
+.proj-desc{font-size:13px; color:var(--ink2); margin:5px 0 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.proj-foot{display:flex; border-top:1px solid var(--rule)}
+.proj-foot a{
+  flex:1 1 0; text-align:center; padding:9px 6px; font-size:12.5px; font-weight:600;
+  text-decoration:none; color:var(--ink2); border-right:1px solid var(--rule);
+}
+.proj-foot a:last-child{border-right:0}
+.proj-foot a:hover{background:var(--chip); color:var(--ink)}
+
+/* ---------- etiketak ---------- */
+.tag{
+  display:inline-flex; align-items:center; gap:5px; font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+  border:1px solid var(--rule); background:var(--chip); color:var(--ink2); padding:2px 7px;
+}
+.tag.team{border-color:color-mix(in srgb, var(--s1) 45%, var(--rule)); color:var(--s1)}
+.tag.solo{border-color:color-mix(in srgb, var(--s5) 45%, var(--rule)); color:var(--s5)}
+.code-chip{
+  font-family:"IBM Plex Mono",monospace; font-weight:600; letter-spacing:.18em;
+  background:var(--ink); color:var(--sheet); padding:3px 9px; font-size:13px;
+}
+
+/* ---------- botoiak ---------- */
+.btn{
+  font-family:"IBM Plex Sans",sans-serif; font-size:13.5px; font-weight:600;
+  border:1px solid var(--rule); background:var(--sheet); color:var(--ink);
+  padding:7px 13px; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+  text-decoration:none; line-height:1.3;
+}
+.btn:hover{background:var(--chip); border-color:var(--ink3)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn.primary{background:var(--ink); color:var(--sheet); border-color:var(--ink)}
+.btn.primary:hover{background:var(--s1); border-color:var(--s1); color:#fff}
+.btn.danger{color:var(--danger); border-color:color-mix(in srgb, var(--danger) 40%, var(--rule))}
+.btn.danger:hover{background:var(--danger); color:#fff; border-color:var(--danger)}
+.btn.sm{font-size:12px; padding:4px 9px}
+.btn.icon{padding:5px 8px; font-family:"IBM Plex Mono",monospace}
+.btn.ghost{border-color:transparent; background:transparent}
+.btn.ghost:hover{border-color:var(--rule)}
+.btn-google{
+  display:inline-flex; align-items:center; gap:10px; font-size:15px; padding:11px 20px;
+  background:var(--sheet); border:1px solid var(--rule); font-weight:600; cursor:pointer; color:var(--ink);
+  box-shadow:var(--shadow);
+}
+.btn-google:hover{border-color:var(--s1)}
+.btn-google svg{width:19px; height:19px}
+
+.seg{display:inline-flex; border:1px solid var(--rule); background:var(--sheet)}
+.seg button{
+  border:0; background:transparent; color:var(--ink2); font-size:12px; font-weight:600;
+  padding:6px 11px; cursor:pointer; font-family:inherit; border-right:1px solid var(--rule);
+}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--ink); color:var(--sheet)}
+
+/* ---------- formularioak ---------- */
+label.field{display:flex; flex-direction:column; gap:5px; font-size:12px; font-weight:600; color:var(--ink2)}
+input[type=text],input[type=date],input[type=number],input[type=search],select,textarea{
+  font-family:"IBM Plex Sans",sans-serif; font-size:14px; color:var(--ink);
+  background:var(--sheet); border:1px solid var(--rule); padding:7px 9px; width:100%;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--s1); outline-offset:-1px; border-color:var(--s1)}
+textarea{resize:vertical; min-height:74px; line-height:1.5}
+input.mono,select.mono{font-family:"IBM Plex Mono",monospace}
+.inline-in{
+  border:1px solid transparent; background:transparent; padding:4px 6px; font-size:13.5px; width:100%;
+  font-family:inherit; color:var(--ink);
+}
+.inline-in:hover{border-color:var(--rule)}
+.inline-in:focus{border-color:var(--s1); background:var(--sheet)}
+
+/* ---------- modala ---------- */
+.modal-back{
+  position:fixed; inset:0; background:rgba(8,14,22,.55); z-index:100;
+  display:grid; place-items:center; padding:16px; backdrop-filter:blur(2px);
+}
+.modal{
+  background:var(--sheet); border:1px solid var(--rule); box-shadow:var(--shadow-lg);
+  width:min(560px, 100%); max-height:88vh; overflow:auto;
+}
+.modal-head{display:flex; align-items:center; gap:10px; padding:13px 16px; border-bottom:1px solid var(--rule)}
+.modal-head h3{font-size:16px; flex:1}
+.modal-body{padding:16px; display:flex; flex-direction:column; gap:13px}
+.modal-foot{display:flex; gap:9px; justify-content:flex-end; padding:13px 16px; border-top:1px solid var(--rule); background:var(--chip)}
+
+/* ---------- oharrak ---------- */
+#toasts{position:fixed; right:14px; bottom:14px; z-index:200; display:flex; flex-direction:column; gap:8px}
+.toast{
+  background:var(--ink); color:var(--sheet); padding:9px 14px; font-size:13px; font-weight:500;
+  box-shadow:var(--shadow-lg); max-width:340px; animation:tin .18s ease-out;
+}
+.toast.err{background:var(--danger); color:#fff}
+.toast.ok{background:var(--ok); color:#fff}
+@keyframes tin{from{opacity:0; transform:translateY(8px)}}
+
+.empty{
+  border:1px dashed var(--rule); background:color-mix(in srgb, var(--sheet) 55%, transparent);
+  padding:34px 20px; text-align:center; color:var(--ink2);
+}
+.empty h3{font-size:16px; margin-bottom:6px; color:var(--ink)}
+
+.notice{border-left:3px solid var(--s2); background:var(--chip); padding:11px 14px; font-size:13.5px}
+.notice.err{border-left-color:var(--danger)}
+
+/* ---------- taula ---------- */
+table.tbl{width:100%; border-collapse:collapse; font-size:13.5px}
+table.tbl th{
+  text-align:left; font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink3); font-weight:600; padding:8px 10px; border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+table.tbl td{padding:8px 10px; border-bottom:1px solid var(--grid); vertical-align:middle}
+table.tbl tr:hover td{background:var(--chip)}
+
+/* ---------- kargatzea ---------- */
+.loading{display:grid; place-items:center; min-height:60vh; gap:12px; color:var(--ink3)}
+.spin{width:26px; height:26px; border:2px solid var(--rule); border-top-color:var(--s1); border-radius:50%; animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.save-state{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink3); letter-spacing:.06em; white-space:nowrap}
+.save-state.saving{color:var(--s2)}
+.save-state.saved{color:var(--ok)}
+.save-state.err{color:var(--danger)}
+
+/* ---------- saio-hasiera ---------- */
+.login{min-height:100vh; display:grid; place-items:center; padding:20px}
+.login-card{
+  width:min(480px,100%); background:var(--sheet); border:1px solid var(--rule);
+  box-shadow:var(--shadow-lg); padding:34px 30px; text-align:center;
+}
+.login-card h1{font-size:27px; margin-bottom:8px}
+.login-card p{color:var(--ink2); font-size:14px; margin:0 0 22px}
+.login-rule{height:1px; background:var(--rule); margin:22px 0}
+
+/* ---------- pantaila txikiak ---------- */
+@media (max-width:700px){
+  .hide-sm{display:none}
+  .topnav{order:3; flex:1 1 100%; justify-content:flex-start}
+  .topbar-in{padding:8px 12px}
+  .who{gap:6px}
+  .titleblock{gap:6px 12px}
+  .tb-name{font-size:15px}
+  .wrap, .wrap-wide{padding:0 12px}
+  .modal-body{padding:13px}
+}
+
+@media print{
+  body{background:#fff !important; background-image:none !important}
+  .topbar,.no-print,.btn,#toasts{display:none !important}
+  .card,.titleblock{box-shadow:none}
+}

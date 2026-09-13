@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="eu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="marrazketa/css/fonts.css">
+<link rel="stylesheet" href="marrazketa/css/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c1723'/%3E%3Crect x='5' y='5' width='10' height='10' fill='none' stroke='%232a78d6' stroke-width='2.5'/%3E%3Crect x='5' y='18' width='10' height='9' fill='none' stroke='%23eda100' stroke-width='2.5'/%3E%3Crect x='18' y='5' width='9' height='10' fill='none' stroke='%2300a000' stroke-width='2.5'/%3E%3C/svg%3E">
+<title>Gelarako tresna irekiak</title>
+<meta name="description" content="Euskarazko bi web tresna ireki bigarren hezkuntzarako: Proiektu Taula (Gantt eta Kanban) eta Marrazketa Lantegia (bistak, akotazioa eta 3D).">
+<style>
+  .hero{padding-block:44px 8px; max-width:760px}
+  .hero h1{font-size:clamp(28px, 5vw, 40px); margin:8px 0 12px}
+  .hero p{font-size:16px; color:var(--ink2); margin:0}
+  .apps{display:grid; gap:16px; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); margin:26px 0 34px}
+  .app{border:1px solid var(--rule); background:var(--sheet); box-shadow:var(--shadow); display:flex; flex-direction:column}
+  .app-art{height:150px; display:grid; place-items:center; border-bottom:1px solid var(--rule); background:var(--chip)}
+  .app-art svg{width:220px; height:120px}
+  .app-body{padding:16px 18px; flex:1 1 auto}
+  .app h2{font-size:20px; margin:4px 0 8px}
+  .app p{margin:0 0 10px; color:var(--ink2); font-size:14.5px}
+  .app ul{margin:0; padding-left:18px; font-size:14px; color:var(--ink2)}
+  .app ul li{margin:3px 0}
+  .app-foot{padding:14px 18px; border-top:1px solid var(--rule)}
+  .app-foot .btn{width:100%; justify-content:center; padding:10px}
+  .facts{display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:30px}
+  .facts article{border-left:3px solid var(--ink); padding:2px 0 2px 12px}
+  .facts h3{font-size:14px; margin-bottom:3px}
+  .facts p{margin:0; font-size:13.5px; color:var(--ink2)}
+  footer{border-top:1px solid var(--rule); padding-block:16px 30px; font-size:12.5px; color:var(--ink3)}
+  footer a{color:inherit}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Euskaraz · Doan · Konturik gabe</div>
+    <h1>Gelarako tresna irekiak</h1>
+    <p>Bigarren hezkuntzako ikasleentzat sortutako bi web tresna. Ez dute saio-hasierarik behar,
+       eta ez dute daturik bidaltzen: lana zure nabigatzailean gordetzen da.</p>
+  </section>
+
+  <div class="apps">
+    <article class="app">
+      <div class="app-art" aria-hidden="true">
+        <svg viewBox="0 0 220 120">
+          <g fill="none" stroke="var(--rule)"><line x1="10" y1="20" x2="210" y2="20"/><line x1="10" y1="110" x2="210" y2="110"/></g>
+          <rect x="20" y="32" width="90" height="14" fill="var(--s1)"/>
+          <rect x="70" y="56" width="80" height="14" fill="var(--s2)"/>
+          <rect x="120" y="80" width="70" height="14" fill="var(--s3)"/>
+          <path d="M110 39 H118 V63" fill="none" stroke="var(--ink3)" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="app-body">
+        <div class="eyebrow">Proiektuen kudeaketa</div>
+        <h2>Proiektu Taula</h2>
+        <p>Proiektu bat planifikatu eta jarraitzeko, Gantt diagrama eta Kanban taula batekin.</p>
+        <ul>
+          <li>Atazak, mugarriak eta mendekotasunak</li>
+          <li>Kanban taula, Gantt-eko atazetatik abiatuta</li>
+          <li>Esportatu eta inportatu, beste gailu batean jarraitzeko</li>
+        </ul>
+      </div>
+      <div class="app-foot"><a class="btn primary" href="proiektu-taula/">Ireki Proiektu Taula</a></div>
+    </article>
+
+    <article class="app">
+      <div class="app-art" aria-hidden="true">
+        <svg viewBox="0 0 220 120" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round">
+          <rect x="22" y="14" width="44" height="44" stroke="var(--s1)"/>
+          <rect x="22" y="68" width="44" height="30" stroke="var(--s2)"/>
+          <rect x="76" y="14" width="30" height="44" stroke="var(--s3)"/>
+          <line x1="76" y1="36" x2="106" y2="36" stroke="var(--s3)" stroke-dasharray="5 4"/>
+          <path d="M150 40 L180 23 L205 38 L205 78 L175 95 L150 80 Z"/>
+          <path d="M150 40 L175 55 L205 38 M175 55 L175 95"/>
+        </svg>
+      </div>
+      <div class="app-body">
+        <div class="eyebrow">Marrazketa teknikoa</div>
+        <h2>Marrazketa Lantegia</h2>
+        <p>Piezak 3Dn eraiki eta haien bistak, ezkutuko ertzak eta kotak ikasteko, DBH 1etik Batxilergora.</p>
+        <ul>
+          <li>Bistak berez marrazten dira (sistema europarra eta amerikarra)</li>
+          <li>5 mailatako ariketa autozuzenduak</li>
+          <li>STL esportazioa, Tinkercad-en jarraitzeko</li>
+        </ul>
+      </div>
+      <div class="app-foot"><a class="btn primary" href="marrazketa/">Ireki Marrazketa Lantegia</a></div>
+    </article>
+  </div>
+
+  <section class="facts">
+    <article><h3>Konturik ez</h3><p>Ireki eta erabili. Ez da izenik, postarik edo pasahitzik eskatzen.</p></article>
+    <article><h3>Zure lana, zure gailuan</h3><p>Nabigatzailean gordetzen da. Beste gailu batera eramateko, esportatu fitxategi batera.</p></article>
+    <article><h3>Jarraipenik gabe</h3><p>Ez dago cookierik, publizitaterik ezta analitikarik.</p></article>
+  </section>
+
+  <footer>
+    Sortzailea: <b>Beñat Erezuma</b> · <a href="https://berezuma.com">berezuma.com</a> · MIT lizentzia<br>
+    Erabilitako software librea: <a href="https://threejs.org">Three.js</a> (MIT lizentzia) ·
+    Archivo eta IBM Plex letra-tipoak (SIL Open Font License).
+  </footer>
+</main>
+</body>
+</html>
