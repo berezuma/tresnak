@@ -58,6 +58,8 @@ grep -q 'diseinua-ikasgaia.css' "$LESSON" || { echo "ERROREA: ikasgaiaren disein
 cp overlay/index.html "$OUT/index.html"
 cp overlay/nav.js "$OUT/nav.js"
 touch "$OUT/.nojekyll"
+# Domeinu propioa (GitHub Pages): tresnak.berezuma.com. Fitxategi hau gabe helbidea galduko litzateke.
+cp overlay/CNAME "$OUT/CNAME"
 
 # Orri guztietan tresnen nabigazioa (etxera eta beste tresnetara).
 # Bide erlatiboa orriaren sakoneraren arabera: docs/x.html → "", docs/a/x.html → "../"
