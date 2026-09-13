@@ -39,7 +39,7 @@ function renderProjects(user, list){
       h("p",{text:"Sortu lehen proiektua Gantt diagrama eta Kanban taula batekin hasteko."}),
       h("div",{class:"row", style:{justifyContent:"center", marginTop:"12px"}},
         h("button",{class:"btn primary", onclick:()=>newProjectDialog(user)}, "+ Proiektu berria"),
-        h("a",{class:"btn", href:"ikasgaiak/gantt-diagrama.html", target:"_blank"}, "Zer da Gantt diagrama?"))));
+        h("a",{class:"btn", href:"ikasgaiak/gantt-diagrama.html"}, "Zer da Gantt diagrama?"))));
     return;
   }
   box.appendChild(h("div",{class:"grid grid-3"}, list.map(p => projectCard(user, p))));

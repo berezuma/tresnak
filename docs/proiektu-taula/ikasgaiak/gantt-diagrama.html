@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="eu">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gantt diagrama martxan</title>
 <link rel="stylesheet" href="../css/fonts.css">
 <style>
@@ -48,6 +52,9 @@ h1,h2,h3{font-family:"Archivo", system-ui, sans-serif; text-wrap:balance; margin
 .tb-id{font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3)}
 .tb-name{font-family:"Archivo",sans-serif; font-weight:700; font-size:15px}
 .tb-spacer{flex:1 1 40px}
+.tb-back{font-family:"IBM Plex Sans",sans-serif; font-size:13px; font-weight:600; color:var(--ink); text-decoration:none; border:1px solid var(--rule); background:var(--sheet); padding:4px 10px}
+.tb-back:hover{border-color:var(--ink3)}
+.tb-back:focus-visible{outline:2px solid var(--s1); outline-offset:2px}
 .tb-meta{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink2); letter-spacing:.04em}
 
 /* ---- stage ---- */
@@ -185,6 +192,7 @@ footer{color:var(--ink3); font-size:11.5px; font-family:"IBM Plex Mono",monospac
 
 <div class="wrap">
   <div class="titleblock">
+    <a class="tb-back" href="../index.html">← Proiektuak</a>
     <span class="tb-id">Teknologia</span>
     <span class="tb-name">Gantt diagrama martxan</span>
     <span class="tb-spacer"></span>
