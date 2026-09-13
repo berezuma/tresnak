@@ -28,7 +28,7 @@ function render(){
   clear(app).appendChild(h("div",{class:"wrap", style:{paddingBottom:"40px"}},
     h("div",{class:"titleblock"},
       h("span",{class:"tb-id", text:"ARIKETAK"}),
-      h("span",{class:"tb-name", text:"DBH 1etik Batxilergora"}),
+      h("span",{class:"tb-name", text:"Hasiberritik adituraino"}),
       h("span",{class:"spacer"}),
       h("span",{class:"tb-meta", text: done + " / " + total + " eginda"})),
     h("div",{class:"notice", style:{marginTop:"12px"}, html:

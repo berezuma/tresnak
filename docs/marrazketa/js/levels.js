@@ -1,6 +1,6 @@
 /* ============================================================
    MAILAK ETA ARIKETAK
-   DBH 1etik Batxilergora. Ariketa bakoitza hazi batetik sortzen da:
+   Hasiberritik adituraino (5 maila). Ariketa bakoitza hazi batetik sortzen da:
    ikasle guztiek ariketa BERA ikusten dute (gelan komentatzeko).
    ============================================================ */
 
@@ -22,7 +22,7 @@ export const VIEW_ORDER = ["F", "T", "L"];
 
 export const LEVELS = [
   {
-    n: 1, code: "DBH 1", title: "Kuboekin pentsatu", hidden: true,
+    n: 1, code: "Hasiberria", title: "Kuboekin pentsatu", hidden: true,
     goals: ["Pieza bat 3Dn biratu eta alde guztietatik ikusi", "Altxaera, oinplanoa eta profila bereizi", "Oinplano zenbakidua irakurri"],
     set: [["aukeratu", 4], ["zenbakiak", 3], ["isometrikoa", 3]],
     theory: [
@@ -34,7 +34,7 @@ export const LEVELS = [
     sample: "0_0_0:c 1_0_0:c 2_0_0:c 0_1_0:c 0_0_1:c 0_1_1:c 0_1_2:c"
   },
   {
-    n: 2, code: "DBH 2", title: "Bistak marraztu", hidden: true,
+    n: 2, code: "Oinarrizkoa", title: "Bistak marraztu", hidden: true,
     goals: ["Bistak sarean marraztu", "Bisten kokapena ezagutu (sistema europarra)", "Bisten arteko lerrokatzea ulertu"],
     set: [["aukeratu", 2], ["marraztu", 4], ["isometrikoa", 2], ["eraiki", 2]],
     theory: [
@@ -45,7 +45,7 @@ export const LEVELS = [
     sample: "0_0_0:c 1_0_0:c 2_0_0:c 0_1_0:c 1_1_0:c 0_0_1:c 0_1_1:c"
   },
   {
-    n: 3, code: "DBH 3", title: "Ezkutuko ertzak", hidden: true,
+    n: 3, code: "Tartekoa", title: "Ezkutuko ertzak", hidden: true,
     goals: ["Ezkutuko ertzak marra etenez marraztu", "Hiru bistetatik pieza irudikatu", "Hegalak eta zuloak dituzten piezak"],
     set: [["marraztu", 4], ["eraiki", 3], ["aukeratu", 2]],
     theory: [
@@ -56,7 +56,7 @@ export const LEVELS = [
     sample: "0_0_0:c 2_0_0:c 0_1_0:c 1_1_0:c 2_1_0:c 0_0_1:c 1_0_1:c 2_0_1:c"
   },
   {
-    n: 4, code: "DBH 4", title: "Aurpegi inklinatuak eta akotazioa", hidden: true,
+    n: 4, code: "Aurreratua", title: "Aurpegi inklinatuak eta akotazioa", hidden: true,
     goals: ["Aurpegi inklinatuak bistetan", "Kotak jarri: kota-lerroa, luzapen-lerroak, geziak", "Akotazioaren oinarrizko arauak"],
     set: [["marraztu", 3], ["eraiki", 2], ["akotatu", 4]],
     theory: [
@@ -67,7 +67,7 @@ export const LEVELS = [
     sample: "0_0_0:c 1_0_0:c 2_0_0:c 0_1_0:c 1_1_0:c 2_1_0:c 0_0_1:c 0_1_1:c 1_1_1:w100"
   },
   {
-    n: 5, code: "BATXILERGOA", title: "Normalizazioa", hidden: true,
+    n: 5, code: "Aditua", title: "Normalizazioa", hidden: true,
     goals: ["Sistema europarra (ISO-E) eta amerikarra (ISO-A)", "Pieza konplexuagoak: hegalak + inklinazioak", "Akotazio osoa eta arrazoitua"],
     set: [["sistema", 2], ["marraztu", 3], ["eraiki", 2], ["akotatu", 4]],
     theory: [
@@ -153,7 +153,7 @@ export function buildExercise(ex, teacherPiece = null){
       break;
     case "marraztu":
       out.view = viewFor(ex);
-      /* Bistak beti ezkutuko marrekin erakusten dira; baina DBH 1-2 mailetan
+      /* Bistak beti ezkutuko marrekin erakusten dira; baina 1-2 mailetan
          marrazteko ertz ikusgaiak bakarrik eskatzen dira. */
       out.hidden = level >= 3;
       out.target = viewAtoms(projectView(solid, out.view), out.hidden);
