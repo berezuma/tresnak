@@ -10,7 +10,15 @@
 (function(){
   var TOOLS = [
     { id: "proiektu-taula", name: "Proiektu Taula",      desc: "Gantt diagramak eta Kanban taulak" },
-    { id: "marrazketa",     name: "Marrazketa Lantegia", desc: "Bistak, akotazioa eta 3D ikuspegia" }
+    { id: "marrazketa",     name: "Marrazketa Lantegia", desc: "Bistak, akotazioa eta 3D ikuspegia" },
+    { id: "mekanismoak",       name: "Mekanismoen Lantegia", desc: "Makinak eta mekanismoak, DBH 2-3" },
+    { id: "parabolikoa",       name: "Higidura parabolikoa", desc: "Jaurtiketen simulagailua, 2Dn eta 3Dn" },
+    { id: "eguzkisistema",     name: "Eguzki-sistema",       desc: "Planetak 3Dn, datuak eta bisita gidatua" },
+    { id: "lurraetaeguzkia",   name: "Lurra eta Eguzkia",    desc: "Urtaroak eta egunaren iraupena" },
+    { id: "irudigeometrikoak", name: "Irudi geometrikoak",   desc: "Perimetroa, azalera eta bolumena" },
+    { id: "baserria",          name: "Baserria",             desc: "Baserriaren analisi termikoa 3Dn" },
+    { id: "etxeadimentsua",    name: "Etxe adimentsua",      desc: "Arduino proiektuen gida" },
+    { id: "paperezkozubia",    name: "Paperezko zubia",      desc: "Zubiaren pisua eta hipotenusa" }
   ];
   var SITE = { href: "https://berezuma.com", name: "berezuma.com" };
 

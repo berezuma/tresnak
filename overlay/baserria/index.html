@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baserria</title>
+<meta name="description" content="Baserriaren simulagailu termikoa 3Dn: gelen banaketa, inertzia, eguzkia, isolamendua eta berotze-sistemak, galdetegiarekin.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f9f8f5'/%3E%3Cpath d='M5 27 V14 L16 6 L27 14 V27' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'/%3E%3Cline x1='3' y1='27' x2='29' y2='27' stroke='%23000' stroke-width='2'/%3E%3Ccircle cx='16' cy='19' r='3' fill='%23e5a21a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../oinarria/css/fonts.css">
+<link rel="stylesheet" href="../oinarria/css/app.css">
+<link rel="stylesheet" href="../oinarria/css/tresna.css">
+<style>
+  .app{position:relative; overflow:hidden}
+  .stage{position:absolute; inset:0; background:var(--paper)}
+  #container{position:absolute; inset:0}
+  #container canvas{display:block; touch-action:none}
+  #labels-container{position:absolute; inset:0; overflow:hidden; pointer-events:none}
+  .label{
+    position:absolute; top:0; left:0; padding:1px 8px; white-space:nowrap; pointer-events:none; transition:opacity .2s;
+    font:700 13px/1.4 var(--font-body); color:var(--ink); background:var(--sheet); border:1px solid var(--ink);
+  }
+
+  .float{position:absolute; z-index:10; background:var(--sheet); border:1px solid var(--ink); box-shadow:var(--shadow-lg)}
+  .info-box{top:16px; left:16px; width:min(420px, calc(100% - 180px)); max-height:calc(100% - 210px); overflow-y:auto; padding:16px 18px}
+  .info-box h1{font-size:28px; line-height:1.15; margin-bottom:6px}
+  .source{margin:0 0 10px; font-size:14px; color:var(--ink3)}
+  .source a{color:inherit}
+  #info-text{margin:0; font-size:16px; color:var(--ink2)}
+  #info-text strong{color:var(--ink)}
+
+  .control{left:50%; bottom:16px; transform:translateX(-50%); width:min(780px, calc(100% - 32px)); padding:12px 14px}
+  .control h2{margin:0 0 8px; text-align:center; font-family:var(--font-body); font-size:14px; font-weight:700; color:var(--ink2)}
+  .control-grid{display:grid; grid-template-columns:repeat(6, 1fr); gap:8px}
+  .sub-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px}
+  .control-grid .btn, .sub-grid .btn{justify-content:center; text-align:center; font-size:14.5px; padding:6px 8px}
+  .control-btn.active, .sub-btn.active{background:var(--ink); color:var(--sheet)}
+
+  .credits-wrap{position:absolute; top:16px; right:16px; z-index:20; display:flex; flex-direction:column; align-items:flex-end; gap:8px}
+  #creditsPanel{position:static; width:min(300px, calc(100vw - 32px)); padding:12px 16px; font-size:14.5px}
+  #creditsPanel p{margin:0 0 6px}
+  #creditsPanel p:last-child{margin:0}
+  #creditsPanel a{color:inherit}
+  #closeCreditsPanel{float:right; margin:-4px -8px 0 8px; font-size:20px; line-height:1; padding:2px 8px}
+
+  /* galdetegia */
+  #quiz-container{padding-bottom:30px}
+  .question{margin-bottom:16px; padding:16px 18px; background:var(--sheet); border:1px solid var(--rule)}
+  .question-text{margin:0 0 10px; font-weight:700}
+  .options{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:8px}
+  .quiz-option{padding:8px 12px; text-align:left; cursor:pointer; font:400 16px/1.4 var(--font-body); color:var(--ink); background:var(--sheet); border:1px solid var(--ink3)}
+  .quiz-option:hover{background:var(--chip)}
+  .quiz-option.selected{background:var(--chip); border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink)}
+  .quiz-option.correct{background:color-mix(in srgb, var(--ok) 18%, var(--sheet)); border-color:var(--ok)}
+  .quiz-option.incorrect{background:color-mix(in srgb, var(--danger) 16%, var(--sheet)); border-color:var(--danger)}
+  .quiz-actions{margin-top:8px; text-align:center}
+  .quiz-result{margin:22px 0 10px; text-align:center; font-family:var(--font-display); font-size:28px}
+  .quiz-result.ok{color:var(--ok)}
+  .quiz-result.bad{color:var(--danger)}
+
+  @media (max-width:860px){
+    .app{display:flex; flex-direction:column; overflow:visible}
+    .info-box{position:static; order:1; width:auto; max-height:none; margin:16px 16px 0; box-shadow:var(--edge)}
+    .stage{position:relative; order:2; inset:auto; height:60vh; margin-top:16px}
+    .control{position:static; order:3; width:auto; margin:16px 16px 0; transform:none; box-shadow:var(--edge)}
+    .control-grid{grid-template-columns:repeat(3, 1fr)}
+    .credits-wrap{position:static; order:4; align-items:flex-start; margin:16px 16px 28px}
+  }
+</style>
+</head>
+<body class="fill">
+
+<div id="simulator-view" class="app">
+  <div class="stage">
+    <div id="container"></div>
+    <div id="labels-container">
+      <div id="label-south" class="label">Hegoaldea (bizitokia)</div>
+      <div id="label-north" class="label">Iparraldea (korta/lastategia)</div>
+      <div id="room-labels" class="hidden">
+        <div id="label-kitchen" class="label">Sukaldea</div>
+        <div id="label-storage" class="label">Logela/biltegia</div>
+        <div id="label-living" class="label">Bizitokia</div>
+        <div id="label-korta" class="label">Korta</div>
+        <div id="label-hayloft" class="label">Lastategia</div>
+      </div>
+    </div>
+  </div>
+
+  <section id="info-panel" class="float info-box" aria-live="polite">
+    <h1>Baserriaren analisi termikoa</h1>
+    <p class="source">Ugaitz Gaztelu arkitektoaren <a href="https://www.ueu.eus/apunteak/ingeniaritza-eta-teknologia-1/arkitektura/10-12-baserrien-analisi-termikoa-ugaitz-gaztelu/at_download/file" target="_blank" rel="noopener noreferrer">«Baserrien analisi termikoa»</a> dokumentuan oinarritua.</p>
+    <p id="info-text">Ongi etorri! Simulatzaile honek baserri baten portaera termikoa erakusten du. Sakatu botoiak informazio gehiago lortzeko.</p>
+  </section>
+
+  <section class="float control" aria-label="Kontrol panela">
+    <h2>Kontrol panela</h2>
+    <div class="control-grid">
+      <button id="btn-rooms" class="control-btn btn sm">Gelen banaketa</button>
+      <button id="btn-inertia" class="control-btn btn sm">Inertzia</button>
+      <button id="btn-sun" class="control-btn btn sm">Eguzkia</button>
+      <button id="btn-insulation" class="control-btn btn sm">Isolamendua</button>
+      <button id="btn-heating" class="control-btn btn sm">Berotze sistemak</button>
+      <button id="btn-quiz" class="control-btn btn sm">Galdetegia</button>
+    </div>
+    <div id="heating-submenu" class="hidden sub-grid">
+      <button id="btn-heating-animals" class="sub-btn btn sm">Animaliak</button>
+      <button id="btn-heating-kitchen" class="sub-btn btn sm">Sukaldea</button>
+    </div>
+  </section>
+
+  <div class="credits-wrap">
+    <button id="creditsButton" class="btn sm" aria-controls="creditsPanel">Informazioa</button>
+    <div id="creditsPanel" class="float hidden">
+      <button id="closeCreditsPanel" class="btn sm ghost" aria-label="Itxi informazioa">&times;</button>
+      <p><b>Baserriaren simulagailu termikoa</b></p>
+      <p><a href="https://berezuma.com">Beñat Erezuma</a>-k garatua.</p>
+      <p>Jatorrizko lana: <a href="https://www.ueu.eus/apunteak/ingeniaritza-eta-teknologia-1/arkitektura/10-12-baserrien-analisi-termikoa-ugaitz-gaztelu/at_download/file" target="_blank" rel="noopener noreferrer">Ugaitz Gaztelu</a> arkitektoarena.</p>
+      <p>Teknologia: <a href="https://threejs.org/">Three.js</a></p>
+      <p>Lizentzia: <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.eu">CC BY-SA 4.0</a></p>
+    </div>
+  </div>
+</div>
+
+<div id="quiz-view" class="hidden">
+  <main id="quiz-container" class="wrap page" style="max-width:860px">
+    <div class="head">
+      <h1>Baserriari buruzko galdetegia</h1>
+      <button id="back-to-sim-btn" class="btn">Itzuli simulagailura</button>
+    </div>
+    <div id="questions-wrapper"></div>
+    <div class="quiz-actions">
+      <button id="submit-quiz-btn" class="btn primary">Zuzendu</button>
+    </div>
+    <div id="quiz-result" class="quiz-result hidden" role="status"></div>
+  </main>
+</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "../oinarria/vendor/three-0.164.1/three.module.min.js",
+      "three/addons/": "../oinarria/vendor/three-0.164.1/"
+    }
+  }
+</script>
+<script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/OrbitControls.js';
+
+        // Diseinuaren koloreak (app.css-eko aldagaiak; gai argia eta iluna)
+        const tok = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+        let scene, camera, renderer, controls, directionalLight;
+        let baserri, mainWall, teilatua, cows, hay, rooms, behekoSua;
+        let sunRays, animalHeat, kitchenHeat, insulationEffect, inertiaEffect;
+        const htmlLabels = [];
+        let collisionables = [];
+        let sunRaycaster = new THREE.Raycaster();
+        
+        const infoTextElement = document.getElementById('info-text');
+
+        // --- UI Views ---
+        const simulatorView = document.getElementById('simulator-view');
+        const quizView = document.getElementById('quiz-view');
+        const btnQuiz = document.getElementById('btn-quiz');
+        const btnBackToSim = document.getElementById('back-to-sim-btn');
+        const creditsButton = document.getElementById('creditsButton');
+        const creditsPanel = document.getElementById('creditsPanel');
+        const closeCreditsPanel = document.getElementById('closeCreditsPanel');
+
+        btnQuiz.addEventListener('click', () => {
+            simulatorView.classList.add('hidden');
+            quizView.classList.remove('hidden');
+            document.body.classList.remove('fill');
+            window.scrollTo(0, 0);
+        });
+
+        btnBackToSim.addEventListener('click', () => {
+            quizView.classList.add('hidden');
+            simulatorView.classList.remove('hidden');
+            document.body.classList.add('fill');
+        });
+
+        creditsButton.addEventListener('click', () => {
+            creditsPanel.classList.toggle('hidden');
+        });
+        closeCreditsPanel.addEventListener('click', () => {
+            creditsPanel.classList.add('hidden');
+        });
+
+
+        // --- Quiz Logic ---
+        const questions = [
+            {
+                question: "Zein da baserriaren orientazio-faktore nagusia dokumentuaren arabera?",
+                options: ["Irisgarritasuna", "Faktore ekonomikoak", "Haizea, topografia eta eguzkia", "Hurbiltasun soziala"],
+                answer: "Haizea, topografia eta eguzkia"
+            },
+            {
+                question: "Baserriaren zein aldetan kokatzen da normalean etxebizitza-gunea?",
+                options: ["Iparraldean", "Hegoaldean", "Ekialdean", "Mendebaldean"],
+                answer: "Hegoaldean"
+            },
+            {
+                question: "Zergatik da garrantzitsua harrizko horma nagusiaren eraikuntza?",
+                options: ["Estetikagatik bakarrik", "Suteen aurkako babesagatik eta portaera termikoagatik", "Animaliak hobeto entzuteko", "Argitasun gehiago lortzeko"],
+                answer: "Suteen aurkako babesagatik eta portaera termikoagatik"
+            },
+            {
+                question: "Nola funtzionatzen du kortak sistema bioklimatikoan?",
+                options: ["Bero-galerak sortzen ditu", "Koltxoi termiko gisa", "Biltegi gisa soilik", "Ez du eraginik"],
+                answer: "Koltxoi termiko gisa"
+            },
+            {
+                question: "Zein funtzio betetzen du lastategiak kortaren gainean?",
+                options: ["Isolatzaile gisa jokatzea", "Pisu estrukturala ematea", "Hezetasuna sortzea", "Apaingarri gisa"],
+                answer: "Isolatzaile gisa jokatzea"
+            },
+            {
+                question: "Zer ondorio du harrizko hormen inertzia termiko handiak?",
+                options: ["Barne-tenperaturak asko aldatzen dira", "Barne-tenperaturak konstanteago mantentzen dira", "Hezetasun handiagoa sortzen da", "Soinua anplifikatzen du"],
+                answer: "Barne-tenperaturak konstanteago mantentzen dira"
+            },
+            {
+                question: "Zein dira baserriko berotze-sistema nagusiak, dokumentuaren arabera?",
+                options: ["Berogailu zentrala eta eguzki-plakak", "Animaliak eta sukaldeko behe sua", "Lurreko berokuntza", "Gas naturala"],
+                answer: "Animaliak eta sukaldeko behe sua"
+            },
+            {
+                question: "Zein zen baserriko gunerik beroena neguan?",
+                options: ["Logelak", "Ganbara", "Sukaldea", "Korta"],
+                answer: "Sukaldea"
+            },
+            {
+                question: "Zein lodiera dute normalean harrizko hormek?",
+                options: ["10-20 cm", "25-40 cm", "50-75 cm", "100 cm baino gehiago"],
+                answer: "50-75 cm"
+            },
+            {
+                question: "Zein da dokumentuaren helburu nagusia?",
+                options: ["Baserriak eraistea proposatzea", "Baserrien historia kontatzea", "Arkitektoei baserriak berritzeko analisi bioklimatikoa eskaintzea", "Baserrien salmenta sustatzea"],
+                answer: "Arkitektoei baserriak berritzeko analisi bioklimatikoa eskaintzea"
+            }
+        ];
+
+        const questionsWrapper = document.getElementById('questions-wrapper');
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+        const quizResult = document.getElementById('quiz-result');
+
+        function renderQuiz() {
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                const questionP = document.createElement('p');
+                questionP.className = 'question-text';
+                questionP.textContent = `${index + 1}. ${q.question}`;
+                questionDiv.appendChild(questionP);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                q.options.forEach(option => {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.className = 'quiz-option';
+                    optionBtn.textContent = option;
+                    optionBtn.dataset.questionIndex = index;
+                    optionBtn.addEventListener('click', () => {
+                        document.querySelectorAll(`button[data-question-index='${index}']`).forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        optionBtn.classList.add('selected');
+                    });
+                    optionsDiv.appendChild(optionBtn);
+                });
+                questionDiv.appendChild(optionsDiv);
+                questionsWrapper.appendChild(questionDiv);
+            });
+        }
+        
+        submitQuizBtn.addEventListener('click', () => {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`button.quiz-option.selected[data-question-index='${index}']`);
+                const allOptions = document.querySelectorAll(`button.quiz-option[data-question-index='${index}']`);
+                
+                allOptions.forEach(opt => {
+                    if (opt.textContent === q.answer) {
+                       opt.classList.add('correct');
+                    }
+                });
+
+                if (selectedOption) {
+                    if (selectedOption.textContent === q.answer) {
+                        score++;
+                        selectedOption.classList.add('correct');
+                    } else {
+                        selectedOption.classList.add('incorrect');
+                    }
+                }
+            });
+
+            quizResult.classList.remove('hidden');
+            if (score >= 8) {
+                quizResult.innerHTML = `Zorionak! Zure emaitza: ${score} / 10. Proba gainditu duzu!`;
+                quizResult.className = 'quiz-result ok';
+            } else {
+                quizResult.innerHTML = `Zure emaitza: ${score} / 10. Saiatu berriro!`;
+                quizResult.className = 'quiz-result bad';
+            }
+            submitQuizBtn.disabled = true;
+            submitQuizBtn.style.opacity = '0.5';
+        });
+
+        renderQuiz();
+
+
+        // --- Simulator Logic ---
+        
+        const infoContent = {
+            default: "Ongi etorri! Simulatzaile honek baserri baten portaera termikoa erakusten du. Sakatu botoiak informazio gehiago lortzeko.",
+            sun: "**Eguzki-irabaziak:** Baserriaren bizitoki-gunea hegoaldean kokatzen da, eguzkiaren irabaziak ahalik eta gehien aprobetxatzeko. Fatxada nagusiak, egurrezko egitura irekiarekin, orientazio hori du.",
+            heating: "**Berotze Sistemak:** Baserriak bi berotze-sistema nagusi zituen: animalien beroa (sistema pasiboa) eta sukaldeko beheko sua (sistema aktiboa). Aukeratu bat bere funtzionamendua ikusteko.",
+            animals: "**Animaliak:** Berotze-sistema pasibo gisa uler daitezke. Animaliek sortutako beroa gora igotzen da, baina lastategiak blokeatuta, hegoalderantz mugitzen da, bizitokia behetik gora berotuz eta 'koltxoi termiko' gisa funtzionatuz.",
+            kitchen: "**Sukaldea:** Sukaldean erabiltzen zen behe suak eraikina berotzen zuen. Neguan egun guztian piztuta egoten zen, sukaldea eta bizitokia baserriko gunerik beroenak bihurtuz.",
+            insulation: "**Lastoaren Isolamendua:** Kortaren gainean lastategia dago. Lastoak isolatzaile gisa jokatzen du, animaliek sortutako beroari gorantz ihes egitea eragotziz eta iparraldeko 'koltxoi termikoa' indartuz.",
+            inertia: "**Inertzia Termikoa:** Kanpoko eta barruko banaketa horma nagusiak (50-75cm) harrizkoak dira. Honek inertzia termiko handia ematen dio baserriari, barne-tenperaturak konstanteago mantenduz.",
+            rooms: "**Gelen Banaketa:** Baserria bi zati nagusitan banatzen da. Hegoaldean, eguzkitsuen den aldean, bizitokia kokatzen da. Iparraldean, hotzen den aldean, korta eta lastategia daude. Erdian harrizko horma lodi batek bi guneak banatzen ditu."
+        };
+        
+        function updateInfoPanel(key) {
+            infoTextElement.innerHTML = infoContent[key].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
+        
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(tok('--paper'));
+
+            const stageEl = document.getElementById('container');
+            camera = new THREE.PerspectiveCamera(75, stageEl.clientWidth / stageEl.clientHeight, 0.1, 1000);
+            camera.position.set(20, 15, 35);
+            
+            rooms = new THREE.Group();
+            rooms.visible = false;
+
+            const container = document.getElementById('container');
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 10;
+            controls.maxDistance = 100;
+            controls.target.set(0, 4, 0);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xffffff, 1.8);
+            directionalLight.position.set(0, 30, 40);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.camera.top = 25;
+            directionalLight.shadow.camera.bottom = -25;
+            directionalLight.shadow.camera.left = -25;
+            directionalLight.shadow.camera.right = 25;
+            scene.add(directionalLight);
+            
+            const groundGeometry = new THREE.PlaneGeometry(200, 200);
+            const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22, side: THREE.DoubleSide });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            createBaserri();
+            directionalLight.target = baserri;
+            createThermalEffects();
+            setupHTMLLabels();
+            setupUI();
+            
+            new ResizeObserver(onWindowResize).observe(container);
+            matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                scene.background = new THREE.Color(tok('--paper'));
+            });
+            animate();
+        }
+        
+        function createBaserri() {
+            baserri = new THREE.Group();
+            scene.add(baserri);
+            baserri.add(rooms);
+
+            const stoneMaterial = new THREE.MeshStandardMaterial({ color: 0xadadad, roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity: 0.3 });
+            const woodMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.7 });
+            const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x9e3c30, roughness: 0.6, transparent: true, opacity: 0.5 });
+            const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x1a202c });
+            const darkWoodMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
+
+            const width = 18;
+            const depth = 22; // Deeper baserri
+            const wallHeight = 8;
+            const roofHeight = 5;
+            const wallThickness = 0.6;
+            const soportalHeight = 3.5;
+
+            const walls = new THREE.Group();
+            baserri.add(walls);
+            
+            const northWall = new THREE.Mesh(new THREE.BoxGeometry(width, wallHeight, wallThickness), stoneMaterial);
+            northWall.position.set(0, wallHeight / 2, -depth / 2);
+            walls.add(northWall);
+            
+            const eastWall = new THREE.Mesh(new THREE.BoxGeometry(depth, wallHeight, wallThickness), stoneMaterial);
+            eastWall.position.set(width / 2, wallHeight / 2, 0);
+            eastWall.rotation.y = Math.PI / 2;
+            walls.add(eastWall);
+            
+            const westWall = new THREE.Mesh(new THREE.BoxGeometry(depth, wallHeight, wallThickness), stoneMaterial);
+            westWall.position.set(-width / 2, wallHeight / 2, 0);
+            westWall.rotation.y = -Math.PI / 2;
+            walls.add(westWall);
+
+            // Add windows to side walls
+            const sideWindowGeo = new THREE.BoxGeometry(1.2, 1.2, wallThickness + 0.1);
+            const eastWin1 = new THREE.Mesh(sideWindowGeo, windowMaterial);
+            eastWin1.position.set(6, 1.5, 0); 
+            eastWall.add(eastWin1);
+            const eastWin2 = new THREE.Mesh(sideWindowGeo, windowMaterial);
+            eastWin2.position.set(-4, -1.5, 0);
+            eastWall.add(eastWin2);
+
+            const westWin1 = new THREE.Mesh(sideWindowGeo, windowMaterial);
+            westWin1.position.set(6, -1.5, 0);
+            westWall.add(westWin1);
+            const westWin2 = new THREE.Mesh(sideWindowGeo, windowMaterial);
+            westWin2.position.set(-4, 1.5, 0);
+            westWall.add(westWin2);
+
+            const southWall = new THREE.Group();
+            southWall.position.z = depth / 2;
+            
+            const doorWidth = 5.0;
+            const doorHeight = 3.0;
+
+            const lintel = new THREE.Mesh(
+                new THREE.BoxGeometry(doorWidth, soportalHeight - doorHeight, wallThickness),
+                stoneMaterial
+            );
+            lintel.position.set(0, doorHeight + (soportalHeight - doorHeight) / 2, 0);
+            southWall.add(lintel);
+
+            const leftWallPartWidth = (width - doorWidth) / 2;
+            const leftWallPart = new THREE.Mesh(
+                new THREE.BoxGeometry(leftWallPartWidth, soportalHeight, wallThickness),
+                stoneMaterial
+            );
+            leftWallPart.position.set(-doorWidth / 2 - leftWallPartWidth / 2, soportalHeight / 2, 0);
+            southWall.add(leftWallPart);
+
+            const rightWallPartWidth = (width - doorWidth) / 2;
+            const rightWallPart = new THREE.Mesh(
+                new THREE.BoxGeometry(rightWallPartWidth, soportalHeight, wallThickness),
+                stoneMaterial
+            );
+            rightWallPart.position.set(doorWidth / 2 + rightWallPartWidth / 2, soportalHeight / 2, 0);
+            southWall.add(rightWallPart);
+            
+            const firstFloorSouth = new THREE.Mesh(new THREE.BoxGeometry(width, wallHeight - soportalHeight, wallThickness), stoneMaterial);
+            firstFloorSouth.position.y = soportalHeight + (wallHeight - soportalHeight) / 2;
+            southWall.add(firstFloorSouth);
+
+            const winGeo = new THREE.BoxGeometry(1.2, 1.2, wallThickness + 0.1);
+            const win1 = new THREE.Mesh(winGeo, windowMaterial);
+            win1.position.set(-7, 0, 0);
+            firstFloorSouth.add(win1);
+            const win2 = new THREE.Mesh(winGeo, windowMaterial);
+            win2.position.set(7, 0, 0);
+            firstFloorSouth.add(win2);
+
+            const doorGeo = new THREE.BoxGeometry(1.5, 2.2, wallThickness + 0.1);
+            const door1 = new THREE.Mesh(doorGeo, windowMaterial);
+            door1.position.set(-4, -0.5, 0);
+            firstFloorSouth.add(door1);
+            const door2 = new THREE.Mesh(doorGeo, windowMaterial);
+            door2.position.set(0, -0.5, 0);
+            firstFloorSouth.add(door2);
+            const door3 = new THREE.Mesh(doorGeo, windowMaterial);
+            door3.position.set(4, -0.5, 0);
+            firstFloorSouth.add(door3);
+
+            walls.add(southWall);
+            collisionables.push(southWall);
+
+            const balcony = new THREE.Group();
+            const balconyWidth = 10;
+            balcony.position.set(0, soportalHeight + 0.1, depth/2 + 0.5);
+            
+            const floor = new THREE.Mesh(new THREE.BoxGeometry(balconyWidth, 0.2, 1.5), woodMaterial);
+            balcony.add(floor);
+            
+            const railing = new THREE.Mesh(new THREE.BoxGeometry(balconyWidth, 1, 0.15), darkWoodMaterial);
+            railing.position.set(0, 0.5, 0.75);
+            balcony.add(railing);
+
+            baserri.add(balcony);
+            collisionables.push(balcony);
+
+            mainWall = new THREE.Mesh(new THREE.BoxGeometry(width, wallHeight, wallThickness), stoneMaterial.clone());
+            mainWall.position.set(0, wallHeight / 2, 0);
+            mainWall.material.transparent = true; mainWall.material.opacity = 0.1;
+            walls.add(mainWall);
+            
+            const roofShape = new THREE.Shape();
+            roofShape.moveTo(-width / 2 - 0.5, wallHeight); roofShape.lineTo(0, wallHeight + roofHeight); roofShape.lineTo(width / 2 + 0.5, wallHeight); roofShape.closePath();
+            const extrudeSettings = { depth: depth + 1, bevelEnabled: false };
+            const roofGeometry = new THREE.ExtrudeGeometry(roofShape, extrudeSettings);
+            teilatua = new THREE.Mesh(roofGeometry, roofMaterial);
+            teilatua.position.z = -(depth / 2 + 0.5);
+            baserri.add(teilatua);
+            collisionables.push(teilatua);
+
+            const floorMaterial = new THREE.MeshStandardMaterial({color: 0x966F33, transparent: true, opacity: 0.15});
+            const groundFloor = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, depth), floorMaterial); baserri.add(groundFloor);
+            const firstFloor = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, depth), floorMaterial); firstFloor.position.y = soportalHeight; baserri.add(firstFloor);
+
+            createCows(depth);
+            createHay(depth);
+            createRooms(width, depth, wallHeight, soportalHeight, wallThickness);
+            
+            baserri.traverse((child) => {
+                if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; }
+            });
+        }
+        
+        function createCow(position) {
+            const cow = new THREE.Group();
+            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0x664229 });
+            const legGeo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.5, 1.2), bodyMaterial); cow.add(body);
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), bodyMaterial); head.position.set(1.5, 0.5, 0); cow.add(head);
+            const leg1 = new THREE.Mesh(legGeo, bodyMaterial); leg1.position.set(1, -1.15, 0.4); cow.add(leg1);
+            const leg2 = new THREE.Mesh(legGeo, bodyMaterial); leg2.position.set(1, -1.15, -0.4); cow.add(leg2);
+            const leg3 = new THREE.Mesh(legGeo, bodyMaterial); leg3.position.set(-1, -1.15, 0.4); cow.add(leg3);
+            const leg4 = new THREE.Mesh(legGeo, bodyMaterial); leg4.position.set(-1, -1.15, -0.4); cow.add(leg4);
+            cow.position.copy(position);
+            return cow;
+        }
+
+        function createCows() {
+            cows = new THREE.Group();
+            const cow1 = createCow(new THREE.Vector3(-5, 1.55, -6));
+            const cow2 = createCow(new THREE.Vector3(0, 1.55, -8)); cow2.rotation.y = Math.PI / 4;
+            const cow3 = createCow(new THREE.Vector3(5, 1.55, -6)); cow3.rotation.y = -Math.PI / 6;
+            cows.add(cow1, cow2, cow3); cows.visible = false; baserri.add(cows);
+        }
+
+        function createHay(depth) {
+            const hayMaterial = new THREE.MeshStandardMaterial({ color: 0xf0e68c });
+            hay = new THREE.Group();
+            const hayloftInnerDepth = depth / 2 - 0.6;
+            const haystackCount = 150; const buildingInnerWidth = 18 - 0.6; const hayloftBaseY = 3.5; const mainWallCenterZ = 0;
+            for (let i = 0; i < haystackCount; i++) {
+                const radius = Math.random() * 0.8 + 0.3; const height = Math.random() * 0.6 + 0.2;
+                const geometry = new THREE.CylinderGeometry(radius * 0.7, radius, height, 6); 
+                const haystack = new THREE.Mesh(geometry, hayMaterial);
+                const placementWidth = buildingInnerWidth - (radius * 2); const placementDepth = hayloftInnerDepth - (radius * 2);
+                const x = (Math.random() - 0.5) * placementWidth; const y = hayloftBaseY + height / 2;
+                const z = (mainWallCenterZ - 0.6 / 2) - radius - (Math.random() * placementDepth);
+                haystack.position.set(x, y, z); haystack.rotation.y = Math.random() * Math.PI * 2;
+                haystack.castShadow = true; hay.add(haystack);
+                hay.add(haystack);
+            }
+            hay.visible = false; baserri.add(hay);
+        }
+        
+        function createRooms(width, depth, wallHeight, soportalHeight, wallThickness) {
+            const roomMaterial = (color) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+            
+            const southAreaDepth = depth/2 - wallThickness; 
+            const southAreaWidth = width - wallThickness;
+            const northAreaDepth = depth/2 - wallThickness;
+            const northAreaWidth = width - wallThickness;
+            
+            const kitchenGeo = new THREE.BoxGeometry(southAreaWidth / 2, soportalHeight, southAreaDepth);
+            const kitchen = new THREE.Mesh(kitchenGeo, roomMaterial(0xffa500));
+            kitchen.position.set(southAreaWidth / 4, soportalHeight / 2, southAreaDepth / 2 + wallThickness/2);
+            rooms.add(kitchen);
+
+            const livingGeo = new THREE.BoxGeometry(southAreaWidth / 2, soportalHeight, southAreaDepth);
+            const living = new THREE.Mesh(livingGeo, roomMaterial(0xadd8e6));
+            living.position.set(-southAreaWidth / 4, soportalHeight / 2, southAreaDepth / 2 + wallThickness/2);
+            rooms.add(living);
+
+            const firstFloorHeight = wallHeight - soportalHeight;
+            const firstFloorLivingGeo = new THREE.BoxGeometry(southAreaWidth, firstFloorHeight, southAreaDepth);
+            const firstFloorLiving = new THREE.Mesh(firstFloorLivingGeo, roomMaterial(0x90ee90));
+            firstFloorLiving.position.set(0, soportalHeight + firstFloorHeight / 2, southAreaDepth / 2 + wallThickness/2);
+            rooms.add(firstFloorLiving);
+            
+            const kortaGeo = new THREE.BoxGeometry(northAreaWidth, soportalHeight, northAreaDepth);
+            const korta = new THREE.Mesh(kortaGeo, roomMaterial(0x8B4513));
+            korta.position.set(0, soportalHeight / 2, -northAreaDepth / 2 - wallThickness/2);
+            rooms.add(korta);
+            
+            const lastategiaGeo = new THREE.BoxGeometry(northAreaWidth, wallHeight - soportalHeight, northAreaDepth);
+            const lastategia = new THREE.Mesh(lastategiaGeo, roomMaterial(0xFFFFE0));
+            lastategia.position.set(0, soportalHeight + (wallHeight - soportalHeight) / 2, -northAreaDepth / 2 - wallThickness/2);
+            rooms.add(lastategia);
+        }
+
+        function setupHTMLLabels() {
+            htmlLabels.push({
+                element: document.getElementById('label-south'),
+                position: new THREE.Vector3(0, 1, 12),
+                alwaysVisible: true
+            });
+            htmlLabels.push({
+                element: document.getElementById('label-north'),
+                position: new THREE.Vector3(0, 1, -12),
+                alwaysVisible: true
+            });
+
+            const wallThickness = 0.6;
+            const southAreaDepth = 22/2 - wallThickness; 
+            const southAreaWidth = 18 - wallThickness;
+            const soportalHeight = 3.5; 
+
+            htmlLabels.push({ element: document.getElementById('label-kitchen'), position: new THREE.Vector3(southAreaWidth / 4, 1.5, southAreaDepth / 2 + wallThickness/2) });
+            htmlLabels.push({ element: document.getElementById('label-storage'), position: new THREE.Vector3(-southAreaWidth / 4, 1.5, southAreaDepth / 2 + wallThickness/2) });
+            htmlLabels.push({ element: document.getElementById('label-living'), position: new THREE.Vector3(0, soportalHeight + 1.5, southAreaDepth / 2 + wallThickness/2) });
+            htmlLabels.push({ element: document.getElementById('label-korta'), position: new THREE.Vector3(0, 1.5, -6) });
+            htmlLabels.push({ element: document.getElementById('label-hayloft'), position: new THREE.Vector3(0, soportalHeight + 1.5, -6) });
+        }
+
+        function createThermalEffects() {
+            sunRays = new THREE.Group();
+            const sunDirection = new THREE.Vector3(0, -30, -40).normalize();
+            for (let i = 0; i < 15; i++) {
+                const geometry = new THREE.CylinderGeometry(0.1, 0.1, 8, 8);
+                const material = new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.7 });
+                const ray = new THREE.Mesh(geometry, material);
+                ray.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), sunDirection);
+                ray.position.set((Math.random() - 0.5) * 18, 20, (Math.random() - 0.5) * 8 + 25);
+                ray.userData.direction = sunDirection.clone();
+                sunRays.add(ray);
+            }
+            sunRays.visible = false; scene.add(sunRays);
+
+            const particleMaterial = new THREE.PointsMaterial({ color: 0xff4500, size: 0.3, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+            
+            animalHeat = new THREE.Group();
+            const animalParticleGeo = new THREE.BufferGeometry(); 
+            const animalVertices = [];
+            const animalParticleData = [];
+            const kortaDepth = 22/2 - 0.6;
+            for (let i = 0; i < 200; i++) { 
+                animalVertices.push(Math.random() * 17 - 8.5, Math.random() * 1.5 + 0.1, (Math.random() * -kortaDepth)); 
+                animalParticleData.push({ state: 0, targetX: 0, targetZ: 0 });
+            }
+            animalParticleGeo.setAttribute('position', new THREE.Float32BufferAttribute(animalVertices, 3));
+            const animalPoints = new THREE.Points(animalParticleGeo, particleMaterial);
+            animalPoints.userData.particleData = animalParticleData;
+            animalHeat.add(animalPoints);
+            animalHeat.visible = false; scene.add(animalHeat);
+
+            kitchenHeat = new THREE.Group();
+            const kitchenParticleGeo = new THREE.BufferGeometry();
+            const kitchenVertices = [];
+            const kitchenParticleData = [];
+            const firePosition = new THREE.Vector3(4.5, 0.5, 6);
+            for (let i = 0; i < 150; i++) {
+                kitchenVertices.push(firePosition.x, firePosition.y, firePosition.z);
+                kitchenParticleData.push({ state: 0, targetX: 0, targetZ: 0 });
+            }
+            kitchenParticleGeo.setAttribute('position', new THREE.Float32BufferAttribute(kitchenVertices, 3));
+            const kitchenPoints = new THREE.Points(kitchenParticleGeo, particleMaterial);
+            kitchenPoints.userData.particleData = kitchenParticleData;
+            kitchenHeat.add(kitchenPoints);
+            kitchenHeat.visible = false; scene.add(kitchenHeat);
+
+            behekoSua = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1, 0.4, 12), new THREE.MeshStandardMaterial({color: 0x4d4d4d}));
+            behekoSua.position.copy(firePosition).setY(0.2);
+            behekoSua.visible = false; baserri.add(behekoSua);
+
+            insulationEffect = new THREE.Mesh(new THREE.BoxGeometry(18, 0.2, 22/2), new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.5 }));
+            insulationEffect.position.set(0, 3.5, -(22/4)); insulationEffect.visible = false; scene.add(insulationEffect);
+
+            inertiaEffect = new THREE.Group();
+            const inertiaMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.5, wireframe: true });
+            const w = 18, d = 22, h = 8, t = 0.6, sh = 3.5;
+            const wallsData = [
+                { s: [w, h, t], p: [0, h / 2, -d / 2] }, { s: [d, h, t], p: [w / 2, h / 2, 0], r: [0, Math.PI / 2, 0] },
+                { s: [d, h, t], p: [-w / 2, h / 2, 0], r: [0, -Math.PI / 2, 0] }, 
+                { s: [w, sh, t], p: [0, sh/2, d/2]},
+                { s: [w, h-sh, t], p: [0, sh + (h-sh)/2, d/2]},
+                { s: [w, h, t], p: [0, h / 2, 0] },
+            ];
+            wallsData.forEach(data => {
+                const mesh = new THREE.Mesh(new THREE.BoxGeometry(...data.s), inertiaMaterial);
+                mesh.position.set(...data.p);
+                if (data.r) mesh.rotation.set(...data.r);
+                inertiaEffect.add(mesh);
+            });
+            inertiaEffect.visible = false; scene.add(inertiaEffect);
+        }
+        
+        function setupUI() {
+            const buttons = [
+                { id: 'btn-rooms', effect: rooms, info: 'rooms' },
+                { id: 'btn-inertia', effect: inertiaEffect, info: 'inertia' },
+                { id: 'btn-sun', effect: sunRays, info: 'sun' }, 
+                { id: 'btn-insulation', effect: insulationEffect, info: 'insulation', extra: hay }, 
+                { id: 'btn-heating', info: 'heating'}
+            ];
+
+            const heatingSubMenu = document.getElementById('heating-submenu');
+            const btnHeatingAnimals = document.getElementById('btn-heating-animals');
+            const btnHeatingKitchen = document.getElementById('btn-heating-kitchen');
+            const roomLabelsContainer = document.getElementById('room-labels');
+            
+            const allEffects = [sunRays, animalHeat, kitchenHeat, insulationEffect, inertiaEffect, rooms];
+            const allExtras = [cows, hay, behekoSua];
+            const allBtns = [...buttons.map(b => b.id), 'btn-heating-animals', 'btn-heating-kitchen'];
+
+            function deactivateAll() {
+                allEffects.forEach(e => e.visible = false);
+                allExtras.forEach(e => e.visible = false);
+                allBtns.forEach(id => document.getElementById(id).classList.remove('active', 'sub-btn-active'));
+                heatingSubMenu.classList.add('hidden');
+                roomLabelsContainer.classList.add('hidden');
+            }
+
+            buttons.forEach(btnInfo => {
+                document.getElementById(btnInfo.id).addEventListener('click', () => {
+                    const wasActive = document.getElementById(btnInfo.id).classList.contains('active');
+                    deactivateAll();
+                    if (!wasActive) {
+                        document.getElementById(btnInfo.id).classList.add('active');
+                        if (btnInfo.effect) btnInfo.effect.visible = true;
+                        if (btnInfo.extra) btnInfo.extra.visible = true;
+                        if (btnInfo.id === 'btn-heating') {
+                           heatingSubMenu.classList.remove('hidden');
+                        }
+                        if (btnInfo.id === 'btn-rooms') {
+                           roomLabelsContainer.classList.remove('hidden');
+                        }
+                        updateInfoPanel(btnInfo.info);
+                    } else {
+                         updateInfoPanel('default');
+                    }
+                });
+            });
+
+            btnHeatingAnimals.addEventListener('click', () => {
+                kitchenHeat.visible = false; behekoSua.visible = false;
+                animalHeat.visible = true; cows.visible = true;
+                btnHeatingKitchen.classList.remove('active');
+                btnHeatingAnimals.classList.add('active');
+                updateInfoPanel('animals');
+            });
+
+            btnHeatingKitchen.addEventListener('click', () => {
+                animalHeat.visible = false; cows.visible = false;
+                kitchenHeat.visible = true; behekoSua.visible = true;
+                btnHeatingAnimals.classList.remove('active');
+                btnHeatingKitchen.classList.add('active');
+                updateInfoPanel('kitchen');
+            });
+        }
+
+        function onWindowResize() {
+            const el = document.getElementById('container');
+            if (!el.clientWidth || !el.clientHeight) return; // galdetegian ezkutatuta
+            camera.aspect = el.clientWidth / el.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(el.clientWidth, el.clientHeight);
+        }
+
+        function updateLabels() {
+            const roomLabelsContainer = document.getElementById('room-labels');
+            for (const label of htmlLabels) {
+                const vector = label.position.clone().project(camera);
+                const isVisible = vector.z < 1;
+
+                if (isVisible) {
+                    const x = (vector.x * 0.5 + 0.5) * renderer.domElement.clientWidth;
+                    const y = (vector.y * -0.5 + 0.5) * renderer.domElement.clientHeight;
+                    label.element.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+                    label.element.style.opacity = '1';
+                } else {
+                    label.element.style.opacity = '0';
+                }
+                 if (!label.alwaysVisible) {
+                    label.element.style.display = roomLabelsContainer.classList.contains('hidden') ? 'none' : 'block';
+                }
+            }
+        }
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            updateLabels();
+            
+            if (sunRays.visible) {
+                const speed = 0.4;
+                sunRays.children.forEach(ray => {
+                    const rayOrigin = ray.position.clone();
+                    sunRaycaster.set(rayOrigin, ray.userData.direction);
+                    const intersects = sunRaycaster.intersectObjects(collisionables, true);
+                    if (intersects.length > 0 && intersects[0].distance < speed * 1.5) {
+                        ray.position.set((Math.random() - 0.5) * 18, 20, (Math.random() - 0.5) * 8 + 25);
+                    } else {
+                        ray.position.addScaledVector(ray.userData.direction, speed);
+                        if (ray.position.y < -5) {
+                           ray.position.set((Math.random() - 0.5) * 18, 20, (Math.random() - 0.5) * 8 + 25);
+                        }
+                    }
+                });
+            }
+            
+            if (animalHeat.visible) {
+                 const points = animalHeat.children[0];
+                 const positions = points.geometry.attributes.position.array;
+                 const particleData = points.userData.particleData;
+                 const kortaCeilingY = 3.3, roofY = 12, livingAreaWidth = 17, livingAreaDepth = 22/2 - 0.6, mainWallZ = 0.3;
+
+                 for (let i = 0; i < particleData.length; i++) {
+                     const i3 = i * 3;
+                     let data = particleData[i];
+                     if (data.state === 0) {
+                         positions[i3 + 1] += 0.03;
+                         if (positions[i3 + 1] >= kortaCeilingY) {
+                             data.state = 1;
+                             data.targetX = (Math.random() - 0.5) * livingAreaWidth;
+                             data.targetZ = mainWallZ + Math.random() * livingAreaDepth;
+                         }
+                     } else if (data.state === 1) {
+                         const speed = 0.05;
+                         const target = new THREE.Vector3(data.targetX, kortaCeilingY, data.targetZ);
+                         const current = new THREE.Vector3(positions[i3], positions[i3 + 1], positions[i3 + 2]);
+                         const direction = target.clone().sub(current).normalize();
+                         positions[i3] += direction.x * speed;
+                         positions[i3 + 2] += direction.z * speed;
+                         positions[i3 + 1] = kortaCeilingY + (Math.random() - 0.5) * 0.2;
+                         if (current.distanceTo(target) < 0.5) data.state = 2;
+                     } else {
+                         positions[i3 + 1] += 0.025;
+                     }
+                     if (positions[i3 + 1] > roofY) {
+                          positions[i3] = Math.random() * 17 - 8.5;
+                          positions[i3 + 1] = Math.random() * 1.5 + 0.1;
+                          positions[i3 + 2] = (Math.random() * -(22/2 - 0.6));
+                          data.state = 0;
+                     }
+                 }
+                 points.geometry.attributes.position.needsUpdate = true;
+            }
+
+            if(kitchenHeat.visible) {
+                const points = kitchenHeat.children[0];
+                const positions = points.geometry.attributes.position.array;
+                const particleData = points.userData.particleData;
+                const roofY = 12;
+                const firePosition = behekoSua.position;
+                const kitchenWidth = (18 - 0.6) / 2;
+                const kitchenDepth = 22/2 - 0.6;
+                const wallThickness = 0.6;
+
+                for (let i = 0; i < particleData.length; i++) {
+                     const i3 = i * 3;
+                     let data = particleData[i];
+                     if (data.state === 0) {
+                         data.state = 1;
+                         data.targetX = Math.random() * kitchenWidth;
+                         data.targetZ = wallThickness/2 + Math.random() * kitchenDepth;
+                     } else if (data.state === 1) {
+                         const speed = 0.06;
+                         const target = new THREE.Vector3(data.targetX, firePosition.y, data.targetZ);
+                         const current = new THREE.Vector3(positions[i3], positions[i3 + 1], positions[i3 + 2]);
+                         const direction = target.clone().sub(current).normalize();
+                         
+                         positions[i3] += direction.x * speed;
+                         positions[i3 + 2] += direction.z * speed;
+                         positions[i3 + 1] = firePosition.y + (Math.random() - 0.5) * 0.2;
+
+                         if (current.distanceTo(target) < 0.5) {
+                             data.state = 2;
+                         }
+                     } else {
+                         positions[i3 + 1] += 0.03;
+                     }
+
+                     if (positions[i3 + 1] > roofY) {
+                          positions[i3] = firePosition.x;
+                          positions[i3 + 1] = firePosition.y;
+                          positions[i3 + 2] = firePosition.z;
+                          data.state = 0;
+                     }
+                }
+                points.geometry.attributes.position.needsUpdate = true;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        init();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+/* ============================================================
+   Marrazketa Lantegia — oinarrizko estiloak
+   berezuma.com-ekin bat: paper beroa (#f9f8f5), eduki zuria, tinta
+   beltza, DM Serif Display izenburuetan eta Lato testuan, ertz
+   zuzenak eta botoietan ertz beltza itzal txiki batekin.
+   Bisten koloreek esanahia dute: urdina altxaera, horia oinplanoa,
+   berdea profila (urdina berezuma.com-eko #315EFF bera).
+   ============================================================ */
+
+:root{
+  color-scheme: light;
+  --paper:#f9f8f5; --sheet:#ffffff; --grid:#eeede8; --rule:#dedede; --chip:#f3f2ee;
+  --ink:#000000; --ink2:#444444; --ink3:#666666;
+  --s1:#315eff; --s2:#e5a21a; --s3:#1d9a63; --s4:#d85c8a; --s5:#7b5cd6; --s6:#0f9488;
+  --s2-ink:#8a5a00;
+  --danger:#cf2e2e; --ok:#1d8a4f; --link:#000000;
+  --edge:2px 2px 0 var(--ink);
+  --shadow:none;
+  --shadow-lg:4px 4px 0 var(--ink);
+  --font-body:"Lato", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display:"DM Serif Display", Georgia, "Times New Roman", serif;
+  --font-code:ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --row-h:36px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#141412; --sheet:#1c1c1a; --grid:#262623; --rule:#3a3a36; --chip:#23231f;
+    --ink:#f4f3ef; --ink2:#c9c8c2; --ink3:#9d9c95;
+    --s1:#7a93ff; --s2:#f0b83f; --s3:#3cc285; --s4:#e57fab; --s5:#9b82ef; --s6:#2fb8a9;
+    --s2-ink:#f0b83f;
+    --danger:#f06b6f; --ok:#3cc285; --link:#f4f3ef;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#141412; --sheet:#1c1c1a; --grid:#262623; --rule:#3a3a36; --chip:#23231f;
+  --ink:#f4f3ef; --ink2:#c9c8c2; --ink3:#9d9c95;
+  --s1:#7a93ff; --s2:#f0b83f; --s3:#3cc285; --s4:#e57fab; --s5:#9b82ef; --s6:#2fb8a9;
+  --s2-ink:#f0b83f;
+  --danger:#f06b6f; --ok:#3cc285; --link:#f4f3ef;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--font-body); font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:400; margin:0; letter-spacing:0; line-height:1.2; text-wrap:balance}
+p{text-wrap:pretty}
+a{color:var(--link); text-underline-offset:.2em}
+:focus-visible{outline:2px solid var(--s1); outline-offset:3px}
+.mono{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:14px; font-weight:700; color:var(--ink2)}
+.muted{color:var(--ink2)}
+.dim{color:var(--ink3)}
+.center{text-align:center}
+[hidden]{display:none !important}
+
+/* ---------- egitura ---------- */
+.wrap{max-width:1180px; margin:0 auto; padding:0 20px}
+.wrap-wide{max-width:1600px; margin:0 auto; padding:0 20px}
+.stack{display:flex; flex-direction:column; gap:14px}
+.row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.spacer{flex:1 1 auto}
+
+/* ---------- goiburua ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  background:color-mix(in srgb, var(--paper) 94%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{display:flex; align-items:center; gap:10px 26px; padding:12px 20px; max-width:1600px; margin:0 auto; flex-wrap:wrap}
+.brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; flex:0 0 auto}
+.brand .glyph{width:28px; height:28px; display:grid; place-items:center; flex:0 0 auto}
+.brand .glyph i{display:block; width:14px; height:3px; background:var(--s1); box-shadow:0 6px 0 var(--s2), 0 -6px 0 var(--s3)}
+.brand b{font-family:var(--font-display); font-weight:400; font-size:22px; line-height:1.1; color:var(--ink)}
+.brand span span{font-size:13px; color:var(--ink3)}
+.topnav{display:flex; gap:22px; flex-wrap:wrap}
+.topnav a{
+  font-size:16px; text-decoration:none; color:var(--ink); padding:4px 0;
+  border-bottom:2px solid transparent;
+}
+.topnav a:hover{border-bottom-color:var(--rule)}
+.topnav a.on{border-bottom-color:var(--ink); font-weight:700}
+.who{display:flex; align-items:center; gap:8px; font-size:15px; color:var(--ink2)}
+.badge-admin{font-size:12.5px; font-weight:700; border:1px solid var(--ink); color:var(--ink); padding:1px 8px}
+
+/* ---------- orriaren izenburua ---------- */
+.titleblock{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 16px;
+  margin-top:30px; padding:0;
+}
+.tb-id{display:inline-block; font-size:15px; color:var(--ink3); text-transform:lowercase}
+.tb-id::first-letter{text-transform:uppercase}
+.tb-name{font-family:var(--font-display); font-weight:400; font-size:clamp(26px, 3.4vw, 36px); line-height:1.15}
+.tb-meta{font-size:15px; color:var(--ink2); font-variant-numeric:tabular-nums}
+
+/* ---------- txartelak ---------- */
+.card{border:1px solid var(--rule); background:var(--sheet); padding:20px}
+.card h3{font-size:21px; margin-bottom:4px}
+.grid{display:grid; gap:18px}
+.grid-3{grid-template-columns:repeat(auto-fill, minmax(260px,1fr))}
+.grid-2{grid-template-columns:repeat(auto-fit, minmax(300px,1fr))}
+
+.proj{
+  border:1px solid var(--ink); background:var(--sheet); box-shadow:var(--edge);
+  display:flex; flex-direction:column; min-height:150px; position:relative;
+}
+.proj-top{padding:14px 16px 12px; flex:1 1 auto}
+.proj-top h3{font-size:21px; line-height:1.2}
+.proj-desc{font-size:15px; color:var(--ink2); margin:5px 0 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.proj-foot{display:flex; border-top:1px solid var(--rule)}
+.proj-foot a{
+  flex:1 1 0; text-align:center; padding:10px 6px; font-size:15.5px; font-weight:700;
+  text-decoration:none; color:var(--ink); border-right:1px solid var(--rule);
+}
+.proj-foot a:last-child{border-right:0}
+.proj-foot a:hover{background:var(--chip)}
+
+/* ---------- etiketak ---------- */
+.tag{
+  display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:700;
+  border:1px solid var(--rule); background:var(--sheet); color:var(--ink2); padding:1px 8px;
+}
+.tag.team{border-color:color-mix(in srgb, var(--s1) 50%, var(--rule)); color:var(--s1)}
+.tag.solo{border-color:color-mix(in srgb, var(--s5) 50%, var(--rule)); color:var(--s5)}
+.code-chip{
+  font-family:var(--font-code); font-weight:700; letter-spacing:.14em;
+  background:var(--ink); color:var(--sheet); padding:3px 10px; font-size:14px;
+}
+
+/* ---------- botoiak (berezuma.com-eko ertz beltza + itzala) ---------- */
+.btn{
+  font-family:var(--font-body); font-size:16px; font-weight:700;
+  border:1px solid var(--ink); background:var(--sheet); color:var(--ink);
+  padding:8px 16px; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+  text-decoration:none; line-height:1.3; box-shadow:var(--edge);
+}
+.btn:hover{background:var(--chip)}
+.btn:active{transform:translate(2px, 2px); box-shadow:none}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none; box-shadow:none}
+.btn.primary{background:var(--ink); color:var(--sheet)}
+.btn.primary:hover{background:color-mix(in srgb, var(--ink) 82%, var(--s1))}
+.btn.danger{color:var(--danger); border-color:var(--danger); box-shadow:2px 2px 0 var(--danger)}
+.btn.danger:hover{background:var(--danger); color:#fff}
+.btn.sm{font-size:14.5px; padding:5px 11px; box-shadow:1px 1px 0 var(--ink)}
+.btn.sm:active{transform:translate(1px, 1px); box-shadow:none}
+.btn.icon{padding:4px 9px}
+.btn.ghost{border-color:transparent; background:transparent; box-shadow:none}
+.btn.ghost:hover{background:var(--chip)}
+.btn-google{
+  display:inline-flex; align-items:center; gap:10px; font-size:17px; padding:12px 22px;
+  background:var(--sheet); border:1px solid var(--ink); font-weight:700; cursor:pointer; color:var(--ink);
+  box-shadow:var(--edge); font-family:var(--font-body);
+}
+.btn-google:hover{background:var(--chip)}
+.btn-google:active{transform:translate(2px, 2px); box-shadow:none}
+.btn-google svg{width:20px; height:20px}
+
+.seg{display:inline-flex; border:1px solid var(--ink); background:var(--sheet)}
+.seg button{
+  border:0; background:transparent; color:var(--ink); font-size:15px; font-weight:700;
+  padding:6px 12px; cursor:pointer; font-family:inherit; border-right:1px solid var(--rule);
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:var(--chip)}
+.seg button.on{background:var(--ink); color:var(--sheet)}
+
+/* ---------- formularioak ---------- */
+label.field{display:flex; flex-direction:column; gap:6px; font-size:15px; font-weight:700; color:var(--ink2)}
+input[type=text],input[type=date],input[type=number],input[type=search],select,textarea{
+  font-family:var(--font-body); font-size:16px; color:var(--ink);
+  background:var(--sheet); border:1px solid var(--ink3); padding:9px 11px; width:100%; border-radius:0;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--s1); outline-offset:0; border-color:var(--s1)}
+textarea{resize:vertical; min-height:80px; line-height:1.5}
+input.mono,select.mono{font-family:var(--font-code)}
+.inline-in{
+  border:1px solid transparent; background:transparent; padding:4px 6px; font-size:15.5px; width:100%;
+  font-family:inherit; color:var(--ink);
+}
+.inline-in:hover{border-color:var(--rule)}
+.inline-in:focus{border-color:var(--s1); background:var(--sheet)}
+
+/* ---------- modala ---------- */
+.modal-back{
+  position:fixed; inset:0; background:rgba(20,20,18,.45); z-index:100;
+  display:grid; place-items:center; padding:16px;
+}
+.modal{
+  background:var(--sheet); border:1px solid var(--ink); box-shadow:var(--shadow-lg);
+  width:min(560px, 100%); max-height:88vh; overflow:auto;
+}
+.modal-head{display:flex; align-items:center; gap:10px; padding:16px 20px; border-bottom:1px solid var(--rule)}
+.modal-head h3{font-size:24px; flex:1}
+.modal-body{padding:20px; display:flex; flex-direction:column; gap:14px}
+.modal-foot{display:flex; gap:12px; justify-content:flex-end; padding:14px 20px; border-top:1px solid var(--rule); background:var(--paper)}
+
+/* ---------- oharrak ---------- */
+#toasts{position:fixed; right:18px; bottom:18px; z-index:200; display:flex; flex-direction:column; gap:8px}
+.toast{
+  background:var(--ink); color:var(--sheet); padding:11px 16px; font-size:15.5px; font-weight:700;
+  max-width:360px; animation:tin .18s ease-out;
+}
+.toast.err{background:var(--danger); color:#fff}
+.toast.ok{background:var(--ok); color:#fff}
+@keyframes tin{from{opacity:0; transform:translateY(8px)}}
+
+.empty{
+  border:1px dashed var(--ink3); background:var(--sheet);
+  padding:36px 22px; text-align:center; color:var(--ink2);
+}
+.empty h3{font-size:24px; margin-bottom:6px; color:var(--ink)}
+
+.notice{background:var(--sheet); border:1px solid var(--rule); border-left:3px solid var(--ink); padding:12px 16px; font-size:16px}
+.notice.err{border-left-color:var(--danger)}
+
+/* ---------- taula ---------- */
+table.tbl{width:100%; border-collapse:collapse; font-size:15.5px}
+table.tbl th{
+  text-align:left; font-size:14px; color:var(--ink3); font-weight:700;
+  padding:10px 12px; border-bottom:1px solid var(--ink); white-space:nowrap;
+}
+table.tbl td{padding:9px 12px; border-bottom:1px solid var(--rule); vertical-align:middle}
+table.tbl tr:hover td{background:var(--paper)}
+
+/* ---------- kargatzea ---------- */
+.loading{display:grid; place-items:center; min-height:60vh; gap:12px; color:var(--ink3)}
+.spin{width:28px; height:28px; border:2px solid var(--rule); border-top-color:var(--ink); border-radius:50%; animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.save-state{font-size:14px; color:var(--ink3); white-space:nowrap}
+.save-state.saving{color:var(--s2-ink)}
+.save-state.saved{color:var(--ok)}
+.save-state.err{color:var(--danger)}
+
+/* ---------- saio-hasiera ---------- */
+.login{min-height:100vh; display:grid; place-items:center; padding:20px}
+.login-card{
+  width:min(480px,100%); background:var(--sheet); border:1px solid var(--ink);
+  box-shadow:var(--shadow-lg); padding:38px 32px; text-align:center;
+}
+.login-card h1{font-size:38px; margin-bottom:8px}
+.login-card p{color:var(--ink2); font-size:16px; margin:0 0 22px}
+.login-rule{height:1px; background:var(--rule); margin:22px 0}
+
+/* ---------- pantaila txikiak ---------- */
+@media (max-width:700px){
+  .hide-sm{display:none}
+  .topnav{order:3; flex:1 1 100%; justify-content:flex-start; gap:18px}
+  .topbar-in{padding:10px 16px}
+  .who{gap:6px}
+  .titleblock{margin-top:22px}
+  .wrap, .wrap-wide{padding:0 16px}
+  .modal-body{padding:16px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important}
+}
+
+@media print{
+  body{background:#fff !important}
+  .topbar,.no-print,.btn,#toasts{display:none !important}
+  .card,.proj{box-shadow:none}
+}

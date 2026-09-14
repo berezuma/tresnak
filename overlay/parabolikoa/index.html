@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Higidura parabolikoa</title>
+<meta name="description" content="Higidura parabolikoaren simulagailua: jaurtiketaren abiadura, angelua, altuera eta airearen marruskadura, 2Dn eta falta jaurtiketa batean 3Dn.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f9f8f5'/%3E%3Cpath d='M4 26 Q15 -4 28 26' fill='none' stroke='%23315eff' stroke-width='2.5'/%3E%3Cline x1='2' y1='27.5' x2='30' y2='27.5' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../oinarria/css/fonts.css">
+<link rel="stylesheet" href="../oinarria/css/app.css">
+<script src="../oinarria/vendor/chart-4.5.1.umd.min.js"></script>
+<script src="../oinarria/vendor/three-r128.min.js"></script>
+<style>
+  /* Higidura parabolikoa — Tresnak bildumaren diseinua (app.css-eko aldagaiak) */
+  .page{padding-block:34px 0}
+  .head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:18px 30px; margin-bottom:24px}
+  .head h1{font-size:clamp(34px, 5vw, 48px); line-height:1.1}
+  .lede{font-size:18px; color:var(--ink2); margin:8px 0 0; max-width:38em}
+  .seg button.active{background:var(--ink); color:var(--sheet)}
+
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+
+  /* kontrolak */
+  .controls{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:18px 28px; align-items:end;
+    padding:20px 22px; background:var(--sheet); border:1px solid var(--rule);
+  }
+  .ctl label{display:block; font-size:15px; font-weight:700; color:var(--ink2); margin-bottom:4px}
+  .ctl label small{font-size:14px; font-weight:400; color:var(--ink3)}
+  .ctl-in{display:flex; align-items:center; gap:12px}
+  .ctl-in input[type=number]{width:84px; flex:0 0 auto; padding:6px 8px; text-align:center; font-variant-numeric:tabular-nums}
+  .actions{grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:12px; padding-top:16px; border-top:1px solid var(--rule)}
+
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:24px; margin:0; background:transparent; cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:2px; background:var(--ink3)}
+  input[type=range]::-moz-range-track{height:2px; background:var(--ink3)}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; box-sizing:border-box; width:16px; height:16px; margin-top:-7px;
+    background:var(--sheet); border:2px solid var(--ink); box-shadow:1px 1px 0 var(--ink);
+  }
+  input[type=range]::-moz-range-thumb{box-sizing:border-box; width:16px; height:16px; border-radius:0; background:var(--sheet); border:2px solid var(--ink); box-shadow:1px 1px 0 var(--ink)}
+  input[type=range]:active::-webkit-slider-thumb{background:var(--ink)}
+  input[type=range]:active::-moz-range-thumb{background:var(--ink)}
+  input[type=range]:focus{outline:none}
+  input[type=range]:focus-visible{outline:2px solid var(--s1); outline-offset:2px}
+
+  /* eszenatokia */
+  .stage{display:grid; grid-template-columns:minmax(0, 3fr) minmax(0, 2fr); gap:20px; margin-top:20px}
+  .box{position:relative; background:var(--sheet); border:1px solid var(--rule)}
+  /* width:100% behar da: bestela grid-ean aspect-ratio-k zabalera altueratik (min-height) kalkulatzen du */
+  .traj{width:100%; aspect-ratio:180 / 100; min-height:300px; max-width:100%}
+  .traj canvas{position:absolute; top:0; left:0; display:block}
+  .box-label{position:absolute; top:10px; right:12px; font-size:14px; font-weight:700; color:var(--s4); pointer-events:none}
+  .analysis{display:flex; flex-direction:column; padding:14px 16px; min-height:300px}
+  .axis-pick{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; font-size:15px; margin-bottom:8px}
+  .axis-pick select{width:auto; padding:5px 8px; font-size:15px}
+  .chart-wrap{flex:1 1 auto; position:relative; min-height:240px}
+
+  /* emaitzak */
+  .results{display:flex; flex-wrap:wrap; overflow:hidden; margin-top:20px; background:var(--sheet); border:1px solid var(--ink); box-shadow:var(--edge)}
+  .stat{flex:1 1 190px; margin:0 0 -1px -1px; padding:12px 18px; border-left:1px solid var(--rule); border-bottom:1px solid var(--rule)}
+  .stat span{display:block; font-size:14px; color:var(--ink2)}
+  .stat b{font-size:26px; line-height:1.3; font-variant-numeric:tabular-nums}
+  .stat small{font-size:15px; font-weight:400; color:var(--ink3)}
+
+  /* azalpenak */
+  .explain{margin-top:20px; background:var(--sheet); border:1px solid var(--rule)}
+  .explain-toggle{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
+    padding:14px 18px; background:transparent; border:0; color:var(--ink); font:inherit; text-align:left; cursor:pointer;
+  }
+  .explain-toggle:hover{background:var(--chip)}
+  .explain-title{font-family:var(--font-display); font-size:22px; line-height:1.2}
+  .explain-toggle svg{width:22px; height:22px; flex:0 0 auto; transition:transform .2s}
+  .explain-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+  .explain-body{padding:0 18px 20px; border-top:1px solid var(--rule)}
+
+  .calc{display:flex; flex-direction:column; gap:26px; padding-top:18px}
+  .calc h4{font-size:22px; margin:0 0 4px}
+  .calc p{margin:0}
+  .calc .note{font-size:15.5px; color:var(--ink2); margin-bottom:10px}
+  .calc .sheet{display:flex; flex-direction:column; gap:6px; padding:14px 16px; background:var(--paper); border-left:3px solid var(--ink)}
+  .calc .sheet .note{margin:8px 0 0; font-size:14.5px}
+  .calc .sub{font-weight:700; margin-top:10px}
+  .calc .sub:first-child{margin-top:0}
+  .calc .f{font-family:var(--font-code); font-size:14.5px; overflow-wrap:anywhere}
+  .calc .f.in{padding-left:18px}
+  .calc .v{color:var(--s1); font-weight:700}
+  .calc .v.ok{color:var(--ok)}
+  .calc .v.bad{color:var(--danger)}
+  .calc ol{margin:0; padding-left:22px; display:flex; flex-direction:column; gap:8px; font-size:15.5px}
+  .calc ul{list-style:none; margin:4px 0 0; padding-left:12px}
+  .calc code{font-family:var(--font-code); font-size:.9em; background:var(--chip); padding:0 4px}
+
+  /* 3D */
+  .pitch{height:520px; margin-top:20px; overflow:hidden}
+  .pitch canvas{display:block; width:100%; height:100%; touch-action:none}
+  .verdict{
+    position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); z-index:2;
+    font-family:var(--font-display); font-size:clamp(36px, 7vw, 64px); line-height:1.15; white-space:nowrap;
+    padding:6px 28px; background:var(--sheet); border:1px solid var(--ink); box-shadow:var(--shadow-lg);
+    pointer-events:none; opacity:0; transition:opacity .4s;
+  }
+  .verdict.on{opacity:1}
+
+  .foot{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 24px;
+    margin-top:44px; padding-block:22px 34px; border-top:1px solid var(--rule); font-size:15px; color:var(--ink3);
+  }
+  .foot p{margin:0}
+  .foot a{color:inherit}
+  .share{display:flex; align-items:center; gap:10px}
+
+  @media (max-width:1000px){ .stage{grid-template-columns:minmax(0, 1fr)} }
+  @media (min-width:768px){ .traj, .analysis{min-height:460px} }
+  @media (max-width:700px){ .pitch{height:380px} .actions{justify-content:flex-start} }
+</style>
+</head>
+<body>
+
+<main class="wrap page">
+  <div class="head">
+    <div>
+      <h1>Higidura parabolikoa</h1>
+      <p class="lede">Jaurti baloi bat eta ikusi nola aldatzen duten ibilbidea abiadurak, angeluak, altuerak eta airearen marruskadurak.</p>
+    </div>
+    <div class="seg" role="tablist" aria-label="Simulagailua">
+      <button id="tab-2d" class="tab-button active" role="tab" aria-selected="true">2D simulagailua</button>
+      <button id="tab-3d" class="tab-button" role="tab" aria-selected="false">Falta jaurtiketa (3D)</button>
+    </div>
+  </div>
+
+  <!-- 2D simulagailua -->
+  <section id="content-2d" class="tab-content active">
+    <div class="controls">
+      <div class="ctl">
+        <label for="launchSpeed">Jaurtiketaren abiadura <small>m/s</small></label>
+        <div class="ctl-in">
+          <input type="range" id="launchSpeed" min="10" max="40" value="25">
+          <input type="number" id="launchSpeedValue" value="25" aria-label="Jaurtiketaren abiadura (m/s)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="launchAngle">Jaurtiketaren angelua <small>°</small></label>
+        <div class="ctl-in">
+          <input type="range" id="launchAngle" min="0" max="90" value="35">
+          <input type="number" id="launchAngleValue" value="35" aria-label="Jaurtiketaren angelua (°)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="launchHeight">Hasierako altuera <small>m</small></label>
+        <div class="ctl-in">
+          <input type="range" id="launchHeight" min="0" max="10" value="0" step="0.1">
+          <input type="number" id="launchHeightValue" value="0" step="0.1" aria-label="Hasierako altuera (m)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="airDrag">Airearen marruskadura <small>kg/s</small></label>
+        <div class="ctl-in">
+          <input type="range" id="airDrag" min="0" max="0.02" step="0.001" value="0.007">
+          <input type="number" id="airDragValue" value="0.007" step="0.001" aria-label="Airearen marruskadura (kg/s)">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="launchButton2D" class="btn primary">Jaurti</button>
+        <button id="resetButton2D" class="btn">Berrezarri</button>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="box traj">
+        <div class="box-label">Azelerazioa: 9.81 m/s² (behera) ↓</div>
+        <canvas id="trajectoryCanvas"></canvas>
+      </div>
+      <div class="box analysis">
+        <div class="axis-pick">
+          <select id="yAxisSelect" aria-label="Ardatz bertikala">
+            <option value="range">Iritsiera</option>
+            <option value="maxHeight">Altuera maximoa</option>
+            <option value="time">Hegaldiaren denbora</option>
+          </select>
+          <span class="dim">vs.</span>
+          <select id="xAxisSelect" aria-label="Ardatz horizontala">
+            <option value="angle">Jaurtiketa angelua</option>
+            <option value="speed">Jaurtiketa abiadura</option>
+          </select>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="analysisCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div id="results2D" class="results">
+      <div class="stat"><span>Hegaldiaren denbora</span><b id="timeOfFlight">0.00</b> <small>s</small></div>
+      <div class="stat"><span>Iritsiera</span><b id="range">0.00</b> <small>m</small></div>
+      <div class="stat"><span>Altuera maximoa</span><b id="maxHeight">0.00</b> <small>m</small></div>
+    </div>
+
+    <div class="explain">
+      <button id="toggleFormulasButton" class="explain-toggle" aria-expanded="false" aria-controls="formulasContent">
+        <span class="explain-title">Nola kalkulatzen da? Formulak eta azalpenak</span>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="formulasContent" class="explain-body" hidden>
+        <div id="calculationBreakdown" class="calc">
+          <p class="note">Egin jaurtiketa bat kalkulu zehatzak hemen ikusteko.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3D simulagailua -->
+  <section id="content-3d" class="tab-content">
+    <div class="controls">
+      <div class="ctl">
+        <label for="ballPosX">Posizioa X <small>m</small></label>
+        <div class="ctl-in">
+          <input type="range" id="ballPosX" min="-20" max="20" value="0" step="0.5">
+          <input type="number" id="ballPosXValue" value="0" step="0.5" aria-label="Posizioa X (m)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="ballDist">Distantzia ateraino <small>m</small></label>
+        <div class="ctl-in">
+          <input type="range" id="ballDist" min="16.5" max="35" value="25" step="0.5">
+          <input type="number" id="ballDistValue" value="25" step="0.5" aria-label="Distantzia ateraino (m)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="launchSpeed3D">Abiadura <small>m/s</small></label>
+        <div class="ctl-in">
+          <input type="range" id="launchSpeed3D" min="10" max="40" value="28">
+          <input type="number" id="launchSpeedValue3D" value="28" aria-label="Abiadura (m/s)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="verticalAngle3D">Altuera angelua <small>°</small></label>
+        <div class="ctl-in">
+          <input type="range" id="verticalAngle3D" min="5" max="45" value="18">
+          <input type="number" id="verticalAngleValue3D" value="18" aria-label="Altuera angelua (°)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="horizontalAngle3D">Norabide angelua <small>°</small></label>
+        <div class="ctl-in">
+          <input type="range" id="horizontalAngle3D" min="-60" max="60" value="0" step="0.5">
+          <input type="number" id="horizontalAngleValue3D" value="0" step="0.5" aria-label="Norabide angelua (°)">
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="airDrag3D">Airearen marruskadura <small>kg/s</small></label>
+        <div class="ctl-in">
+          <input type="range" id="airDrag3D" min="0" max="0.02" step="0.001" value="0.007">
+          <input type="number" id="airDragValue3D" value="0.007" step="0.001" aria-label="Airearen marruskadura (kg/s)">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="launchButton3D" class="btn primary">Jaurti</button>
+        <button id="resetButton3D" class="btn">Berrezarri</button>
+      </div>
+    </div>
+
+    <div class="box pitch">
+      <div id="result-3d-overlay" class="verdict" aria-live="polite"></div>
+      <canvas id="threejs-canvas" aria-label="Falta jaurtiketaren 3D eszena: arrastatu kamera biratzeko"></canvas>
+    </div>
+
+    <div id="results3D" class="results">
+      <div class="stat"><span>Hegaldiaren denbora</span><b id="timeOfFlight3D">0.00</b> <small>s</small></div>
+      <div class="stat"><span>Altuera maximoa</span><b id="maxHeight3D">0.00</b> <small>m</small></div>
+      <div class="stat"><span>Abiadura atean</span><b id="velocityAtGoal3D">0.00</b> <small>km/h</small></div>
+      <div class="stat"><span>Hasierako energia zinetikoa</span><b id="initialKE3D">0.00</b> <small>J</small></div>
+    </div>
+
+    <div class="explain">
+      <button id="toggleFormulasButton3D" class="explain-toggle" aria-expanded="false" aria-controls="formulasContent3D">
+        <span class="explain-title">Nola kalkulatzen da? Formulak eta azalpenak</span>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div id="formulasContent3D" class="explain-body" hidden>
+        <div id="calculationBreakdown3D" class="calc">
+          <p class="note">Egin jaurtiketa bat kalkulu zehatzak hemen ikusteko.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>Egilea: <a href="https://berezuma.com">Beñat Erezuma Arisketa</a> · Lizentzia: <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.eu">CC BY-SA 4.0</a></p>
+    <div class="share">
+      <span id="shareMessage" class="dim" hidden>Esteka kopiatuta</span>
+      <button id="shareButton" class="btn sm">Partekatu esteka</button>
+    </div>
+  </footer>
+</main>
+
+<script type="module">
+    // --- DISEINUAREN KOLOREAK (app.css-eko aldagaiak; gai argia eta iluna) ---
+    const tok = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    function alpha(hex, a) {
+        const n = parseInt(hex.replace('#', ''), 16);
+        return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+    }
+
+    // --- FITXA-SISTEMAREN LOGIKA ---
+    const tab2D = document.getElementById('tab-2d');
+    const tab3D = document.getElementById('tab-3d');
+    const content2D = document.getElementById('content-2d');
+    const content3D = document.getElementById('content-3d');
+
+    let threeJSApp;
+
+    function setActiveTab(activeTab) {
+        [tab2D, tab3D].forEach(tab => { tab.classList.remove('active'); tab.setAttribute('aria-selected', 'false'); });
+        [content2D, content3D].forEach(content => content.style.display = 'none');
+        if (threeJSApp) threeJSApp.stop();
+
+        activeTab.button.classList.add('active');
+        activeTab.button.setAttribute('aria-selected', 'true');
+        activeTab.content.style.display = 'block';
+        if (activeTab.app && activeTab.app.start) {
+            activeTab.app.start();
+        }
+    }
+
+    tab2D.addEventListener('click', () => setActiveTab({ button: tab2D, content: content2D }));
+    tab3D.addEventListener('click', () => {
+        if (!threeJSApp) threeJSApp = new ThreeJSApp();
+        setActiveTab({ button: tab3D, content: content3D, app: threeJSApp });
+    });
+
+    // --- PARTEKATZEKO LOGIKA ---
+    const shareButton = document.getElementById('shareButton');
+    const shareMessage = document.getElementById('shareMessage');
+
+    function copyWithTextarea(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try { document.execCommand('copy'); } finally { document.body.removeChild(textarea); }
+    }
+
+    shareButton.addEventListener('click', async () => {
+        const url = window.location.href;
+        try {
+            if (navigator.clipboard) await navigator.clipboard.writeText(url);
+            else copyWithTextarea(url);
+        } catch (err) {
+            copyWithTextarea(url);
+        }
+        shareMessage.hidden = false;
+        setTimeout(() => { shareMessage.hidden = true; }, 2000);
+    });
+
+    function linkToggle(button, content) {
+        button.addEventListener('click', () => {
+            content.hidden = !content.hidden;
+            button.setAttribute('aria-expanded', String(!content.hidden));
+        });
+    }
+
+    // --- 2D SIMULAGAILUAREN KODEA ---
+    // --- ELEMENTUAK LORTU ---
+    const trajectoryCanvas = document.getElementById('trajectoryCanvas');
+    const trajectoryCtx = trajectoryCanvas.getContext('2d');
+    const analysisCanvas = document.getElementById('analysisCanvas');
+
+    // Formula atalaren interaktibitatea
+    const calculationBreakdownEl = document.getElementById('calculationBreakdown');
+    linkToggle(document.getElementById('toggleFormulasButton'), document.getElementById('formulasContent'));
+
+    // Kontrolak
+    const launchSpeedSlider = document.getElementById('launchSpeed');
+    const launchSpeedValue = document.getElementById('launchSpeedValue');
+    const launchAngleSlider = document.getElementById('launchAngle');
+    const launchAngleValue = document.getElementById('launchAngleValue');
+    const airDragSlider = document.getElementById('airDrag');
+    const airDragValue = document.getElementById('airDragValue');
+    const launchHeightSlider = document.getElementById('launchHeight');
+    const launchHeightValue = document.getElementById('launchHeightValue');
+
+    // Botoiak
+    const launchButton2D = document.getElementById('launchButton2D');
+    const resetButton2D = document.getElementById('resetButton2D');
+
+    // Emaitzak
+    const timeOfFlightEl = document.getElementById('timeOfFlight');
+    const rangeEl = document.getElementById('range');
+    const maxHeightEl = document.getElementById('maxHeight');
+
+    // Analisi Grafikoaren Aukerak
+    const yAxisSelect = document.getElementById('yAxisSelect');
+    const xAxisSelect = document.getElementById('xAxisSelect');
+
+    // --- ALDAGAI GLOBALAK ETA KONSTANTEAK ---
+    const g = 9.81; // Grabitatea
+    const mass = 0.45; // Futbol baloi baten masa (kg)
+    const WORLD_WIDTH = 180; // Munduaren zabalera metrotan
+    const WORLD_HEIGHT = 100; // Munduaren altuera metrotan
+
+    let scale = 1;  // Metroak pixel bihurtzeko eskala
+    let originX = 0, originY = 0; // (0,0) puntuaren kokapena pixeletan
+
+    let projectile = {};
+    let trajectoryPath = [];
+    let animationFrameId;
+    let isRunning2D = false;
+    let lastTime = 0;
+
+    let analysisChart;
+
+    function init2D() {
+        updateCanvasDimensions();
+        setupAnalysisChart();
+        setupEventListeners2D();
+        resetSimulation2D();
+    }
+
+    function updateCanvasDimensions() {
+        if (!trajectoryCanvas.parentElement) return;
+        const trajectoryContainer = trajectoryCanvas.parentElement;
+
+        const dpr = window.devicePixelRatio || 1;
+        const rect = trajectoryContainer.getBoundingClientRect();
+        // ertzaren 1px-ak kanpoan utzi, canvas-a koadroaren barruan gera dadin
+        const width = trajectoryContainer.clientWidth || rect.width;
+        const height = trajectoryContainer.clientHeight || rect.height;
+
+        trajectoryCanvas.width = width * dpr;
+        trajectoryCanvas.height = height * dpr;
+        trajectoryCtx.scale(dpr, dpr);
+        trajectoryCanvas.style.width = `${width}px`;
+        trajectoryCanvas.style.height = `${height}px`;
+
+        const logicalWidth = width;
+        const logicalHeight = height;
+
+        const scaleX = logicalWidth * 0.9 / WORLD_WIDTH;
+        const scaleY = logicalHeight * 0.9 / WORLD_HEIGHT;
+        scale = Math.min(scaleX, scaleY);
+        if (scale <= 0 || !isFinite(scale)) {
+            scale = 10;
+        }
+        originX = Math.max(logicalWidth * 0.05, 32); // mugikorrean ardatzeko zenbakiak ez mozteko
+        originY = logicalHeight * 0.95;
+    }
+
+    function setupAnalysisChart() {
+        if (analysisChart) analysisChart.destroy();
+        const analysisCtx = analysisCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const s1 = tok('--s1'), ink2 = tok('--ink2'), ink3 = tok('--ink3'), grid = tok('--grid');
+        Chart.defaults.font.family = '"Lato", system-ui, -apple-system, "Segoe UI", sans-serif';
+        Chart.defaults.font.size = 13;
+        analysisChart = new Chart(analysisCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Analisia', data: [], borderColor: s1, backgroundColor: alpha(s1, 0.12), fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, pointBackgroundColor: s1, }] },
+            options: {
+                responsive: true, maintainAspectRatio: false, devicePixelRatio: dpr, animation: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { title: { display: true, text: 'X ardatza', color: ink2 }, ticks: { color: ink3, maxTicksLimit: 10 }, grid: { color: grid }, border: { color: ink3 } },
+                    y: { title: { display: true, text: 'Y ardatza', color: ink2 }, ticks: { color: ink3 }, grid: { color: grid }, border: { color: ink3 }, beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    function setupEventListeners2D() {
+        linkSliderAndInput(launchSpeedSlider, launchSpeedValue, () => { updateAnalysisGraph(); draw2D(); });
+        linkSliderAndInput(launchAngleSlider, launchAngleValue, () => { updateAnalysisGraph(); draw2D(); });
+        linkSliderAndInput(launchHeightSlider, launchHeightValue, () => { updateAnalysisGraph(); draw2D(); });
+        linkSliderAndInput(airDragSlider, airDragValue, updateAnalysisGraph);
+
+        launchButton2D.addEventListener('click', launch2D);
+        resetButton2D.addEventListener('click', resetSimulation2D);
+
+        xAxisSelect.addEventListener('change', updateAnalysisGraph);
+        yAxisSelect.addEventListener('change', updateAnalysisGraph);
+
+        // Ibilbidearen koadroa bakarrik neurtu: grafikoak (Chart.js) bere tamaina berak kudeatzen du
+        new ResizeObserver(() => {
+            requestAnimationFrame(() => {
+                if (content2D.offsetParent !== null) {
+                    updateCanvasDimensions();
+                    draw2D();
+                }
+            });
+        }).observe(trajectoryCanvas.parentElement);
+
+        // Gai argia/iluna aldatzean koloreak berriro hartu
+        matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            setupAnalysisChart();
+            updateAnalysisGraph();
+            draw2D();
+            if (threeJSApp) threeJSApp.applyTheme();
+        });
+    }
+
+    function linkSliderAndInput(slider, input, callback) {
+        slider.addEventListener('input', () => { input.value = slider.value; if (callback) callback(); });
+        input.addEventListener('change', () => { slider.value = input.value; if (callback) callback(); });
+    }
+
+    function launch2D() {
+        if (isRunning2D) return;
+
+        isRunning2D = true;
+        calculationBreakdownEl.innerHTML = "<p class='note'>Kalkulatzen...</p>";
+
+        const v0 = parseFloat(launchSpeedValue.value);
+        const angleRad = parseFloat(launchAngleValue.value) * Math.PI / 180;
+        const h0 = parseFloat(launchHeightValue.value);
+        const k = parseFloat(airDragValue.value);
+
+        projectile = { x: 0, y: h0, vx: v0 * Math.cos(angleRad), vy: v0 * Math.sin(angleRad), drag: k, time: 0, maxHeight: h0 };
+        trajectoryPath = [{ x: 0, y: h0 }];
+        lastTime = 0;
+
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(animationLoop2D);
+    }
+
+    function resetSimulation2D() {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        isRunning2D = false;
+
+        launchSpeedSlider.value = 25; launchSpeedValue.value = 25;
+        launchAngleSlider.value = 35; launchAngleValue.value = 35;
+        airDragSlider.value = 0.007; airDragValue.value = 0.007;
+        launchHeightSlider.value = 0; launchHeightValue.value = 0;
+
+        trajectoryPath = [];
+        projectile = {};
+
+        timeOfFlightEl.textContent = '0.00';
+        rangeEl.textContent = '0.00';
+        maxHeightEl.textContent = '0.00';
+
+        calculationBreakdownEl.innerHTML = "<p class='note'>Egin jaurtiketa bat kalkulu zehatzak hemen ikusteko.</p>";
+        updateAnalysisGraph();
+        draw2D();
+    }
+
+    function animationLoop2D(currentTime) {
+        if (!isRunning2D) return;
+        if (lastTime === 0) lastTime = currentTime;
+        const dt = (currentTime - lastTime) / 1000;
+        lastTime = currentTime;
+
+        const dragForceX = -projectile.drag * projectile.vx;
+        const dragForceY = -projectile.drag * projectile.vy;
+
+        const ax = dragForceX / mass;
+        const ay = -g + (dragForceY / mass);
+
+        projectile.vx += ax * dt;
+        projectile.vy += ay * dt;
+        projectile.x += projectile.vx * dt;
+        projectile.y += projectile.vy * dt;
+        projectile.time += dt;
+
+        if (projectile.y > projectile.maxHeight) {
+            projectile.maxHeight = projectile.y;
+        }
+
+        trajectoryPath.push({ x: projectile.x, y: projectile.y });
+        draw2D();
+
+        if (projectile.y < 0 && trajectoryPath.length > 1) {
+            isRunning2D = false;
+            const v0 = parseFloat(launchSpeedValue.value);
+            const angle = parseFloat(launchAngleValue.value);
+            const k = parseFloat(airDragValue.value);
+            const h0 = parseFloat(launchHeightValue.value);
+            const angleRad = angle * Math.PI / 180;
+            let finalX, finalTime, finalMaxHeight;
+            if (k === 0) {
+                const v0x = v0 * Math.cos(angleRad); const v0y = v0 * Math.sin(angleRad);
+                finalTime = (v0y + Math.sqrt(v0y*v0y + 2*g*h0)) / g;
+                finalX = v0x * finalTime;
+                finalMaxHeight = h0 + (v0y * v0y) / (2 * g);
+                if (trajectoryPath.length > 0) { trajectoryPath[trajectoryPath.length - 1] = { x: finalX, y: 0 };}
+            } else {
+                const lastPoint = trajectoryPath[trajectoryPath.length - 2]; const currentPoint = trajectoryPath[trajectoryPath.length - 1];
+                const r = -lastPoint.y / (currentPoint.y - lastPoint.y);
+                finalX = lastPoint.x + r * (currentPoint.x - lastPoint.x); finalTime = projectile.time; finalMaxHeight = projectile.maxHeight;
+                 if (trajectoryPath.length > 0) { trajectoryPath[trajectoryPath.length - 1] = { x: finalX, y: 0 };}
+            }
+            timeOfFlightEl.textContent = finalTime.toFixed(2); rangeEl.textContent = finalX.toFixed(2); maxHeightEl.textContent = finalMaxHeight.toFixed(2);
+            updateFormulaExplanation({ v0, angle, h0, k }, { time: finalTime, range: finalX, maxHeight: finalMaxHeight });
+            draw2D();
+        } else {
+            animationFrameId = requestAnimationFrame(animationLoop2D);
+        }
+    }
+
+    function updateFormulaExplanation(inputs, results) {
+        const { v0, angle, h0, k } = inputs;
+        const angleRad = angle * Math.PI / 180;
+        const v0x = v0 * Math.cos(angleRad);
+        const v0y = v0 * Math.sin(angleRad);
+        const idealMaxHeight = h0 + (v0y * v0y) / (2 * g);
+        const idealTime = (v0y + Math.sqrt(v0y * v0y + 2 * g * h0)) / g;
+        const idealRange = v0x * idealTime;
+        let html = '<div>' +
+            '<h4>1. kasua: kalkulu ideala (marruskadurarik gabe)</h4>' +
+            '<p class="note">Hau da lortuko litzatekeen emaitza airearen erresistentziarik egongo ez balitz. Konparatzeko baliagarria da.</p>' +
+            '<div class="sheet">' +
+                '<p class="sub">Hasierako datuak:</p>' +
+                '<p class="f">v₀ = ' + v0 + ' m/s, θ = ' + angle + '°, h₀ = ' + h0 + ' m, g = ' + g + ' m/s²</p>' +
+                '<p class="f">v₀ₓ = ' + v0 + ' * cos(' + angle + '°) = ' + v0x.toFixed(2) + ' m/s</p>' +
+                '<p class="f">v₀y = ' + v0 + ' * sin(' + angle + '°) = ' + v0y.toFixed(2) + ' m/s</p>' +
+                '<p class="sub">Kalkuluak:</p>' +
+                '<p class="f"><b>Altuera maximoa:</b> h_max = h₀ + (v₀y)² / (2g) = ' + h0 + ' + (' + v0y.toFixed(2) + ')² / (2 * ' + g + ') = <b class="v ok">' + idealMaxHeight.toFixed(2) + ' m</b></p>' +
+                '<p class="f"><b>Hegaldiaren denbora:</b> T = (v₀y + √(v₀y² + 2gh₀)) / g = (' + v0y.toFixed(2) + ' + √(' + v0y.toFixed(2) + '² + 2*' + g + '*' + h0 + ')) / ' + g + ' = <b class="v ok">' + idealTime.toFixed(2) + ' s</b></p>' +
+                '<p class="f"><b>Iritsiera:</b> R = v₀ₓ * T = ' + v0x.toFixed(2) + ' * ' + idealTime.toFixed(2) + ' = <b class="v ok">' + idealRange.toFixed(2) + ' m</b></p>' +
+            '</div>' +
+        '</div>';
+
+        if (k > 0) {
+            html += '<div>' +
+                '<h4>2. kasua: benetako emaitza (marruskadurarekin)</h4>' +
+                '<p class="note">Airearen marruskadurarekin, ez dago emaitza zuzenean ematen duen formula sinplerik. Horren ordez, simulagailuak ordenagailuaren kalkulu-ahalmena erabiltzen du ibilbidea "urratsez urrats" eraikitzeko, denbora-tarte oso txikietan (<code>dt</code>). Prozesu honi <strong>zenbakizko integrazioa</strong> deitzen zaio.</p>' +
+                '<div class="sheet">' +
+                    '<p class="sub">Kalkulu prozesua (begizta batean errepikatua):</p>' +
+                    '<ol>' +
+                        '<li><strong>Indarrak kalkulatu:</strong> Une bakoitzean, bi indar nagusi daude:' +
+                            '<ul>' +
+                                '<li>– Grabitatea (beti behera): <code>Fg = m * g</code> = ' + mass + ' * ' + g + ' = ' + (mass * g).toFixed(2) + ' N</li>' +
+                                '<li>– Airearen marruskadura (abiaduraren aurka): <code>F_drag ≈ -k * v²</code></li>' +
+                            '</ul>' +
+                        '</li>' +
+                        '<li><strong>Azelerazioa kalkulatu:</strong> Newtonen bigarren legea (F=ma) erabiliz, indar guztien batura egiten da:' +
+                            '<ul>' +
+                                '<li><code>a_x = F_drag_x / m</code></li>' +
+                                '<li><code>a_y = (-Fg + F_drag_y) / m</code></li>' +
+                            '</ul>' +
+                        '</li>' +
+                        '<li><strong>Abiadura eta posizioa eguneratu:</strong> Aurreko azelerazioarekin, hurrengo unean (<code>t + dt</code>) abiadura eta posizio berria kalkulatzen dira.</li>' +
+                    '</ol>' +
+                    '<p class="note">* Prozesu hau segundoko dozenaka aldiz errepikatzen da proiektilak lurra jo arte. Horrela lortzen da ibilbide zehatza.</p>' +
+                '</div>' +
+                '<p class="sub" style="margin:16px 0 8px">Simulazioaren emaitza:</p>' +
+                '<div class="sheet">' +
+                    '<p class="f"><b>Altuera maximoa:</b> <b class="v">' + results.maxHeight.toFixed(2) + ' m</b></p>' +
+                    '<p class="f"><b>Hegaldiaren denbora:</b> <b class="v">' + results.time.toFixed(2) + ' s</b></p>' +
+                    '<p class="f"><b>Iritsiera:</b> <b class="v">' + results.range.toFixed(2) + ' m</b></p>' +
+                '</div>' +
+            '</div>';
+        } else {
+            html += '<div>' +
+                '<h4>2. kasua: benetako emaitza (marruskadurarik gabe)</h4>' +
+                '<p class="note">Airearen marruskadura zero denez (k = 0), simulazioaren emaitzak eta kalkulu idealak bat datoz.</p>' +
+            '</div>';
+        }
+        calculationBreakdownEl.innerHTML = html;
+    }
+
+    function draw2D() {
+        if (!trajectoryCtx) return;
+        const dpr = window.devicePixelRatio || 1;
+        const logicalWidth = trajectoryCanvas.width / dpr;
+        const logicalHeight = trajectoryCanvas.height / dpr;
+
+        trajectoryCtx.clearRect(0, 0, logicalWidth, logicalHeight);
+
+        drawGridAndAxes2D();
+
+        trajectoryCtx.save();
+        trajectoryCtx.beginPath();
+        trajectoryCtx.rect(originX, 0, logicalWidth - originX, originY);
+        trajectoryCtx.clip();
+
+        trajectoryCtx.beginPath();
+        trajectoryCtx.strokeStyle = tok('--s1');
+        trajectoryCtx.lineWidth = 2.5;
+        trajectoryPath.forEach((p, index) => {
+            const px = originX + p.x * scale;
+            const py = originY - p.y * scale;
+            if (index === 0) trajectoryCtx.moveTo(px, py);
+            else trajectoryCtx.lineTo(px, py);
+        });
+        trajectoryCtx.stroke();
+
+        if (isRunning2D) {
+            const px = originX + projectile.x * scale;
+            const py = originY - projectile.y * scale;
+            trajectoryCtx.beginPath();
+            trajectoryCtx.arc(px, py, 6, 0, 2 * Math.PI);
+            trajectoryCtx.fillStyle = tok('--sheet');
+            trajectoryCtx.fill();
+            trajectoryCtx.strokeStyle = tok('--ink');
+            trajectoryCtx.lineWidth = 2;
+            trajectoryCtx.stroke();
+        }
+
+        trajectoryCtx.restore();
+
+        if (!isRunning2D && trajectoryPath.length === 0) {
+            drawInitialVector2D();
+        }
+    }
+
+    function drawGridAndAxes2D() {
+        if (!isFinite(scale) || scale <= 0) return;
+
+        const dpr = window.devicePixelRatio || 1;
+        const logicalWidth = trajectoryCanvas.width / dpr;
+        const logicalHeight = trajectoryCanvas.height / dpr;
+
+        trajectoryCtx.strokeStyle = tok('--grid');
+        trajectoryCtx.fillStyle = tok('--ink3');
+        trajectoryCtx.font = '12px Lato, system-ui, sans-serif';
+        trajectoryCtx.lineWidth = 1;
+
+        // Ardatz horizontala (X)
+        let xStep = 20;
+        for (let x = 0; x <= WORLD_WIDTH; x += xStep) {
+            const px = originX + x * scale;
+            if (px > logicalWidth) break;
+            trajectoryCtx.beginPath();
+            trajectoryCtx.moveTo(px, 0);
+            trajectoryCtx.lineTo(px, logicalHeight);
+            trajectoryCtx.stroke();
+            if (x > 0) trajectoryCtx.fillText(x.toFixed(0), px + 5, originY - 5);
+        }
+
+        // Ardatz bertikala (Y)
+        let yStep = 10;
+        trajectoryCtx.textAlign = "right";
+        trajectoryCtx.textBaseline = "middle";
+        for (let y = 0; y <= WORLD_HEIGHT; y += yStep) {
+            const py = originY - y * scale;
+            if (py < 0) break;
+            trajectoryCtx.beginPath();
+            trajectoryCtx.moveTo(0, py);
+            trajectoryCtx.lineTo(logicalWidth, py);
+            trajectoryCtx.stroke();
+            if (y > 0) trajectoryCtx.fillText(y.toFixed(0), originX - 8, py);
+        }
+        trajectoryCtx.textAlign = "start";
+        trajectoryCtx.textBaseline = "alphabetic";
+
+        // Ardatz nagusiak marraztu
+        trajectoryCtx.strokeStyle = tok('--ink');
+        trajectoryCtx.beginPath();
+        trajectoryCtx.moveTo(originX, 0);
+        trajectoryCtx.lineTo(originX, logicalHeight);
+        trajectoryCtx.moveTo(0, originY);
+        trajectoryCtx.lineTo(logicalWidth, originY);
+        trajectoryCtx.stroke();
+    }
+
+    function drawInitialVector2D() {
+        const v0 = parseFloat(launchSpeedValue.value); const angleRad = parseFloat(launchAngleValue.value) * Math.PI / 180; const h0 = parseFloat(launchHeightValue.value);
+        const vx = v0 * Math.cos(angleRad); const vy = v0 * Math.sin(angleRad);
+        const startX = originX; const startY = originY - h0 * scale; const vectorScale = scale * 0.5;
+        const endX = startX + vx * vectorScale; const endY = startY - vy * vectorScale;
+        trajectoryCtx.beginPath(); trajectoryCtx.moveTo(startX, startY); trajectoryCtx.lineTo(endX, endY); trajectoryCtx.strokeStyle = tok('--s1'); trajectoryCtx.lineWidth = 2.5; trajectoryCtx.stroke();
+        const headlen = 10; const angle = Math.atan2(endY - startY, endX - startX);
+        trajectoryCtx.beginPath(); trajectoryCtx.moveTo(endX, endY); trajectoryCtx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
+        trajectoryCtx.moveTo(endX, endY); trajectoryCtx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
+        trajectoryCtx.stroke();
+    }
+
+    function updateAnalysisGraph() {
+        const xAxisType = xAxisSelect.value; const yAxisType = yAxisSelect.value;
+        const labels = []; const data = []; const steps = 50;
+        const h0 = parseFloat(launchHeightValue.value);
+        const k = parseFloat(airDragValue.value);
+        const maxSpeed = 40;
+        if (xAxisType === 'angle') { const v0 = parseFloat(launchSpeedValue.value); for (let i = 0; i <= steps; i++) { const angle = (90 / steps) * i; labels.push(angle.toFixed(1)); const result = runSilentSimulation(v0, angle, h0, k); data.push(result[yAxisType]); } }
+        else { const angle = parseFloat(launchAngleValue.value); for (let i = 1; i <= steps; i++) { const v0 = (maxSpeed / steps) * i; labels.push(v0.toFixed(1)); const result = runSilentSimulation(v0, angle, h0, k); data.push(result[yAxisType]); } }
+        analysisChart.data.labels = labels; analysisChart.data.datasets[0].data = data;
+        analysisChart.options.scales.x.title.text = xAxisType === 'angle' ? 'Jaurtiketa angelua (°)' : 'Jaurtiketa abiadura (m/s)';
+        analysisChart.options.scales.y.title.text = yAxisType === 'range' ? 'Iritsiera (m)' : yAxisType === 'maxHeight' ? 'Altuera maximoa (m)' : 'Hegaldiaren denbora (s)';
+        analysisChart.update();
+    }
+
+    function runSilentSimulation(v0, angle, h0, k) {
+        const angleRad = angle * Math.PI / 180;
+        let p = { x: 0, y: h0, vx: v0 * Math.cos(angleRad), vy: v0 * Math.sin(angleRad), maxHeight: h0 };
+        const dt = 0.01; let time = 0;
+        while (p.y >= 0 || time === 0) {
+            const dragForceX = -k * p.vx;
+            const dragForceY = -k * p.vy;
+            const ax = dragForceX / mass;
+            const ay = -g + (dragForceY / mass);
+
+            p.vx += ax * dt;
+            p.vy += ay * dt;
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            time += dt;
+
+            if (p.y > p.maxHeight) p.maxHeight = p.y;
+            if (time > 100) break;
+            if (p.y < 0 && time > dt) break;
+        }
+        return { range: p.x, maxHeight: p.maxHeight, time: time };
+    }
+
+    init2D();
+
+    // --- 3D SIMULAGAILUAREN KODEA ---
+    class ThreeJSApp {
+        constructor() {
+            this.canvas = document.getElementById('threejs-canvas');
+            this.container = this.canvas.parentElement;
+            this.scene = new THREE.Scene();
+            this.camera = new THREE.PerspectiveCamera(75, this.container.clientWidth / this.container.clientHeight, 0.1, 1000);
+            this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+            this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+            this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+            this.applyTheme();
+
+            this.clock = new THREE.Clock();
+            this.ball = null;
+            this.ballTrail = null;
+            this.launchArrow = null;
+            this.initialCameraOffset = null;
+            this.isRunning = false;
+            this.animationFrameId = null;
+            this.wallPlayers = [];
+
+            this.cameraTarget = new THREE.Vector3(0, 1, -15);
+            this.controls = {
+                isDragging: false,
+                previousMousePosition: { x: 0, y: 0 },
+                rotationSpeed: 0.005,
+                zoomSpeed: 0.1,
+                minZoom: 5,
+                maxZoom: 50,
+                initialTouchDistance: 0
+            };
+            this.setupControls();
+            this.setupScene();
+
+            this.resizeObserver = new ResizeObserver(() => {
+                requestAnimationFrame(() => {
+                    if (this.container.offsetParent !== null) {
+                        this.onResize();
+                    }
+                });
+            });
+            this.resizeObserver.observe(this.container);
+        }
+
+        applyTheme() {
+            this.renderer.setClearColor(new THREE.Color(tok('--paper')));
+        }
+
+        setupControls() {
+            this.ballPosXSlider = document.getElementById('ballPosX');
+            this.ballPosXValue = document.getElementById('ballPosXValue');
+            this.ballDistSlider = document.getElementById('ballDist');
+            this.ballDistValue = document.getElementById('ballDistValue');
+            this.launchSpeedSlider3D = document.getElementById('launchSpeed3D');
+            this.launchSpeedValue3D = document.getElementById('launchSpeedValue3D');
+            this.verticalAngleSlider3D = document.getElementById('verticalAngle3D');
+            this.verticalAngleValue3D = document.getElementById('verticalAngleValue3D');
+            this.horizontalAngleSlider3D = document.getElementById('horizontalAngle3D');
+            this.horizontalAngleValue3D = document.getElementById('horizontalAngleValue3D');
+            this.airDragSlider3D = document.getElementById('airDrag3D');
+            this.airDragValue3D = document.getElementById('airDragValue3D');
+            this.launchButton3D = document.getElementById('launchButton3D');
+            this.resetButton3D = document.getElementById('resetButton3D');
+            this.resultOverlay = document.getElementById('result-3d-overlay');
+            this.timeOfFlight3D = document.getElementById('timeOfFlight3D');
+            this.maxHeight3D = document.getElementById('maxHeight3D');
+            this.velocityAtGoal3D = document.getElementById('velocityAtGoal3D');
+            this.initialKE3D = document.getElementById('initialKE3D');
+
+            this.calculationBreakdown3D = document.getElementById('calculationBreakdown3D');
+            linkToggle(document.getElementById('toggleFormulasButton3D'), document.getElementById('formulasContent3D'));
+
+            linkSliderAndInput(this.ballPosXSlider, this.ballPosXValue, () => this.updateBallAndWallPosition());
+            linkSliderAndInput(this.ballDistSlider, this.ballDistValue, () => this.updateBallAndWallPosition());
+            linkSliderAndInput(this.launchSpeedSlider3D, this.launchSpeedValue3D, () => this.updateLaunchArrow());
+            linkSliderAndInput(this.verticalAngleSlider3D, this.verticalAngleValue3D, () => this.updateLaunchArrow());
+            linkSliderAndInput(this.horizontalAngleSlider3D, this.horizontalAngleValue3D, () => this.updateLaunchArrow());
+            linkSliderAndInput(this.airDragSlider3D, this.airDragValue3D);
+
+            this.launchButton3D.addEventListener('click', () => this.launch());
+            this.resetButton3D.addEventListener('click', () => this.reset());
+
+            this.canvas.style.cursor = 'grab';
+            this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this), false);
+            this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+            this.canvas.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+            this.canvas.addEventListener('mouseleave', this.onMouseUp.bind(this), false);
+            this.canvas.addEventListener('wheel', this.onMouseWheel.bind(this), { passive: false });
+
+            // Ukipen gertaerak gehitu
+            this.canvas.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: false });
+            this.canvas.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
+            this.canvas.addEventListener('touchend', this.onTouchEnd.bind(this), false);
+        }
+
+        createPlayerModel() {
+            const playerGroup = new THREE.Group();
+            const material = new THREE.MeshLambertMaterial({ color: 0x315eff });
+
+            const torsoHeight = 0.8;
+            const torsoGeometry = new THREE.CylinderGeometry(0.25, 0.22, torsoHeight, 16);
+            const torso = new THREE.Mesh(torsoGeometry, material);
+            torso.position.y = 0.9 + torsoHeight / 2;
+            playerGroup.add(torso);
+
+            const headRadius = 0.15;
+            const headGeometry = new THREE.SphereGeometry(headRadius, 16, 16);
+            const head = new THREE.Mesh(headGeometry, new THREE.MeshLambertMaterial({ color: 0xffdbac }));
+            head.position.y = 0.9 + torsoHeight + headRadius;
+            playerGroup.add(head);
+
+            const legHeight = 0.9;
+            const legGeometry = new THREE.CylinderGeometry(0.15, 0.12, legHeight, 16);
+            const leftLeg = new THREE.Mesh(legGeometry, material);
+            leftLeg.position.set(-0.1, legHeight / 2, 0);
+            playerGroup.add(leftLeg);
+
+            const rightLeg = new THREE.Mesh(legGeometry, material);
+            rightLeg.position.set(0.1, legHeight / 2, 0);
+            playerGroup.add(rightLeg);
+
+            return playerGroup;
+        }
+
+
+        setupScene() {
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            this.scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight.position.set(10, 20, 5);
+            this.scene.add(directionalLight);
+
+            const pitchGeometry = new THREE.PlaneGeometry(50, 80);
+            const pitchMaterial = new THREE.MeshLambertMaterial({ color: 0x1d9a63 });
+            const pitch = new THREE.Mesh(pitchGeometry, pitchMaterial);
+            pitch.rotation.x = -Math.PI / 2;
+            pitch.position.y = 0;
+            this.scene.add(pitch);
+
+            this.createFieldLines();
+
+            const goalWidth = 7.32;
+            const goalHeight = 2.44;
+            const postMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+            const postGeometry = new THREE.CylinderGeometry(0.08, 0.08, goalHeight, 16);
+            const leftPost = new THREE.Mesh(postGeometry, postMaterial);
+            leftPost.position.set(-goalWidth / 2, goalHeight / 2, -25);
+            this.scene.add(leftPost);
+
+            const rightPost = new THREE.Mesh(postGeometry, postMaterial);
+            rightPost.position.set(goalWidth / 2, goalHeight / 2, -25);
+            this.scene.add(rightPost);
+
+            const crossbarGeometry = new THREE.CylinderGeometry(0.08, 0.08, goalWidth, 16);
+            const crossbar = new THREE.Mesh(crossbarGeometry, postMaterial);
+            crossbar.rotation.z = Math.PI / 2;
+            crossbar.position.set(0, goalHeight, -25);
+            this.scene.add(crossbar);
+
+            const netMaterial = new THREE.LineBasicMaterial({ color: 0xcccccc, transparent: true, opacity: 0.4 });
+            const netDepthTop = 1.0;
+            const netDepthBottom = 2.0;
+            const points = [];
+            const ftl = new THREE.Vector3(-goalWidth / 2, goalHeight, -25);
+            const ftr = new THREE.Vector3( goalWidth / 2, goalHeight, -25);
+            const fbl = new THREE.Vector3(-goalWidth / 2, 0, -25);
+            const fbr = new THREE.Vector3( goalWidth / 2, 0, -25);
+            const btl = new THREE.Vector3(-goalWidth / 2, goalHeight, -25 - netDepthTop);
+            const btr = new THREE.Vector3( goalWidth / 2, goalHeight, -25 - netDepthTop);
+            const bbl = new THREE.Vector3(-goalWidth / 2, 0, -25 - netDepthBottom);
+            const bbr = new THREE.Vector3( goalWidth / 2, 0, -25 - netDepthBottom);
+            points.push(ftl, btl, btr, ftr, ftl);
+            points.push(fbl, bbl, bbr, fbr, fbl);
+            points.push(ftl, fbl);
+            points.push(ftr, fbr);
+            points.push(btl, bbl);
+            points.push(btr, bbr);
+            const hDivs = 25;
+            const vDivs = 10;
+            for (let i = 1; i < vDivs; i++) {
+                points.push(
+                    new THREE.Vector3().lerpVectors(btl, bbl, i / vDivs),
+                    new THREE.Vector3().lerpVectors(btr, bbr, i / vDivs)
+                );
+            }
+            for (let i = 1; i < hDivs; i++) {
+                points.push(
+                    new THREE.Vector3().lerpVectors(btl, btr, i / hDivs),
+                    new THREE.Vector3().lerpVectors(bbl, bbr, i / hDivs)
+                );
+            }
+             for (let i = 1; i < vDivs; i++) {
+                points.push(
+                    new THREE.Vector3().lerpVectors(ftl, btl, i / vDivs),
+                    new THREE.Vector3().lerpVectors(ftr, btr, i / vDivs)
+                );
+            }
+             for (let i = 1; i < hDivs; i++) {
+                points.push(
+                    new THREE.Vector3().lerpVectors(ftl, ftr, i / hDivs),
+                    new THREE.Vector3().lerpVectors(btl, btr, i / hDivs)
+                );
+            }
+            for (let i = 1; i < vDivs; i++) {
+                points.push(
+                    new THREE.Vector3().lerpVectors(ftl, fbl, i / vDivs),
+                    new THREE.Vector3().lerpVectors(btl, bbl, i / vDivs)
+                );
+            }
+            for (let i = 1; i < Math.round(hDivs/4); i++) {
+                 points.push(
+                    new THREE.Vector3().lerpVectors(ftl, btl, i / Math.round(hDivs/4)),
+                    new THREE.Vector3().lerpVectors(fbl, bbl, i / Math.round(hDivs/4))
+                );
+            }
+
+            for (let i = 1; i < vDivs; i++) {
+                points.push(
+                    new THREE.Vector3().lerpVectors(ftr, fbr, i / vDivs),
+                    new THREE.Vector3().lerpVectors(btr, bbr, i / vDivs)
+                );
+            }
+             for (let i = 1; i < Math.round(hDivs/4); i++) {
+                 points.push(
+                    new THREE.Vector3().lerpVectors(ftr, btr, i / Math.round(hDivs/4)),
+                    new THREE.Vector3().lerpVectors(fbr, bbr, i / Math.round(hDivs/4))
+                );
+            }
+            const netGeometry = new THREE.BufferGeometry().setFromPoints(points);
+            const net = new THREE.LineSegments(netGeometry, netMaterial);
+            this.scene.add(net);
+
+            for (let i = 0; i < 6; i++) {
+                const player = this.createPlayerModel();
+                this.scene.add(player);
+                this.wallPlayers.push(player);
+            }
+
+            const ballGeometry = new THREE.SphereGeometry(0.11, 32, 32);
+            const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, metalness: 0.1 });
+            this.ball = new THREE.Mesh(ballGeometry, ballMaterial);
+            this.scene.add(this.ball);
+
+            this.ballTrail = new THREE.Mesh(
+                new THREE.BufferGeometry(),
+                new THREE.MeshBasicMaterial({ color: 0xf0b83f, transparent: true, opacity: 0.9, side: THREE.DoubleSide })
+            );
+            this.scene.add(this.ballTrail);
+
+            const initialDir = new THREE.Vector3(0, 1, -1).normalize();
+            this.launchArrow = new THREE.ArrowHelper(initialDir, this.ball.position, 3, 0x111111);
+            this.scene.add(this.launchArrow);
+
+            this.reset();
+        }
+
+        createFieldLines() {
+            const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+            const points = [];
+            const y = 0.01;
+            const goalLineZ = -25;
+            const penaltyBoxWidth = 40.32;
+            const penaltyBoxLength = 16.5;
+            const goalAreaWidth = 18.32;
+            const goalAreaLength = 5.5;
+            const penaltySpotZ = goalLineZ + 11;
+            const pitchWidth = 50;
+
+            // Atearen Marra osoa
+            points.push(new THREE.Vector3(-pitchWidth / 2, y, goalLineZ));
+            points.push(new THREE.Vector3(pitchWidth / 2, y, goalLineZ));
+
+            // Area Handia (Penalty Box)
+            const pBoxTopZ = goalLineZ + penaltyBoxLength;
+            points.push(new THREE.Vector3(-penaltyBoxWidth / 2, y, goalLineZ), new THREE.Vector3(-penaltyBoxWidth / 2, y, pBoxTopZ));
+            points.push(new THREE.Vector3(penaltyBoxWidth / 2, y, goalLineZ), new THREE.Vector3(penaltyBoxWidth / 2, y, pBoxTopZ));
+            points.push(new THREE.Vector3(-penaltyBoxWidth / 2, y, pBoxTopZ), new THREE.Vector3(penaltyBoxWidth / 2, y, pBoxTopZ));
+
+            // Area Txikia (Goal Box)
+            const gAreaTopZ = goalLineZ + goalAreaLength;
+            points.push(new THREE.Vector3(-goalAreaWidth / 2, y, goalLineZ), new THREE.Vector3(-goalAreaWidth / 2, y, gAreaTopZ));
+            points.push(new THREE.Vector3(goalAreaWidth / 2, y, goalLineZ), new THREE.Vector3(goalAreaWidth / 2, y, gAreaTopZ));
+            points.push(new THREE.Vector3(-goalAreaWidth / 2, y, gAreaTopZ), new THREE.Vector3(goalAreaWidth / 2, y, gAreaTopZ));
+
+            // Penalti Puntua
+            const spotGeom = new THREE.CircleGeometry(0.1, 16);
+            const spotMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const spot = new THREE.Mesh(spotGeom, spotMat);
+            spot.position.set(0, y, penaltySpotZ);
+            spot.rotation.x = -Math.PI / 2;
+            this.scene.add(spot);
+
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const lines = new THREE.LineSegments(geometry, material);
+            this.scene.add(lines);
+        }
+
+        updateBallAndWallPosition() {
+            const distance = parseFloat(this.ballDistSlider.value);
+            const posX = parseFloat(this.ballPosXSlider.value);
+
+            this.ball.position.set(posX, 0.11, -25 + distance);
+
+            const goalCenter = new THREE.Vector3(0, 0, -25);
+            const directionToGoal = goalCenter.clone().sub(this.ball.position).normalize();
+
+            const wallCenterPosition = this.ball.position.clone().add(directionToGoal.clone().multiplyScalar(9.15));
+            const wallRightVector = new THREE.Vector3().crossVectors(directionToGoal, new THREE.Vector3(0, 1, 0)).normalize();
+
+            this.wallPlayers.forEach((player, i) => {
+                const offset = (i - 2.5) * 0.55;
+                const playerPosition = wallCenterPosition.clone().add(wallRightVector.clone().multiplyScalar(offset));
+                player.position.set(playerPosition.x, 0, playerPosition.z);
+                player.lookAt(this.ball.position);
+            });
+
+            this.updateLaunchArrow();
+        }
+
+        resetSimulationState(keepArrowHidden = false) {
+            this.isRunning = false;
+            this.updateBallAndWallPosition();
+            this.resultOverlay.textContent = "";
+            this.resultOverlay.classList.remove('on');
+            if (this.ballTrail) {
+                this.ballTrail.geometry.dispose();
+                this.ballTrail.geometry = new THREE.BufferGeometry();
+            }
+            this.ball.userData = {};
+            this.initialCameraOffset = null;
+            if (this.launchArrow && !keepArrowHidden) {
+                this.launchArrow.visible = true;
+                this.updateLaunchArrow();
+            }
+            this.timeOfFlight3D.textContent = '0.00';
+            this.maxHeight3D.textContent = '0.00';
+            this.velocityAtGoal3D.textContent = '0.00';
+            this.initialKE3D.textContent = '0.00';
+            this.calculationBreakdown3D.innerHTML = "<p class='note'>Egin jaurtiketa bat kalkulu zehatzak hemen ikusteko.</p>";
+        }
+
+        launch() {
+            this.resetSimulationState(true);
+            this.clock.getDelta();
+
+            this.isRunning = true;
+            this.launchArrow.visible = false;
+            this.initialCameraOffset = this.camera.position.clone().sub(this.cameraTarget);
+
+            const v0 = parseFloat(this.launchSpeedSlider3D.value);
+            const vertAngle = parseFloat(this.verticalAngleSlider3D.value) * Math.PI / 180;
+            const horizAngle = parseFloat(this.horizontalAngleSlider3D.value) * Math.PI / 180;
+            const k = parseFloat(this.airDragSlider3D.value);
+            const initialKE = 0.5 * mass * v0 * v0;
+
+            this.ball.userData = {
+                velocity: new THREE.Vector3(
+                    v0 * Math.sin(horizAngle) * Math.cos(vertAngle),
+                    v0 * Math.sin(vertAngle),
+                    -v0 * Math.cos(horizAngle) * Math.cos(vertAngle)
+                ),
+                k,
+                trailPoints: [this.ball.position.clone()],
+                maxHeight: this.ball.position.y,
+                time: 0,
+                initialKE: initialKE,
+                velocityAtGoal: null,
+                positionAtGoal: null,
+                hasCrossedGoalLine: false,
+                bounces: 0
+            };
+        }
+
+        reset() {
+            this.ballPosXSlider.value = 0; this.ballPosXValue.value = 0;
+            this.ballDistSlider.value = 25; this.ballDistValue.value = 25;
+
+            this.resetSimulationState();
+
+            this.camera.position.set(15, 5, 0);
+            this.cameraTarget.set(0, 1, -15);
+            this.camera.lookAt(this.cameraTarget);
+        }
+
+        updateLaunchArrow() {
+            if (!this.launchArrow) return;
+            this.launchArrow.position.copy(this.ball.position);
+
+            const v0 = parseFloat(this.launchSpeedSlider3D.value);
+            const vertAngle = parseFloat(this.verticalAngleSlider3D.value) * Math.PI / 180;
+            const horizAngle = parseFloat(this.horizontalAngleSlider3D.value) * Math.PI / 180;
+
+            const direction = new THREE.Vector3(
+                Math.sin(horizAngle) * Math.cos(vertAngle),
+                Math.sin(vertAngle),
+                -Math.cos(horizAngle) * Math.cos(vertAngle)
+            );
+
+            this.launchArrow.setDirection(direction.normalize());
+            this.launchArrow.setLength(v0 / 8, 0.5, 0.3);
+        }
+
+        update(dt) {
+            if (!this.isRunning || !this.ball.userData.velocity) return;
+            const vel = this.ball.userData.velocity;
+            const k = this.ball.userData.k;
+            const speed = vel.length();
+
+            const dragForce = vel.clone().multiplyScalar(-k * speed);
+            const gravityForce = new THREE.Vector3(0, -g * mass, 0);
+            const totalForce = dragForce.add(gravityForce);
+
+            const acceleration = totalForce.divideScalar(mass);
+
+            vel.add(acceleration.multiplyScalar(dt));
+            this.ball.position.add(vel.clone().multiplyScalar(dt));
+
+            this.ball.userData.time += dt;
+            if(this.ball.position.y > this.ball.userData.maxHeight) {
+                this.ball.userData.maxHeight = this.ball.position.y;
+            }
+
+            if (!this.ball.userData.hasCrossedGoalLine && this.ball.position.z <= -25) {
+                this.ball.userData.velocityAtGoal = this.ball.userData.velocity.clone();
+                this.ball.userData.positionAtGoal = this.ball.position.clone();
+                this.ball.userData.hasCrossedGoalLine = true;
+            }
+
+            this.ball.userData.trailPoints.push(this.ball.position.clone());
+
+            if (this.ball.userData.trailPoints.length > 1) {
+                this.ballTrail.geometry.dispose();
+                const curve = new THREE.CatmullRomCurve3(this.ball.userData.trailPoints);
+                const tubeRadius = 0.05;
+                const tubeSegments = Math.min(200, Math.max(8, this.ball.userData.trailPoints.length * 2));
+                const radiusSegments = 8;
+                this.ballTrail.geometry = new THREE.TubeGeometry(curve, tubeSegments, tubeRadius, radiusSegments, false);
+            }
+
+            this.checkOutcome();
+        }
+
+        stopSimulation(resultText, resultColor) {
+            this.isRunning = false;
+            this.showResult(resultText, resultColor);
+
+            const velocityAtGoalKmh = this.ball.userData.velocityAtGoal ? this.ball.userData.velocityAtGoal.length() * 3.6 : 0;
+
+            this.timeOfFlight3D.textContent = this.ball.userData.time.toFixed(2);
+            this.maxHeight3D.textContent = this.ball.userData.maxHeight.toFixed(2);
+            this.velocityAtGoal3D.textContent = velocityAtGoalKmh.toFixed(2);
+            this.initialKE3D.textContent = this.ball.userData.initialKE.toFixed(2);
+
+            this.updateFormulaExplanation3D();
+        }
+
+        checkOutcome() {
+             if (!this.isRunning) return;
+            const ballSphere = new THREE.Sphere(this.ball.position, 0.11);
+            const pos = this.ball.position;
+            const vel = this.ball.userData.velocity;
+
+            for (const player of this.wallPlayers) {
+                const playerBox = new THREE.Box3().setFromObject(player);
+                if (playerBox.intersectsSphere(ballSphere)) {
+                    this.stopSimulation("Harresia", tok('--s1'));
+                    return;
+                }
+            }
+
+            if (this.checkPostCollision()) {
+                this.stopSimulation("Zutoina!", tok('--s2-ink'));
+                return;
+            }
+
+            if (pos.y < 0.11 && vel.y < 0) {
+                this.ball.userData.bounces++;
+                if (pos.z > -25) {
+                    vel.y *= -0.7;
+                    pos.y = 0.11;
+                    vel.x *= 0.9;
+                    vel.z *= 0.9;
+                    if (vel.lengthSq() < 0.5) {
+                        this.stopSimulation("Kanpora", tok('--danger'));
+                    }
+                    return;
+                }
+            }
+
+            if (pos.z < -25) {
+                if (!this.ball.userData.hasCrossedGoalLine) {
+                    this.ball.userData.velocityAtGoal = this.ball.userData.velocity.clone();
+                    this.ball.userData.positionAtGoal = this.ball.position.clone();
+                    this.ball.userData.hasCrossedGoalLine = true;
+                }
+                if (pos.y < 2.44 && pos.y > 0 && Math.abs(pos.x) < 7.32 / 2) {
+                     this.stopSimulation("Gola!", tok('--ok'));
+                } else {
+                     this.stopSimulation("Kanpora", tok('--danger'));
+                }
+                return;
+            }
+        }
+
+        checkPostCollision() {
+            const ballPos = this.ball.position;
+            const ballRadius = 0.11;
+            const postRadius = 0.08;
+            const collisionDistanceSq = (ballRadius + postRadius) ** 2;
+
+            const goalZ = -25;
+            const goalHeight = 2.44;
+            const goalWidth = 7.32;
+
+            const leftPostX = -goalWidth / 2;
+            const closestPointY = Math.max(0, Math.min(goalHeight, ballPos.y));
+            if (ballPos.distanceToSquared(new THREE.Vector3(leftPostX, closestPointY, goalZ)) < collisionDistanceSq) return true;
+
+            const rightPostX = goalWidth / 2;
+            if (ballPos.distanceToSquared(new THREE.Vector3(rightPostX, closestPointY, goalZ)) < collisionDistanceSq) return true;
+
+            const closestPointX = Math.max(-goalWidth/2, Math.min(goalWidth/2, ballPos.x));
+            if (ballPos.distanceToSquared(new THREE.Vector3(closestPointX, goalHeight, goalZ)) < collisionDistanceSq) return true;
+
+            return false;
+        }
+
+        showResult(text, color) {
+            this.resultOverlay.textContent = text;
+            this.resultOverlay.style.color = color;
+            this.resultOverlay.classList.add('on');
+
+            setTimeout(() => {
+                this.resultOverlay.classList.remove('on');
+            }, 2000);
+        }
+
+        updateFormulaExplanation3D() {
+            const v0 = parseFloat(this.launchSpeedSlider3D.value);
+            const vAngle = parseFloat(this.verticalAngleSlider3D.value);
+            const hAngle = parseFloat(this.horizontalAngleSlider3D.value);
+            const k = parseFloat(this.airDragSlider3D.value);
+            const vAngleRad = vAngle * Math.PI / 180;
+            const hAngleRad = hAngle * Math.PI / 180;
+
+            const v0y = v0 * Math.sin(vAngleRad);
+            const v0x = v0 * Math.sin(hAngleRad) * Math.cos(vAngleRad);
+            const v0z = v0 * Math.cos(hAngleRad) * Math.cos(vAngleRad);
+
+            const initialKE = this.ball.userData.initialKE;
+            const maxHeight = this.ball.userData.maxHeight;
+            const maxPE = mass * g * maxHeight;
+
+            let finalKE = 0, finalPE = 0, finalEnergy = 0;
+            let finalVelocity, finalHeight;
+            let finalEnergyLabel = '<b>3. Amaierako energia mekanikoa (E_final):</b> Baloia gelditzen den uneko energia.';
+
+            if (this.ball.userData.hasCrossedGoalLine) {
+                finalVelocity = this.ball.userData.velocityAtGoal.length();
+                finalHeight = this.ball.userData.positionAtGoal.y;
+                finalEnergyLabel = '<b>3. Energia mekanikoa atean (E_atea):</b> Baloia ateko marrara heltzean duen energia.';
+            } else {
+                finalVelocity = this.ball.userData.velocity.length();
+                finalHeight = this.ball.position.y < 0.11 ? 0 : this.ball.position.y;
+            }
+            finalKE = 0.5 * mass * finalVelocity * finalVelocity;
+            finalPE = mass * g * finalHeight;
+            finalEnergy = finalKE + finalPE;
+
+            const energyLost = initialKE - finalEnergy;
+
+            let html = '<div>' +
+                '<h4>Hasierako datuak</h4>' +
+                '<div class="sheet">' +
+                    '<p class="sub">Jaurtiketaren parametroak:</p>' +
+                    '<p class="f">v₀ = ' + v0 + ' m/s, θ_vert = ' + vAngle.toFixed(1) + '°, θ_horiz = ' + hAngle.toFixed(1) + '°</p>' +
+                    '<p class="sub">Hasierako abiaduraren osagaiak:</p>' +
+                    '<p class="f"><b>Y ardatza (gora):</b> v₀y = v₀ * sin(θ_vert) = ' + v0y.toFixed(2) + ' m/s</p>' +
+                    '<p class="f"><b>X ardatza (alboetara):</b> v₀x = v₀ * sin(θ_horiz) * cos(θ_vert) = ' + v0x.toFixed(2) + ' m/s</p>' +
+                    '<p class="f"><b>Z ardatza (aurrera):</b> v₀z = v₀ * cos(θ_horiz) * cos(θ_vert) = ' + v0z.toFixed(2) + ' m/s</p>' +
+                '</div>' +
+            '</div>';
+
+            let energyLostLabel = "Galdutako energia (marruskadura/errebotean):";
+            let energyLostNote = "* Energia airearen marruskaduragatik eta lurreko errebotengatik galtzen da.";
+            if (k === 0 && this.ball.userData.bounces > 0) {
+                 energyLostLabel = "Galdutako energia (errebotean):";
+                 energyLostNote = "* Marruskadura zero denean, energia lurrean errebote egitean bakarrik galtzen da.";
+            } else if (k === 0 && this.ball.userData.bounces === 0) {
+                 energyLostLabel = "Galdutako energia:";
+                 energyLostNote = "* Marruskadura eta erreboterik gabe, energia kontserbatzen da.";
+            }
+
+            html += '<div>' +
+                '<h4>Energiaren analisia</h4>' +
+                '<div class="sheet">' +
+                    '<p class="f"><b>1. Hasierako energia zinetikoa (E₀):</b> Energia jaurtiketaren unean.</p>' +
+                    '<p class="f in">Formula: E₀ = ½ * m * v₀²</p>' +
+                    '<p class="f in">Kalkulua: E₀ = 0.5 * ' + mass + ' kg * (' + v0.toFixed(2) + ' m/s)² = <b class="v">' + initialKE.toFixed(2) + ' J</b></p>' +
+                    '<p class="f sub"><b>2. Energia potentzial maximoa (Ep_max):</b> Baloia punturik altuenera iristen denean metatutako energia.</p>' +
+                    '<p class="f in">Formula: Ep_max = m * g * h_max</p>' +
+                    '<p class="f in">Kalkulua: Ep_max = ' + mass + ' kg * ' + g.toFixed(2) + ' m/s² * ' + maxHeight.toFixed(2) + ' m = <b class="v">' + maxPE.toFixed(2) + ' J</b></p>' +
+                    '<p class="f sub">' + finalEnergyLabel + '</p>' +
+                    '<p class="f in">E_final = E_zinetikoa + E_potentziala</p>' +
+                    '<p class="f in">Kalkulua: E_final = (½ * ' + mass + ' * ' + finalVelocity.toFixed(2) + '²) + (' + mass + ' * ' + g.toFixed(2) + ' * ' + finalHeight.toFixed(2) + ') = <b class="v">' + finalEnergy.toFixed(2) + ' J</b></p>' +
+                    '<p class="f sub"><b>4. ' + energyLostLabel + '</b></p>' +
+                    '<p class="f in">Formula: E_galduta = E₀ - E_final</p>' +
+                    '<p class="f in">Kalkulua: E_galduta = ' + initialKE.toFixed(2) + ' J - ' + finalEnergy.toFixed(2) + ' J = <b class="v bad">' + energyLost.toFixed(2) + ' J</b></p>' +
+                    '<p class="note">' + energyLostNote + '</p>' +
+                '</div>' +
+            '</div>';
+
+            this.calculationBreakdown3D.innerHTML = html;
+        }
+
+        // --- KONTROL LOGIKA BERRIA UKIMEN ETA SAGUARENTZAT ---
+
+        rotateCamera(deltaMove) {
+            const offset = new THREE.Vector3().subVectors(this.camera.position, this.cameraTarget);
+            const theta = Math.atan2(offset.x, offset.z);
+            const phi = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
+            let radius = offset.length();
+            let newTheta = theta - deltaMove.x * this.controls.rotationSpeed;
+            let newPhi = phi - deltaMove.y * this.controls.rotationSpeed;
+            newPhi = Math.max(0.1, Math.min(Math.PI - 0.1, newPhi));
+            offset.x = radius * Math.sin(newPhi) * Math.sin(newTheta);
+            offset.y = radius * Math.cos(newPhi);
+            offset.z = radius * Math.sin(newPhi) * Math.cos(newTheta);
+            this.camera.position.copy(this.cameraTarget).add(offset);
+        }
+
+        zoomCamera(delta) {
+            const offset = new THREE.Vector3().subVectors(this.camera.position, this.cameraTarget);
+            let radius = offset.length();
+            radius += delta * this.controls.zoomSpeed;
+            radius = Math.max(this.controls.minZoom, Math.min(this.controls.maxZoom, radius));
+            offset.normalize().multiplyScalar(radius);
+            this.camera.position.copy(this.cameraTarget).add(offset);
+        }
+
+        onTouchStart(event) {
+            event.preventDefault();
+            if (event.touches.length === 1) {
+                this.controls.isDragging = true;
+                this.canvas.style.cursor = 'grabbing';
+                this.controls.previousMousePosition = {
+                    x: event.touches[0].clientX,
+                    y: event.touches[0].clientY
+                };
+            } else if (event.touches.length === 2) {
+                this.controls.isDragging = false; // Gelditu biraketa zooma hastean
+                const dx = event.touches[0].clientX - event.touches[1].clientX;
+                const dy = event.touches[0].clientY - event.touches[1].clientY;
+                this.controls.initialTouchDistance = Math.sqrt(dx * dx + dy * dy);
+            }
+        }
+
+        onTouchMove(event) {
+            event.preventDefault();
+            if (event.touches.length === 1 && this.controls.isDragging) {
+                const deltaMove = {
+                    x: event.touches[0].clientX - this.controls.previousMousePosition.x,
+                    y: event.touches[0].clientY - this.controls.previousMousePosition.y
+                };
+                this.rotateCamera(deltaMove);
+                this.controls.previousMousePosition = {
+                    x: event.touches[0].clientX,
+                    y: event.touches[0].clientY
+                };
+            } else if (event.touches.length === 2) {
+                const dx = event.touches[0].clientX - event.touches[1].clientX;
+                const dy = event.touches[0].clientY - event.touches[1].clientY;
+                const currentDistance = Math.sqrt(dx * dx + dy * dy);
+                const deltaDistance = this.controls.initialTouchDistance - currentDistance;
+                this.zoomCamera(deltaDistance * 0.5); // Sentikortasuna doituta ukimenarentzat
+                this.controls.initialTouchDistance = currentDistance;
+            }
+        }
+
+        onTouchEnd(event) {
+            this.controls.isDragging = false;
+            this.canvas.style.cursor = 'grab';
+            this.controls.initialTouchDistance = 0;
+        }
+
+        onMouseDown(event) {
+            this.controls.isDragging = true;
+            this.canvas.style.cursor = 'grabbing';
+            this.controls.previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        onMouseMove(event) {
+            if (!this.controls.isDragging) return;
+
+            const deltaMove = {
+                x: event.clientX - this.controls.previousMousePosition.x,
+                y: event.clientY - this.controls.previousMousePosition.y
+            };
+
+            this.rotateCamera(deltaMove);
+
+            this.controls.previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
+
+        onMouseUp() {
+            this.controls.isDragging = false;
+            this.canvas.style.cursor = 'grab';
+        }
+
+        onMouseWheel(event) {
+            event.preventDefault();
+            this.zoomCamera(event.deltaY);
+        }
+
+        animate() {
+            this.animationFrameId = requestAnimationFrame(() => this.animate());
+            const dt = this.clock.getDelta();
+            this.update(dt);
+
+            if (this.isRunning && this.initialCameraOffset) {
+                const initialBallZ = this.ball.userData.trailPoints[0].z;
+                const goalLineZ = -25;
+                const totalZDistance = Math.abs(goalLineZ - initialBallZ);
+                const traveledZDistance = initialBallZ - this.ball.position.z;
+                const progress = Math.max(0, Math.min(1, traveledZDistance / totalZDistance));
+
+                const startDistance = this.initialCameraOffset.length();
+                const endDistance = 5;
+                const desiredDistance = THREE.MathUtils.lerp(startDistance, endDistance, progress);
+                const newOffset = this.initialCameraOffset.clone().normalize().multiplyScalar(desiredDistance);
+                const targetFollowSpeed = 0.1;
+                const newTarget = this.ball.position.clone();
+                newTarget.y = this.cameraTarget.y;
+                this.cameraTarget.lerp(newTarget, targetFollowSpeed);
+                const newCameraPosition = this.cameraTarget.clone().add(newOffset);
+                const cameraFollowSpeed = 0.08;
+                this.camera.position.lerp(newCameraPosition, cameraFollowSpeed);
+            }
+
+            this.camera.lookAt(this.cameraTarget);
+
+            this.renderer.render(this.scene, this.camera);
+        }
+
+        start() {
+            this.onResize();
+            if(!this.animationFrameId) this.animate();
+        }
+
+        stop() {
+            if (this.animationFrameId) {
+                cancelAnimationFrame(this.animationFrameId);
+                this.animationFrameId = null;
+            }
+        }
+
+        onResize() {
+            this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        }
+    }
+</script>
+
+</body>
+</html>

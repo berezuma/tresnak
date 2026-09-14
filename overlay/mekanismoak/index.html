@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mekanismoen Lantegia</title>
+<meta name="description" content="Mekanismoak eta makinak DBH 2 eta 3rako: simulagailuak, azalpenak, ariketa-sorgailua eta galdetegiak, euskaraz.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f9f8f5'/%3E%3Ccircle cx='12' cy='14' r='7' fill='none' stroke='%23315eff' stroke-width='2.5' stroke-dasharray='3 2'/%3E%3Ccircle cx='23' cy='22' r='5' fill='none' stroke='%23e5a21a' stroke-width='2.5' stroke-dasharray='2.5 2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../oinarria/css/fonts.css">
+<link rel="stylesheet" href="../oinarria/css/app.css">
+<link rel="stylesheet" href="../oinarria/css/tresna.css">
+<link rel="stylesheet" href="css/lantegia.css">
+</head>
+<body>
+
+<div class="lan">
+  <aside class="menu" id="menu" aria-label="Lantegiaren atalak">
+    <div class="menu-head">
+      <a class="menu-brand" href="#/">Mekanismoen Lantegia</a>
+      <button class="btn sm menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu-list">Atalak</button>
+    </div>
+    <nav id="menu-list" class="menu-list"></nav>
+    <div class="menu-foot" id="menu-foot"></div>
+  </aside>
+
+  <main id="edukia" class="edukia" tabindex="-1">
+    <div class="loading"><div class="spin"></div><div class="eyebrow">Kargatzen…</div></div>
+  </main>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

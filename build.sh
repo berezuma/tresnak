@@ -55,6 +55,26 @@ LESSON="$PT/ikasgaiak/gantt-diagrama.html"
 sed -i '0,/<div class="wrap">/s##<link rel="stylesheet" href="../css/diseinua-ikasgaia.css">\n<div class="wrap">#' "$LESSON"
 grep -q 'diseinua-ikasgaia.css' "$LESSON" || { echo "ERROREA: ikasgaiaren diseinua ez da txertatu"; exit 1; }
 
+# Tresna bakunak: GitHub-eko biltegietatik ekarri eta diseinu honetara egokitutako
+# HTML fitxategiak (overlay/IZENA/, osorik). Diseinu partekatua docs/oinarria/-n:
+# Marrazketa Lantegiaren app.css eta letra-tipoak + liburutegiak (overlay/oinarria/vendor).
+# Tresna bakun berri bat: karpeta overlay/-en, izena zerrenda honetan, nav.js eta index.html.
+STANDALONE=(mekanismoak parabolikoa eguzkisistema lurraetaeguzkia irudigeometrikoak baserria paperezkozubia etxeadimentsua)
+OIN="$OUT/oinarria"
+mkdir -p "$OIN/css" "$OIN/fonts"
+cp "$SRC_MK/fonts/"*.woff2 "$OIN/fonts/"
+cp "$SRC_MK/css/app.css" "$SRC_MK/css/fonts.css" "$OIN/css/"
+cp -r overlay/oinarria/. "$OIN"/
+for name in "${STANDALONE[@]}"; do
+  [ -f "overlay/$name/index.html" ] || { echo "ERROREA: ez dago overlay/$name/index.html"; exit 1; }
+  cp -r "overlay/$name" "$OUT/$name"
+  # dena webgunean bertan: kanpoko CDN eta letra-tipo zerbitzaririk ez (jarraipenik gabe)
+  if grep -rInE '(src|href)="https?://[^"]*(cdn|unpkg|googleapis|gstatic|rsms\.me)' "$OUT/$name"; then
+    echo "ERROREA: $name tresnak kanpoko baliabideak kargatzen ditu (goian)."
+    exit 1
+  fi
+done
+
 cp overlay/index.html "$OUT/index.html"
 cp overlay/nav.js "$OUT/nav.js"
 touch "$OUT/.nojekyll"

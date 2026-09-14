@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paperezko zubia</title>
+<meta name="description" content="Paperezko zubi baten pisu estimatua tutuen luzeratik kalkulatzeko eta triangelu zuzen baten hipotenusa ateratzeko kalkulagailua.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f9f8f5'/%3E%3Cpath d='M3 23 H29 M6 23 L11 12 L16 23 L21 12 L26 23 M11 12 H21' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../oinarria/css/fonts.css">
+<link rel="stylesheet" href="../oinarria/css/app.css">
+<link rel="stylesheet" href="../oinarria/css/tresna.css">
+<style>
+  .narrow{max-width:700px}
+  .panel h2{font-size:24px; margin:0 0 12px}
+  .form-row{display:grid; grid-template-columns:2fr 1fr; gap:14px}
+  .panel .sub-h{margin-top:26px}
+  .tubes{list-style:none; margin:0; padding:0; min-height:92px; max-height:230px; overflow-y:auto; background:var(--paper); border:1px solid var(--rule)}
+  .tubes li{display:flex; justify-content:space-between; gap:12px; padding:8px 14px; border-bottom:1px solid var(--rule); font-variant-numeric:tabular-nums}
+  .tubes li:last-child{border-bottom:0}
+  .tubes li span{color:var(--ink3); white-space:nowrap}
+  .tubes li.empty-row{color:var(--ink3); font-style:italic; border-bottom:0}
+  .actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:16px}
+  .actions .btn{flex:1 1 200px; justify-content:center}
+  .note{font-size:14.5px; color:var(--ink3); margin:14px 0 0}
+  .notice.err{margin-top:20px}
+  .diagram{display:block; width:100%; max-width:300px; height:auto; margin:4px auto 18px}
+  @media (max-width:480px){ .form-row{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<main class="wrap narrow page">
+  <div class="head">
+    <div>
+      <h1>Paperezko zubia</h1>
+      <p class="lede">Sartu zure zubiaren tutuak pisu estimatua lortzeko, edo kalkulatu triangelu zuzen baten hipotenusa.</p>
+    </div>
+    <div class="seg" role="tablist" aria-label="Kalkulagailua">
+      <button id="pisuaTabBotoia" class="active" role="tab" aria-selected="true" aria-controls="pisuaTabPanela">Pisu kalkulagailua</button>
+      <button id="hipotenusaTabBotoia" role="tab" aria-selected="false" aria-controls="hipotenusaTabPanela">Hipotenusa kalkulagailua</button>
+    </div>
+  </div>
+
+  <!-- Pisu kalkulagailua -->
+  <section id="pisuaTabPanela" class="panel" role="tabpanel" aria-labelledby="pisuaTabBotoia">
+    <form id="tutuForm" class="stack" novalidate>
+      <div class="form-row">
+        <label class="field" for="tutuLuzera">Tutu luzera (cm)
+          <input type="number" id="tutuLuzera" min="0.1" step="0.1" placeholder="Adib.: 20">
+        </label>
+        <label class="field" for="tutuKopurua">Kopurua
+          <input type="number" id="tutuKopurua" min="1" step="1" placeholder="Adib.: 5">
+        </label>
+      </div>
+      <button id="gehituBotoia" type="submit" class="btn primary">Gehitu tutuak zerrendara</button>
+    </form>
+
+    <h2 class="sub-h">Zure tutuen zerrenda</h2>
+    <ul id="tutuZerrenda" class="tubes" aria-live="polite"></ul>
+
+    <div class="actions">
+      <button id="kalkulatuBotoia" class="btn">Kalkulatu pisu osoa</button>
+      <button id="garbituBotoia" class="btn">Garbitu zerrenda</button>
+    </div>
+    <p class="note">* Kalkulua A4 orri baten (29,7 cm) pisu proportzionalean (5 g) oinarritzen da.</p>
+
+    <div id="emaitza" aria-live="polite"></div>
+  </section>
+
+  <!-- Hipotenusa kalkulagailua -->
+  <section id="hipotenusaTabPanela" class="panel" role="tabpanel" aria-labelledby="hipotenusaTabBotoia" hidden>
+    <h2>Hipotenusa kalkulagailua</h2>
+    <p class="muted">Sartu bi katetoen luzerak (A eta B) hipotenusa (C) kalkulatzeko.</p>
+
+    <svg class="diagram" viewBox="0 0 250 200" role="img" aria-label="Triangelu zuzena: A katetoa, B katetoa eta C hipotenusa">
+      <polygon points="50,170 200,170 50,30" fill="var(--chip)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="50" y="150" width="20" height="20" fill="none" stroke="var(--ink3)" stroke-width="1.5"/>
+      <g fill="var(--ink)" font-family="Lato, system-ui, sans-serif" font-size="15">
+        <text x="125" y="192" text-anchor="middle">B katetoa</text>
+        <text x="36" y="100" text-anchor="middle" transform="rotate(-90 36 100)">A katetoa</text>
+        <text x="136" y="92" text-anchor="middle" font-weight="700" fill="var(--s1)" transform="rotate(43 136 92)">Hipotenusa (C)</text>
+      </g>
+    </svg>
+
+    <form id="hipotenusaForm" class="stack" novalidate>
+      <label class="field" for="katetoA">A katetoa (cm)
+        <input type="number" id="katetoA" min="0.1" step="0.1" placeholder="Adib.: 10">
+      </label>
+      <label class="field" for="katetoB">B katetoa (cm)
+        <input type="number" id="katetoB" min="0.1" step="0.1" placeholder="Adib.: 15">
+      </label>
+      <button id="kalkulatuHipotenusaBotoia" type="submit" class="btn primary">Kalkulatu hipotenusa (C)</button>
+    </form>
+
+    <div id="emaitzaHipotenusa" aria-live="polite"></div>
+  </section>
+
+  <footer class="foot">
+    <p>Egilea: <a href="https://berezuma.com">Beñat Erezuma Arisketa</a></p>
+  </footer>
+</main>
+
+<script>
+    // --- Pisu kalkulagailuaren elementuak ---
+    const kopuruaInput = document.getElementById('tutuKopurua');
+    const luzeraInput = document.getElementById('tutuLuzera');
+    const tutuForm = document.getElementById('tutuForm');
+    const kalkulatuBotoia = document.getElementById('kalkulatuBotoia');
+    const garbituBotoia = document.getElementById('garbituBotoia');
+    const emaitzaDiv = document.getElementById('emaitza');
+    const tutuZerrendaEl = document.getElementById('tutuZerrenda');
+
+    // --- Hipotenusa kalkulagailuaren elementuak ---
+    const katetoAInput = document.getElementById('katetoA');
+    const katetoBInput = document.getElementById('katetoB');
+    const hipotenusaForm = document.getElementById('hipotenusaForm');
+    const emaitzaHipotenusaDiv = document.getElementById('emaitzaHipotenusa');
+
+    // --- Fitxak ---
+    const fitxak = [
+        { botoia: document.getElementById('pisuaTabBotoia'), panela: document.getElementById('pisuaTabPanela') },
+        { botoia: document.getElementById('hipotenusaTabBotoia'), panela: document.getElementById('hipotenusaTabPanela') }
+    ];
+
+    // --- Konstanteak (pisua) ---
+    const A4_PISUA_GRAMO = 5.0;  // A4 orri baten pisua gramotan
+    const A4_LUZERA_CM = 29.7;   // A4 orri baten luzera (ertz luzea) cm-tan
+    const PISUA_PER_CM = A4_PISUA_GRAMO / A4_LUZERA_CM; // zentimetro bakoitzeko pisua
+
+    let tutuZerrendaGlobala = [];
+
+    // --- Funtzioak (pisua) ---
+
+    function eguneratuZerrendaBisuala() {
+        const hutsik = tutuZerrendaGlobala.length === 0;
+        if (hutsik) {
+            tutuZerrendaEl.innerHTML = '<li class="empty-row">Oraindik ez duzu tuturik gehitu.</li>';
+        } else {
+            tutuZerrendaEl.innerHTML = tutuZerrendaGlobala.map(tutu => `
+                <li>
+                    <div><strong>${tutu.kopurua}</strong> unitate, <strong>${tutu.luzera}</strong> cm-koak</div>
+                    <span>${(tutu.kopurua * tutu.luzera * PISUA_PER_CM).toFixed(2)} g</span>
+                </li>`).join('');
+        }
+        // Botoiak desgaitu zerrenda hutsik badago
+        kalkulatuBotoia.disabled = hutsik;
+        garbituBotoia.disabled = hutsik;
+    }
+
+    function erakutsiErrorea(helburua, mezua) {
+        helburua.innerHTML = `<div class="notice err" role="alert">${mezua}</div>`;
+    }
+
+    // Pisu osoa kalkulatu
+    function getPisuTotala() {
+        return tutuZerrendaGlobala.reduce((totala, tutu) => totala + tutu.luzera * tutu.kopurua * PISUA_PER_CM, 0);
+    }
+
+    function erakutsiPisuTotala(pisuTotala) {
+        emaitzaDiv.innerHTML = `
+            <div class="result">
+                <span>Zubiaren pisu estimatua (momentuz)</span>
+                <b>${pisuTotala.toFixed(2)} gramo</b>
+            </div>`;
+    }
+
+    // --- Gertaerak (pisua) ---
+
+    // 1. Tutuak gehitu (botoia edo Enter)
+    tutuForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const kopurua = parseInt(kopuruaInput.value);
+        const luzera = parseFloat(luzeraInput.value);
+
+        if (isNaN(kopurua) || isNaN(luzera) || kopurua <= 0 || luzera <= 0) {
+            erakutsiErrorea(emaitzaDiv, 'Mesedez, sartu luzera eta kopuru baliodunak (positiboak).');
+            return;
+        }
+        tutuZerrendaGlobala.push({ kopurua, luzera });
+        eguneratuZerrendaBisuala();
+
+        kopuruaInput.value = '';
+        luzeraInput.value = '';
+        luzeraInput.focus();
+
+        erakutsiPisuTotala(getPisuTotala());
+    });
+
+    // 2. Pisu osoa kalkulatu
+    kalkulatuBotoia.addEventListener('click', function () {
+        if (tutuZerrendaGlobala.length === 0) {
+            erakutsiErrorea(emaitzaDiv, 'Mesedez, gehitu gutxienez tutu multzo bat zerrendara.');
+            return;
+        }
+        erakutsiPisuTotala(getPisuTotala());
+    });
+
+    // 3. Zerrenda garbitu
+    garbituBotoia.addEventListener('click', function () {
+        tutuZerrendaGlobala = [];
+        eguneratuZerrendaBisuala();
+        emaitzaDiv.innerHTML = '';
+        kopuruaInput.value = '';
+        luzeraInput.value = '';
+    });
+
+    // --- Gertaerak (hipotenusa) ---
+
+    hipotenusaForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const a = parseFloat(katetoAInput.value);
+        const b = parseFloat(katetoBInput.value);
+
+        if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0) {
+            erakutsiErrorea(emaitzaHipotenusaDiv, 'Mesedez, sartu bi katetoentzat balio positibo eta baliodunak.');
+            return;
+        }
+        const hipotenusa = Math.sqrt(a * a + b * b);
+        emaitzaHipotenusaDiv.innerHTML = `
+            <div class="result">
+                <span>Hipotenusaren (C) luzera hau da</span>
+                <b>${hipotenusa.toFixed(2)} cm</b>
+            </div>`;
+    });
+
+    // --- Fitxak ---
+
+    function aukeratuFitxa(aktiboa) {
+        fitxak.forEach(f => {
+            const bai = f === aktiboa;
+            f.botoia.classList.toggle('active', bai);
+            f.botoia.setAttribute('aria-selected', String(bai));
+            f.panela.hidden = !bai;
+        });
+    }
+    fitxak.forEach(f => f.botoia.addEventListener('click', () => aukeratuFitxa(f)));
+
+    // Hasierako egoera: "Oraindik ez duzu..." mezua eta botoiak desgaituta
+    eguneratuZerrendaBisuala();
+</script>
+
+<script src="../nav.js" data-root="../"></script>
+</body>
+</html>

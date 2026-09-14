@@ -1,0 +1,191 @@
+/* ============================================================
+   Mekanismoen Lantegia — diseinua
+   app.css (Marrazketa Lantegia) eta tresna.css-en gainean.
+   Koloreen esanahia simulagailuetan: urdina (--s1) indarra / eragilea,
+   horia (--s2) erresistentzia / eragina, berdea (--s3) euskarria / ondo.
+   ============================================================ */
+
+:root{
+  --g1-fill:#e6ebff; --g2-fill:#fbf0d8; --g3-fill:#dcf2e7;
+  --menu-w:272px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --g1-fill:#232a45; --g2-fill:#3a2f16; --g3-fill:#16342a; }
+}
+:root[data-theme="dark"]{ --g1-fill:#232a45; --g2-fill:#3a2f16; --g3-fill:#16342a; }
+
+/* ---------- egitura ---------- */
+.lan{display:grid; grid-template-columns:var(--menu-w) minmax(0, 1fr); min-height:calc(100vh - 44px)}
+.menu{position:sticky; top:0; align-self:start; height:100vh; display:flex; flex-direction:column; background:var(--paper); border-right:1px solid var(--rule)}
+.menu-head{padding:20px 18px 12px}
+.menu-brand{display:block; font-family:var(--font-display); font-size:25px; line-height:1.1; color:var(--ink); text-decoration:none}
+.menu-toggle{display:none}
+.menu-list{flex:1 1 auto; min-height:0; overflow-y:auto; padding:0 10px 12px}
+.menu-group{margin-top:14px}
+.menu-group h2{padding:0 10px 4px; font-family:var(--font-body); font-size:13px; font-weight:700; color:var(--ink3)}
+.menu-link{display:flex; align-items:center; gap:8px; padding:6px 10px; font-size:15.5px; line-height:1.3; color:var(--ink); text-decoration:none; border-left:3px solid transparent}
+.menu-link:hover{background:var(--chip)}
+.menu-link.on{background:var(--sheet); border-left-color:var(--ink); font-weight:700}
+.menu-link .mark{margin-left:auto; flex:0 0 auto; display:flex; gap:2px}
+.menu-link .mark i{display:block; width:6px; height:6px; border:1px solid var(--ink3)}
+.menu-link .mark i.done{background:var(--s3); border-color:var(--s3)}
+.menu-link .new{margin-left:auto; font-size:11.5px; font-weight:700; color:var(--ink3)}
+.menu-foot{padding:12px 18px 16px; border-top:1px solid var(--rule); font-size:13.5px; color:var(--ink3)}
+.menu-foot .bar{height:4px; margin:6px 0 2px; background:var(--grid)}
+.menu-foot .bar span{display:block; height:100%; background:var(--s3)}
+
+.edukia{padding:34px 40px 0; max-width:900px; width:100%}
+.edukia:focus{outline:none}
+
+/* ---------- unitatearen goiburua ---------- */
+.u-head{display:grid; gap:8px; margin-bottom:22px}
+.u-head h1{font-size:clamp(34px, 5vw, 50px); line-height:1.08}
+.hook{display:flex; gap:12px; align-items:flex-start; margin-top:6px; padding:14px 16px; background:var(--sheet); border:1px solid var(--ink); box-shadow:var(--edge)}
+.hook b{flex:0 0 auto; font-family:var(--font-display); font-weight:400; font-size:30px; line-height:1; color:var(--s1)}
+.hook p{margin:0; font-size:18px}
+
+/* urratsen nabigazioa */
+.u-steps{position:sticky; top:0; z-index:20; display:flex; gap:4px 22px; flex-wrap:wrap; margin:0 -40px 8px; padding:10px 40px; background:color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--rule)}
+.u-steps a{display:flex; align-items:center; gap:7px; padding:3px 0; font-size:15.5px; color:var(--ink); text-decoration:none; border-bottom:2px solid transparent}
+.u-steps a:hover{border-bottom-color:var(--rule)}
+.u-steps a i{width:9px; height:9px; border:1.5px solid var(--ink3)}
+.u-steps a i.done{background:var(--s3); border-color:var(--s3)}
+
+.step{padding-top:28px; scroll-margin-top:52px}
+.step + .step{margin-top:22px; border-top:1px solid var(--rule)}
+.step-label{display:flex; align-items:baseline; gap:10px; margin-bottom:12px}
+.step-label h2{font-size:30px}
+.step-label span{font-size:14px; font-weight:700; color:var(--ink3)}
+
+/* ---------- testua ---------- */
+.prose{max-width:44em}
+.prose > * + *{margin-top:14px}
+.prose h3{margin-top:26px; font-size:23px}
+.prose h4{margin-top:18px; font-family:var(--font-body); font-size:17px; font-weight:700}
+.prose p, .prose li{font-size:17px; line-height:1.65}
+.prose ul, .prose ol{padding-left:22px}
+.prose li + li{margin-top:4px}
+.prose strong{font-weight:700}
+.def{padding:12px 16px; background:var(--sheet); border:1px solid var(--rule); border-left:3px solid var(--ink)}
+.note{padding:12px 16px; background:var(--sheet); border:1px solid var(--rule); border-left:3px solid var(--s2)}
+.note.ok{border-left-color:var(--s3)}
+.formula{display:block; padding:12px 16px; font-family:var(--font-code); font-size:17px; text-align:center; background:var(--chip); border:1px solid var(--rule); overflow-x:auto}
+.formula small{display:block; margin-top:4px; font-family:var(--font-body); font-size:14px; color:var(--ink3)}
+.where{display:grid; grid-template-columns:auto 1fr; gap:3px 12px; font-size:16px}
+.where dt{font-family:var(--font-code); font-weight:700}
+.where dd{margin:0; color:var(--ink2)}
+.worked{padding:14px 18px; background:var(--sheet); border:1px solid var(--rule)}
+.worked h4{margin:0 0 6px}
+.worked ol{margin:6px 0 0}
+.worked .ans{margin-top:8px; font-weight:700}
+.table-scroll{overflow-x:auto}
+.table-scroll table.tbl{min-width:520px}
+.eg-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:14px}
+
+/* irudiak */
+figure.fig{margin:0}
+figure.fig img, figure.fig svg{display:block; max-width:100%; height:auto; margin:0 auto; background:var(--sheet)}
+figure.fig.photo img{width:100%; height:190px; object-fit:cover}
+figure.fig figcaption{margin-top:6px; font-size:14.5px; color:var(--ink2)}
+figure.fig .credit{display:block; font-size:12.5px; color:var(--ink3)}
+figure.fig .credit a{color:inherit}
+.diagram{padding:10px; background:var(--sheet); border:1px solid var(--rule)}
+
+/* ---------- simulagailua ---------- */
+.sim{background:var(--sheet); border:1px solid var(--ink); box-shadow:4px 4px 0 var(--ink)}
+.sim-body{display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(250px, 1fr)}
+.sim-stage{position:relative; display:grid; align-items:center; padding:8px; background:var(--paper); border-right:1px solid var(--rule)}
+.sim-panel .seg button{font-size:14px; padding:5px 9px}
+.sim-stage svg{display:block; width:100%; height:auto; touch-action:none}
+.sim-panel{display:grid; gap:14px; align-content:start; padding:16px 18px 18px}
+.sim-foot{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; padding:8px 12px; font-size:13.5px; color:var(--ink3); border-top:1px solid var(--rule)}
+.ctl{display:grid; gap:2px}
+.ctl-top{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:15px; font-weight:700; color:var(--ink2)}
+.ctl-top output{font-family:var(--font-code); font-size:15px; color:var(--ink); white-space:nowrap}
+.readouts{display:grid; gap:5px; padding:10px 12px; background:var(--chip); border-left:3px solid var(--ink)}
+.readouts div{display:flex; flex-wrap:wrap; justify-content:space-between; gap:2px 12px; font-size:15px}
+.readouts b{font-family:var(--font-code); font-weight:500; white-space:nowrap}
+.readouts .hi b{color:var(--s1)}
+.pills{display:flex; flex-wrap:wrap; gap:6px}
+.pill{padding:1px 9px; font-size:13.5px; font-weight:700; color:var(--ink2); background:var(--sheet); border:1px solid var(--ink3)}
+.pill.strong{color:var(--ink); border-color:var(--ink)}
+.pill.ok{color:var(--ok); border-color:var(--ok)}
+.pill.warn{color:var(--danger); border-color:var(--danger)}
+.dot{display:inline-block; width:10px; height:10px; margin-right:6px; vertical-align:0; border:1.5px solid var(--ink)}
+.dot.f{background:var(--g1-fill); border-color:var(--s1)}
+.dot.r{background:var(--g2-fill); border-color:var(--s2)}
+.dot.e{background:var(--g3-fill); border-color:var(--s3)}
+.sim-try{margin-top:12px; font-size:15.5px; color:var(--ink2)}
+.sim-try b{color:var(--ink)}
+
+/* ---------- ariketak ---------- */
+.ex-bar{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px}
+.ex-count{font-size:15px; color:var(--ink2)}
+.ex-count b{font-variant-numeric:tabular-nums; color:var(--ink)}
+.exercise{display:grid; gap:12px; padding:18px 20px; background:var(--sheet); border:1px solid var(--ink); box-shadow:var(--edge)}
+.exercise .q{font-size:18px; line-height:1.55}
+.exercise .q strong{font-variant-numeric:tabular-nums}
+.answer{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
+.answer label{font-size:15px; font-weight:700; color:var(--ink2)}
+.answer input{width:140px; padding:7px 10px; font-family:var(--font-code); font-size:16px}
+.answer .unit{font-family:var(--font-code); color:var(--ink2)}
+.fb{font-size:16px}
+.fb.ok{color:var(--ok)}
+.fb.no{color:var(--danger)}
+.solution{padding:10px 14px; background:var(--chip); border-left:3px solid var(--s3)}
+.solution ol{margin:4px 0 0; padding-left:20px}
+.solution li{font-family:var(--font-code); font-size:15px; overflow-wrap:anywhere}
+
+/* ---------- galdetegia ---------- */
+.quiz{display:grid; gap:14px}
+.qq{padding:14px 16px; background:var(--sheet); border:1px solid var(--rule)}
+.qq-text{margin:0 0 10px; font-weight:700}
+.qq-opts{display:grid; gap:6px}
+.qq-opts button{padding:8px 12px; text-align:left; cursor:pointer; font:400 16px/1.4 var(--font-body); color:var(--ink); background:var(--sheet); border:1px solid var(--ink3)}
+.qq-opts button:hover{background:var(--chip)}
+.qq-opts button[aria-pressed="true"]{background:var(--chip); border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink)}
+.qq-opts button.right{background:color-mix(in srgb, var(--ok) 16%, var(--sheet)); border-color:var(--ok)}
+.qq-opts button.wrong{background:color-mix(in srgb, var(--danger) 14%, var(--sheet)); border-color:var(--danger)}
+.qq-why{margin:8px 0 0; font-size:15.5px; color:var(--ink2)}
+.quiz-result{font-family:var(--font-display); font-size:26px}
+.quiz-result.ok{color:var(--ok)}
+.quiz-result.no{color:var(--danger)}
+
+/* ---------- hasiera ---------- */
+.home-hero{display:grid; gap:12px; padding-bottom:26px; border-bottom:1px solid var(--rule)}
+.home-hero h1{font-size:clamp(40px, 6vw, 60px); line-height:1.05}
+.home-hero .lede{font-size:19px}
+.home-group{margin-top:30px}
+.home-group h2{margin-bottom:12px; font-size:26px}
+.home-cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:14px}
+.home-card{display:grid; gap:4px; padding:14px 16px; color:inherit; text-decoration:none; background:var(--sheet); border:1px solid var(--ink); box-shadow:var(--edge)}
+.home-card:hover{background:var(--paper)}
+.home-card b{font-family:var(--font-display); font-weight:400; font-size:21px; line-height:1.2}
+.home-card span{font-size:14.5px; color:var(--ink2)}
+.home-card .state{margin-top:4px; font-size:13px; font-weight:700; color:var(--ink3)}
+.home-card .state.done{color:var(--ok)}
+
+.pager{display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-top:40px; padding-top:18px; border-top:1px solid var(--rule)}
+.lan-foot{margin-top:30px; padding-block:18px 34px; font-size:14px; color:var(--ink3); border-top:1px solid var(--rule)}
+.lan-foot a{color:inherit}
+
+/* ---------- pantaila txikiak ---------- */
+@media (max-width:900px){
+  .lan{grid-template-columns:minmax(0, 1fr)}
+  .menu{position:static; height:auto; border-right:0; border-bottom:1px solid var(--rule)}
+  .menu-head{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px}
+  .menu-brand{font-size:21px}
+  .menu-toggle{display:inline-flex}
+  .menu-list{display:none; padding:0 6px 12px}
+  .menu.open .menu-list{display:block}
+  .menu-foot{display:none}
+  .menu.open .menu-foot{display:block}
+  .edukia{padding:24px 16px 0}
+  .u-steps{margin:0 -16px 8px; padding:8px 16px; gap:4px 16px}
+  .sim-body{grid-template-columns:minmax(0, 1fr)}
+  .sim-stage{border-right:0; border-bottom:1px solid var(--rule)}
+}
+@media print{
+  .menu, .u-steps, .pager, .sim, .ex-bar, #tresnak-nav{display:none !important}
+  .lan{display:block}
+}
