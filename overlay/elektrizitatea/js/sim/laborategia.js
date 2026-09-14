@@ -633,6 +633,13 @@ export default function mount(box, opts = {}) {
   $(`#${P}-reset`).addEventListener('click', () => { load(ADIBIDEAK[adibideId]); editor(); recompute(); });
   $(`#${P}-clear`).addEventListener('click', () => { load({ nx, ny, fixed: true, osagaiak: [] }); editor(); recompute(); });
 
+  // kanpotik (erronkak) zirkuitua irakurtzeko; onChange-k lehen recompute-tik erabiltzen du
+  const api = {
+    osagaiak: () => [...comps.values()],
+    emaitza: () => res,
+    neurketa: c => neurketa(c, res)
+  };
+
   // ---------- hasiera ----------
   let hasiera = ADIBIDEAK[adibideId] || ADIBIDEAK.sinplea;
   if (opts.gorde) {
@@ -641,12 +648,6 @@ export default function mount(box, opts = {}) {
   load(hasiera);
   editor();
   recompute();
-
-  const api = {
-    osagaiak: () => [...comps.values()],
-    emaitza: () => res,
-    neurketa: c => neurketa(c, res)
-  };
   const stop = () => cancelAnimationFrame(raf);
   stop.lab = api;
   return stop;

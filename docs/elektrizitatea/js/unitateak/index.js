@@ -43,8 +43,8 @@ export const TALDEAK = [
     izena: 'Aplikatu eta errepasatu',
     unitateak: [
       { id: 'laborategia', izena: 'Zirkuitu-laborategia', desk: 'Muntatu zuk zeure zirkuituak eta neurtu', orria: true },
-      { id: 'erronkak', izena: 'Erronkak', desk: 'Diseinatu baldintzak betetzen dituen zirkuitua', orria: true, laster: true },
-      { id: 'glosarioa', izena: 'Glosarioa', desk: 'Hitzak euskaraz, gaztelaniaz eta ingelesez', orria: true, laster: true },
+      { id: 'erronkak', izena: 'Erronkak', desk: 'Diseinatu baldintzak betetzen dituen zirkuitua', orria: true },
+      { id: 'glosarioa', izena: 'Glosarioa', desk: 'Hitzak euskaraz, gaztelaniaz eta ingelesez', orria: true },
       { id: 'irakaslea', izena: 'Irakasleentzat', desk: 'Ariketa-fitxa inprimagarriak, erantzunekin', orria: true }
     ]
   }

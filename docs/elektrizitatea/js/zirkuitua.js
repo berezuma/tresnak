@@ -112,13 +112,12 @@ export function ebatzi(osagaiak) {
     res = solveOnce(osagaiak);
     if (!res.ondo) return { ondo: false, funditu: berriak };
     const orain = [];
-    // zirkuitulaburrean ez funditu ezer: lehenik abisua eman
+    // zirkuitulaburrean fusibleak bakarrik funditzen dira (babesa); bonbillak ez, ia tentsiorik ez dutelako
     const laburra = osagaiak.some(c => c.mota === 'pila' && Math.abs(res.I.get(c.id)) * 0.1 > Math.max(c.balioa, 0.5));
-    if (laburra) break;
     let max = null, maxRatio = 1;
     osagaiak.forEach(c => {
       const i = Math.abs(res.I.get(c.id) || 0);
-      if (c.mota === 'bonbilla' && !c.fundituta) {
+      if (c.mota === 'bonbilla' && !c.fundituta && !laburra) {
         const b = bonbilla(c), R = b.Vn * b.Vn / b.Pn, ratio = i * i * R / (b.Pn * funditzeMuga);
         if (ratio > maxRatio) { maxRatio = ratio; max = c; }
       }

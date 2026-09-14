@@ -127,7 +127,7 @@ export const ADIBIDEAK = {
       ...bidea([0, 0], [3, 0]), ...bidea([0, 2], [3, 2]),
       k(1, 0, 'v', 'erresistentzia', { balioa: 10, n: 1 }), k(1, 1, 'v', 'erresistentzia', { balioa: 30, n: 3 }),
       k(3, 0, 'v', 'erresistentzia', { balioa: 20, n: 2 }), k(3, 1, 'v', 'erresistentzia', { balioa: 40, n: 4 }),
-      k(1, 1, 'h', 'erresistentzia', { balioa: 50, n: 5 }), k(2, 1, 'h', 'amperimetroa', { n: 1 })
+      k(1, 1, 'h', 'amperimetroa', { n: 1 }), k(2, 1, 'h', 'erresistentzia', { balioa: 50, n: 5 })
     ]
   },
 
