@@ -19,9 +19,12 @@ function fig(key, caption = '', cls = '') {
     <figcaption>${caption}<span class="credit">Irudia: ${esc(i.egilea || 'Wikimedia Commons')} · <a href="${i.iturria}" target="_blank" rel="noopener">${esc(i.lizentzia)}</a></span></figcaption>
   </figure>`;
 }
-const ctx = { fig };
+function footer() {
+  return `<footer class="lan-foot">Egilea: <a href="https://berezuma.com">Beñat Erezuma Arisketa</a> · Lizentzia: CC BY-SA 4.0 · <a href="#/glosarioa">Glosarioa</a> · <a href="#/irakaslea">Irakasleentzat</a> · <a href="#/kredituak">Irudien kredituak</a></footer>`;
+}
+const ctx = { fig, footer };
 
-// ---------- menua ----------
+// ---------- aurrerapena ----------
 // Atala eginda: ariketak (baldin badaude) eta galdetegia
 function unitDone(u) {
   const p = progress.get(u.id);
@@ -32,19 +35,73 @@ function marks(u) {
   const kalk = u.kalk === false ? '' : `<i class="${(p.ariketak || 0) >= ASKI ? 'done' : ''}"></i>`;
   return `<span class="mark" aria-hidden="true">${kalk}<i class="${p.galdetegia ? 'done' : ''}"></i></span>`;
 }
+
+function exportProgress() {
+  const data = { aplikazioa: 'mekanismoen-lantegia', bertsioa: 1, data: new Date().toISOString(), aurrerapena: progress.all() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `mekanismoen-lantegia-aurrerapena-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+async function importProgress(file, msg) {
+  try {
+    const data = JSON.parse(await file.text());
+    if (data?.aplikazioa !== 'mekanismoen-lantegia' || typeof data.aurrerapena !== 'object') throw new Error();
+    progress.replace(data.aurrerapena);
+    showMsg('Aurrerapena inportatuta.');
+  } catch {
+    showMsg('Fitxategi hori ez da Mekanismoen Lantegiaren aurrerapena.', true);
+  }
+}
+let msgTimer = 0;
+function showMsg(text, err = false) {
+  const el = document.getElementById('ap-msg');
+  if (!el) return;
+  el.textContent = text;
+  el.style.color = err ? 'var(--danger)' : 'var(--ok)';
+  clearTimeout(msgTimer);
+  msgTimer = setTimeout(() => { el.textContent = ''; }, 4000);
+}
+
+// ---------- menua ----------
 function renderMenu(active) {
   document.getElementById('menu-list').innerHTML = TALDEAK.map(t => `
     <div class="menu-group">
       <h2>${t.izena}</h2>
       ${t.unitateak.map(u => u.laster
         ? `<span class="menu-link" style="color:var(--ink3)" title="${esc(u.desk)}">${u.izena}<span class="new">laster</span></span>`
-        : `<a class="menu-link ${u.id === active ? 'on' : ''}" href="#/${u.id}" ${u.id === active ? 'aria-current="page"' : ''}>${u.izena}${marks(u)}</a>`).join('')}
+        : `<a class="menu-link ${u.id === active ? 'on' : ''}" href="#/${u.id}" ${u.id === active ? 'aria-current="page"' : ''}>${u.izena}${u.orria ? '' : marks(u)}</a>`).join('')}
     </div>`).join('');
   const done = PRESTAK.filter(unitDone).length;
-  document.getElementById('menu-foot').innerHTML =
+  const foot = document.getElementById('menu-foot');
+  foot.innerHTML =
     `<div>Zure aurrerapena: <b>${done} / ${PRESTAK.length}</b> atal</div>
      <div class="bar"><span style="width:${Math.round(done / PRESTAK.length * 100)}%"></span></div>
-     <div>Nabigatzaile honetan gordetzen da.</div>`;
+     <div>Nabigatzaile honetan gordetzen da.</div>
+     <div class="foot-actions">
+       <button class="btn sm" id="ap-export" title="Aurrerapena fitxategi batean gorde">Esportatu</button>
+       <label class="btn sm" for="ap-file" title="Gordetako aurrerapena kargatu">Inportatu</label>
+       <input type="file" id="ap-file" accept=".json,application/json" hidden>
+       <button class="btn sm ghost" id="ap-reset">Hasi berriro</button>
+     </div>
+     <p class="foot-msg" id="ap-msg" aria-live="polite"></p>`;
+  foot.querySelector('#ap-export').addEventListener('click', exportProgress);
+  foot.querySelector('#ap-file').addEventListener('change', e => { if (e.target.files[0]) importProgress(e.target.files[0]); e.target.value = ''; });
+  const reset = foot.querySelector('#ap-reset');
+  let armed = false;
+  reset.addEventListener('click', () => {
+    if (!armed) {
+      armed = true;
+      reset.textContent = 'Ziur? Sakatu berriro';
+      setTimeout(() => { if (reset.isConnected) { armed = false; reset.textContent = 'Hasi berriro'; } }, 4000);
+      return;
+    }
+    progress.replace({});
+    showMsg('Aurrerapena ezabatuta.');
+  });
 }
 document.getElementById('menu-toggle').addEventListener('click', e => {
   const open = menu.classList.toggle('open');
@@ -66,16 +123,13 @@ function renderHome() {
         <div class="home-cards">
           ${t.unitateak.map(u => {
             if (u.laster) return `<div class="home-card" style="box-shadow:none;border-style:dashed;border-color:var(--ink3)"><b>${u.izena}</b><span>${u.desk}</span><span class="state">Laster</span></div>`;
+            if (u.orria) return `<a class="home-card" href="#/${u.id}"><b>${u.izena}</b><span>${u.desk}</span><span class="state">Ireki</span></a>`;
             const p = progress.get(u.id), done = unitDone(u);
             return `<a class="home-card" href="#/${u.id}"><b>${u.izena}</b><span>${u.desk}</span><span class="state ${done ? 'done' : ''}">${done ? 'Eginda' : (p.ariketak || p.galdetegia) ? 'Hasita' : 'Hasi'}</span></a>`;
           }).join('')}
         </div>
       </section>`).join('')}
     ${footer()}`;
-}
-
-function footer() {
-  return `<footer class="lan-foot">Egilea: <a href="https://berezuma.com">Beñat Erezuma Arisketa</a> · Lizentzia: CC BY-SA 4.0 · <a href="#/kredituak">Irudien kredituak</a></footer>`;
 }
 
 function renderCredits() {
@@ -116,10 +170,10 @@ async function renderUnit(id, focusStep) {
     <section class="step" id="ikusi"><div class="step-label"><h2>Ikusi</h2><span>1. urratsa</span></div><div id="ikusi-in"></div></section>
     <section class="step" id="ulertu"><div class="step-label"><h2>Ulertu</h2><span>2. urratsa</span></div><div class="prose">${u.ulertu(ctx)}</div></section>
     ${u.ariketak?.length ? `<section class="step" id="kalkulatu"><div class="step-label"><h2>Kalkulatu</h2><span>3. urratsa</span></div><div id="kalk-in"></div></section>` : ''}
-    ${u.galdetegia?.length ? `<section class="step" id="egiaztatu"><div class="step-label"><h2>Egiaztatu</h2><span>4. urratsa</span></div><div id="quiz-in"></div></section>` : ''}
+    ${u.galdetegia?.length ? `<section class="step" id="egiaztatu"><div class="step-label"><h2>Egiaztatu</h2><span>${steps.length}. urratsa</span></div><div id="quiz-in"></div></section>` : ''}
     <nav class="pager">
       ${prev ? `<a class="btn" href="#/${prev.id}">← ${prev.izena}</a>` : '<span></span>'}
-      ${next ? `<a class="btn primary" href="#/${next.id}">${next.izena} →</a>` : ''}
+      ${next ? `<a class="btn primary" href="#/${next.id}">${next.izena} →</a>` : `<a class="btn primary" href="#/erronkak">Erronkak →</a>`}
     </nav>
     ${footer()}`;
 
@@ -293,17 +347,24 @@ async function route() {
   menu.classList.remove('open');
   document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
   const [, id, step] = (location.hash.match(/^#\/([^/]*)\/?(.*)$/) || []);
+  const meta = ZERRENDA.find(u => u.id === id);
   renderMenu(id);
   try {
     if (!id) renderHome();
     else if (id === 'kredituak') renderCredits();
+    else if (meta?.orria) {
+      const page = await import(`./orriak/${id}.js`);
+      const stop = await page.default(edukia, ctx);
+      if (typeof stop === 'function') cleanup.push(stop);
+      window.scrollTo(0, 0);
+    }
     else await renderUnit(id, step);
   } catch (err) {
     console.error(err);
     edukia.innerHTML = `<div class="notice err">Atal hau ezin izan da kargatu. Freskatu orria.</div>`;
   }
   if (id) edukia.focus({ preventScroll: true });
-  document.title = id && ZERRENDA.find(u => u.id === id) ? `${ZERRENDA.find(u => u.id === id).izena} — Mekanismoen Lantegia` : 'Mekanismoen Lantegia';
+  document.title = meta ? `${meta.izena} — Mekanismoen Lantegia` : 'Mekanismoen Lantegia';
 }
 
 document.addEventListener('aurrerapena', () => renderMenu((location.hash.match(/^#\/([^/]*)/) || [])[1]));

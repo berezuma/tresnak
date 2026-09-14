@@ -16,7 +16,7 @@
 
 /* ---------- egitura ---------- */
 .lan{display:grid; grid-template-columns:var(--menu-w) minmax(0, 1fr); min-height:calc(100vh - 44px)}
-.menu{position:sticky; top:0; align-self:start; height:100vh; display:flex; flex-direction:column; background:var(--paper); border-right:1px solid var(--rule)}
+.menu{position:sticky; top:0; align-self:start; height:calc(100vh - 48px); display:flex; flex-direction:column; background:var(--paper); border-right:1px solid var(--rule)}
 .menu-head{padding:20px 18px 12px}
 .menu-brand{display:block; font-family:var(--font-display); font-size:25px; line-height:1.1; color:var(--ink); text-decoration:none}
 .menu-toggle{display:none}

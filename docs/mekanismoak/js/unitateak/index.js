@@ -1,6 +1,7 @@
 // Lantegiaren atalak.
 //   laster: true  → hurrengo fasean gehituko da
 //   kalk: false   → ez du "Kalkulatu" urratsik (galdetegiarekin osatzen da)
+//   orria: true   → orri berezia (js/orriak/ID.js), ez da unitatea eta ez du aurrerapenik zenbatzen
 export const TALDEAK = [
   {
     izena: 'Oinarriak',
@@ -42,17 +43,19 @@ export const TALDEAK = [
     unitateak: [
       { id: 'bizikleta', izena: 'Bizikleta', desk: 'Platerak, pinoiak eta garapena' },
       { id: 'lurrun-makina', izena: 'Lurrun-makina', desk: 'Industria Iraultzaren motorra', kalk: false },
-      { id: 'motorra', izena: 'Lau aldiko motorra', desk: 'Sarrera, konpresioa, leherketa, ihesa' }
+      { id: 'motorra', izena: 'Lau aldiko motorra', desk: 'Sarrera, konpresioa, leherketa, ihesa' },
+      { id: 'elementuak', izena: 'Beste elementu mekanikoak', desk: 'Trinketea, enbragea, balaztak, errodamenduak, malgukiak', kalk: false }
     ]
   },
   {
-    izena: 'Gehiago',
+    izena: 'Aplikatu eta errepasatu',
     unitateak: [
-      { id: 'elementuak', izena: 'Beste elementu mekanikoak', desk: 'Trinketea, enbragea, balaztak, errodamenduak, malgukiak', kalk: false },
-      { id: 'erronkak', izena: 'Erronkak', desk: 'Diseinatu zuk zeure mekanismoa', laster: true }
+      { id: 'erronkak', izena: 'Erronkak', desk: 'Diseinatu zuk mekanismoa, eta amaierako proiektua', orria: true },
+      { id: 'glosarioa', izena: 'Glosarioa', desk: 'Hitzak euskaraz, gaztelaniaz eta ingelesez', orria: true },
+      { id: 'irakaslea', izena: 'Irakasleentzat', desk: 'Ariketa-fitxa inprimagarriak, erantzunekin', orria: true }
     ]
   }
 ];
 
 export const ZERRENDA = TALDEAK.flatMap(t => t.unitateak.map(u => ({ ...u, taldea: t.izena })));
-export const PRESTAK = ZERRENDA.filter(u => !u.laster);
+export const PRESTAK = ZERRENDA.filter(u => !u.laster && !u.orria);
