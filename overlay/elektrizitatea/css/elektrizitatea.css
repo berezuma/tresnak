@@ -1,0 +1,96 @@
+/* ============================================================
+   Elektrizitatearen Lantegia — lantegi.css-en gainean
+   Koloreen esanahia: urdina (--s1) korrontea eta potentzial baxua,
+   arrosa (--s4) + borna eta potentzial altua, horia (--s2) argia eta energia,
+   berdea (--s3) Kirchhoff-en analisia, morea (--s5) Batxilergoa.
+   ============================================================ */
+
+/* ---------- zirkuitu-laborategia ---------- */
+.lab-tools{display:flex; flex-wrap:wrap; gap:4px; padding:8px; background:var(--sheet); border-bottom:1px solid var(--rule)}
+.lab-tool{display:grid; justify-items:center; gap:1px; width:78px; padding:4px 2px 3px; cursor:pointer; font:700 11.5px/1.2 var(--font-body); color:var(--ink2); background:transparent; border:1px solid transparent}
+.lab-tool svg{width:48px; height:26px}
+.lab-tool:hover{background:var(--chip)}
+.lab-tool[aria-pressed="true"]{color:var(--ink); background:var(--chip); border-color:var(--ink); box-shadow:1px 1px 0 var(--ink)}
+.lab-tool:focus-visible{outline:2px solid var(--s1); outline-offset:1px}
+.lab .sim-stage{align-items:start}
+.lab .sim-stage svg{cursor:crosshair; user-select:none; -webkit-user-select:none}
+.lab .sim-stage svg:focus-visible{outline:2px solid var(--s1); outline-offset:-2px}
+.lab-alert{position:absolute; left:10px; right:10px; bottom:10px; padding:8px 12px; font-size:14.5px; line-height:1.4; background:var(--sheet); border:1px solid var(--rule); border-left:3px solid var(--s2); box-shadow:var(--edge)}
+.lab-alert.err{border-left-color:var(--danger)}
+.lab-alert b{color:var(--ink)}
+.lab-alert.err b{color:var(--danger)}
+.lab-card{display:grid; gap:10px}
+.lab-card-head{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.lab-card h4{margin:0; font-family:var(--font-body); font-size:17px; font-weight:700}
+.lab-card h4 .dim{font-weight:400; color:var(--ink3)}
+.lab-ctl{display:grid; gap:10px; justify-items:start}
+.lab-ctl .ctl{width:100%}
+.lab-ctl .seg{flex-wrap:wrap}
+.lab-hint{margin:0; font-size:14.5px; line-height:1.45; color:var(--ink2)}
+.lab-opts{display:grid; gap:3px}
+.lab-opts .check{display:flex; align-items:center; gap:7px; font-size:14.5px; color:var(--ink2); cursor:pointer}
+.lab-row{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end}
+.lab-adib{display:grid; gap:2px; font-size:13px; font-weight:700; color:var(--ink2)}
+.lab-adib select{padding:4px 6px; font-size:14px; max-width:230px}
+.lab-legend{display:inline-flex; align-items:center; gap:6px}
+.lab-legend i{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--s1)}
+.lab-legend i.lg-e{background:var(--s4)}
+.lab-an{display:grid; gap:4px}
+.an-h{margin:4px 0 0; font-size:13px; font-weight:700; color:var(--ink3)}
+.an-eq{margin:6px 0 2px; font-family:var(--font-code); font-size:15px}
+.lab-an .btn{justify-self:start}
+
+/* 2. fasea: kolore-kodea, polimetroa, sareak */
+.kodea-fig{display:grid; place-items:center; padding:24px 8px 4px}
+.kodea-fig svg{width:100%; max-width:520px; height:auto}
+.kodea-val{margin:0; padding:0 8px 18px; text-align:center; font-family:var(--font-display); font-size:clamp(28px, 5vw, 42px)}
+.po-dial{flex-wrap:wrap}
+.po-dial button{font-size:13px; padding:4px 8px}
+.sim-panel .seg{flex-wrap:wrap}
+.sare-eq{display:grid; gap:3px; padding:4px 12px 12px; font-size:14.5px}
+.sare-eq p{margin:0; line-height:1.5}
+.sare-eq code{font-family:var(--font-code); font-size:14px; overflow-wrap:anywhere}
+
+/* etxeko kontsumoa */
+.etxe-list{display:grid; gap:2px; max-height:300px; overflow-y:auto; padding-right:4px}
+.etxe-row{display:grid; grid-template-columns:minmax(0, 1fr) auto; align-items:center; gap:8px; padding:2px 0; font-size:14.5px; border-bottom:1px solid var(--rule)}
+.etxe-row label{display:flex; align-items:center; gap:7px; cursor:pointer}
+.etxe-row .w{font-family:var(--font-code); font-size:13px; color:var(--ink3)}
+.etxe-row .h{display:flex; align-items:center; gap:4px; font-size:13px; color:var(--ink3)}
+.etxe-row input[type=number]{width:64px; padding:3px 5px; font-family:var(--font-code); font-size:14px}
+.stack-stage{display:grid; gap:6px}
+.murr-steps{margin:0; padding-left:20px; font-family:var(--font-code); font-size:14px}
+.murr-steps li{margin:3px 0; color:var(--ink3)}
+.murr-steps li.on{color:var(--ink); font-weight:700}
+.murr-text{margin:0; font-size:15.5px; line-height:1.5}
+.lab.wide .sim-body{grid-template-columns:minmax(0, 1fr)}
+.lab.wide .sim-stage{border-right:0; border-bottom:1px solid var(--rule)}
+.lab.wide .sim-panel{grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); align-items:start}
+
+/* ---------- simulagailu txikiak ---------- */
+.sim-graph{padding:6px 4px 0}
+.sim-graph svg{display:block; width:100%; height:auto}
+.table-mini{width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums}
+.table-mini th, .table-mini td{padding:3px 6px; text-align:right; border-bottom:1px solid var(--rule)}
+.table-mini th:first-child, .table-mini td:first-child{text-align:left}
+.table-mini th{font-size:12.5px; color:var(--ink3)}
+
+/* ariketen eskemak */
+.ex-fig{margin:10px 0 2px; max-width:420px}
+.ex-fig svg{display:block; width:100%; height:auto}
+.fitxa .ex-fig{max-width:300px}
+.fitxa .ex-fig svg *{stroke:#000}
+.fitxa .ex-fig svg text{fill:#000; stroke:none}
+
+/* laborategiaren orria */
+.lab-page-tips{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; margin-top:22px}
+.lab-page-tips section{padding:14px 16px; background:var(--sheet); border:1px solid var(--rule)}
+.lab-page-tips h3{margin:0 0 6px; font-size:20px}
+.lab-page-tips ul{margin:0; padding-left:18px}
+.lab-page-tips li{margin:4px 0; font-size:15.5px}
+
+@media (max-width:600px){
+  .lab-tool{width:auto; min-width:56px; padding:4px 5px 3px; font-size:10.5px}
+  .lab-tool svg{width:40px; height:22px}
+  .lab-alert{position:static; margin-top:6px}
+}

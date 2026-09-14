@@ -59,7 +59,7 @@ grep -q 'diseinua-ikasgaia.css' "$LESSON" || { echo "ERROREA: ikasgaiaren disein
 # HTML fitxategiak (overlay/IZENA/, osorik). Diseinu partekatua docs/oinarria/-n:
 # Marrazketa Lantegiaren app.css eta letra-tipoak + liburutegiak (overlay/oinarria/vendor).
 # Tresna bakun berri bat: karpeta overlay/-en, izena zerrenda honetan, nav.js eta index.html.
-STANDALONE=(mekanismoak parabolikoa eguzkisistema lurraetaeguzkia irudigeometrikoak baserria paperezkozubia etxeadimentsua)
+STANDALONE=(mekanismoak elektrizitatea parabolikoa eguzkisistema lurraetaeguzkia irudigeometrikoak baserria paperezkozubia etxeadimentsua)
 OIN="$OUT/oinarria"
 mkdir -p "$OIN/css" "$OIN/fonts"
 cp "$SRC_MK/fonts/"*.woff2 "$OIN/fonts/"

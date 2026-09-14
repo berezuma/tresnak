@@ -165,6 +165,28 @@ figure.fig .credit a{color:inherit}
 .home-card .state{margin-top:4px; font-size:13px; font-weight:700; color:var(--ink3)}
 .home-card .state.done{color:var(--ok)}
 
+/* ---------- ikas-mailak (aukerakoa) ---------- */
+.lvl{display:inline-block; margin-left:6px; padding:0 5px; font-family:var(--font-body); font-size:11px; font-weight:700; line-height:16px; letter-spacing:.02em; white-space:nowrap; color:var(--ink2); border:1px solid var(--ink3); vertical-align:1px}
+.lvl-2{color:var(--s1); border-color:var(--s1)}
+.lvl-3{color:var(--s5, var(--danger)); border-color:currentColor}
+.menu-link .lvl{margin-left:auto}
+.menu-link .lvl + .mark{margin-left:6px}
+.menu-link.above{color:var(--ink3)}
+.home-card.above{box-shadow:none; border-color:var(--ink3)}
+.home-card.above b{color:var(--ink2)}
+.level-pick{display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; font-size:15px; font-weight:700; color:var(--ink2)}
+.level-note{margin:0; font-size:15.5px; color:var(--ink2); max-width:44em}
+.u-level{margin-left:auto}
+.u-level .level-pick > span{position:absolute; left:-9999px}
+.u-level .seg button{font-size:13px; padding:3px 8px}
+.sakondu{padding:0; background:var(--sheet); border:1px solid var(--rule); border-left:3px solid var(--s1)}
+.sakondu[data-maila="3"]{border-left-color:var(--s5, var(--danger))}
+.sakondu > summary{cursor:pointer; padding:10px 16px; font-weight:700; font-size:16.5px}
+.sakondu > summary::marker{color:var(--ink3)}
+.sakondu > .in{padding:0 16px 14px}
+.sakondu > .in > * + *{margin-top:12px}
+.notice{padding:10px 14px; font-size:15.5px; background:var(--sheet); border:1px solid var(--rule); border-left:3px solid var(--s2)}
+
 .pager{display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; margin-top:40px; padding-top:18px; border-top:1px solid var(--rule)}
 .lan-foot{margin-top:30px; padding-block:18px 34px; font-size:14px; color:var(--ink3); border-top:1px solid var(--rule)}
 .lan-foot a{color:inherit}

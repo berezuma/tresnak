@@ -1,12 +1,13 @@
 // Irakasleentzat: ariketa-fitxa inprimagarriak, zenbaki berriekin eta erantzun-orriarekin
-import { PRESTAK } from '../unitateak/index.js';
-import { ARIKETAK } from '../ariketak.js';
 import { fmt, esc } from '../util.js';
 
-const MAILAK = { 1: 'Oinarrizkoa', 2: 'Tartekoa', 3: 'Aditua', 0: 'Nahasia' };
 const LETRAK = ['a', 'b', 'c', 'd', 'e'];
 
-export default function render(root, { footer }) {
+export default function render(root, { footer, cfg }) {
+  const { PRESTAK, ARIKETAK } = cfg;
+  const MAILAK = { 1: cfg.ariketaMailak[0], 2: cfg.ariketaMailak[1], 3: cfg.ariketaMailak[2], 0: 'Nahasia' };
+  const hasi = cfg.maila ? cfg.maila() : 1;
+
   root.innerHTML = `
     <header class="page-head">
       <div class="eyebrow">Irakasleentzat</div>
@@ -20,7 +21,7 @@ export default function render(root, { footer }) {
           <select id="ir-u">${PRESTAK.map(u => `<option value="${u.id}">${esc(u.izena)}</option>`).join('')}</select>
         </label>
         <label for="ir-m">Maila
-          <select id="ir-m">${[1, 2, 3, 0].map(m => `<option value="${m}">${MAILAK[m]}</option>`).join('')}</select>
+          <select id="ir-m">${[1, 2, 3, 0].map(m => `<option value="${m}" ${m === hasi ? 'selected' : ''}>${MAILAK[m]}</option>`).join('')}</select>
         </label>
         <label for="ir-n">Ariketak
           <select id="ir-n">${[4, 6, 8, 10].map(n => `<option ${n === 6 ? 'selected' : ''}>${n}</option>`).join('')}</select>
@@ -44,7 +45,7 @@ export default function render(root, { footer }) {
 
   async function build() {
     const meta = PRESTAK.find(u => u.id === $('#ir-u').value);
-    const u = (await import(`../unitateak/${meta.id}.js`)).default;
+    const u = (await cfg.unitatea(meta.id)).default;
     const mailaSel = +$('#ir-m').value, n = +$('#ir-n').value;
     const withQuiz = $('#ir-q').checked, withKey = $('#ir-k').checked;
     const gens = u.ariketak || [];
@@ -55,12 +56,13 @@ export default function render(root, { footer }) {
       const g = ARIKETAK[gens[i % gens.length]];
       ex.push({ ...g.sortu(maila), izena: g.izena, maila });
     }
-    const quiz = withQuiz ? (u.galdetegia || []) : [];
+    // Galdetegia: maila zehatz batean, maila horretarainoko galderak
+    const quiz = withQuiz ? (u.galdetegia || []).filter(q => !mailaSel || (q.maila || 1) <= mailaSel) : [];
     $('#ir-note').textContent = !gens.length ? 'Unitate honek ez du kalkulu-ariketarik: galdetegia bakarrik.' : '';
 
     const head = (titulua) => `
       <h2>${esc(u.izena)}${titulua ? ` · ${titulua}` : ''}</h2>
-      <p class="sub">Mekanismoen Lantegia · ${esc(meta.taldea)}${gens.length ? ` · Maila: ${MAILAK[mailaSel]}` : ''} · g = 9,8 m/s²</p>`;
+      <p class="sub">${esc(cfg.izena)} · ${esc(meta.taldea)}${gens.length ? ` · Maila: ${MAILAK[mailaSel]}` : ''}${cfg.fitxaOharra ? ` · ${cfg.fitxaOharra}` : ''}</p>`;
 
     let html = `<div class="fitxa">${head('')}
       <div class="ids"><div>Izena<span></span></div><div>Taldea<span></span></div><div>Data<span></span></div></div>
@@ -73,7 +75,7 @@ export default function render(root, { footer }) {
     if (withKey && (ex.length || quiz.length)) {
       html += `<div class="fitxa key">${head('Erantzunak')}
         <ol>
-          ${ex.map(e => `<li><strong>${fmt(e.erantzuna)} ${esc(e.unitatea)}</strong><span class="steps">${e.ebazpena.join(' → ')}</span></li>`).join('')}
+          ${ex.map(e => `<li><strong>${fmt(e.erantzuna, e.hamartarrak ?? 2)} ${esc(e.unitatea)}</strong><span class="steps">${e.ebazpena.join(' → ')}</span></li>`).join('')}
           ${quiz.map(q => `<li><strong>${LETRAK[q.z]}) ${q.a[q.z]}</strong><span class="steps" style="font-family:var(--font-body)">${q.zergatik}</span></li>`).join('')}
         </ol>
       </div>`;

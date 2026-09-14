@@ -10,6 +10,9 @@ Euskarazko web tresnak bigarren hezkuntzarako, **saio-hasierarik gabe** eta
 - **Mekanismoen Lantegia** — makinak eta mekanismoak DBH 2-3rako: simulagailuak, azalpenak,
   ariketa-sorgailua eta galdetegiak (`overlay/mekanismoak/`, ES moduluak, build-ik gabe;
   aurrerapena nabigatzailean). `mekanismoenikastaroaEUS` ikastaroan oinarritua.
+- **Elektrizitatearen Lantegia** — elektrizitatea DBH 1etik Batxilergora, Ohm-en legetik
+  Kirchhoff-en legeetaraino: zirkuitu-laborategia (analisi nodal bidezko ebazle erreala),
+  polimetroa, sare-korronteen metodoa, ariketa-sorgailua mailaka (`overlay/elektrizitatea/`).
 - **Etxe adimentsua** — Arduino eta ArduinoBlocks bidezko 8 proiektuko gida.
 - **Paperezko zubia** — zubiaren pisua eta hipotenusa kalkulatzeko.
 - **Simulagailuak** — Higidura parabolikoa, Eguzki-sistema, Lurra eta Eguzkia,
@@ -31,6 +34,8 @@ overlay/proiektu-taula/   saio-hasierarik gabe, datuak localStorage-n
 overlay/marrazketa/       berdin
 overlay/oinarria/         tresna bakunen oinarria → docs/oinarria/
   css/tresna.css            osagai partekatuak (graduatzaileak, emaitzak, pantaila osoa)
+  lantegia/                 bi lantegien motorra: nabigazioa, urratsak, ariketak, galdetegiak,
+                            aurrerapena, ikas-mailak, glosarioa eta irakasleen fitxak
   vendor/                   liburutegiak: Three.js, Chart.js, Tween.js, SunCalc
 overlay/parabolikoa/ …    tresna bakunak: HTML fitxategi bat (+ irudiak), osorik
 overlay/index.html        hasierako orria
