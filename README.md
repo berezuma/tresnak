@@ -13,6 +13,14 @@ Euskarazko web tresnak bigarren hezkuntzarako, **saio-hasierarik gabe** eta
 - **Elektrizitatearen Lantegia** — elektrizitatea DBH 1etik Batxilergora, Ohm-en legetik
   Kirchhoff-en legeetaraino: zirkuitu-laborategia (analisi nodal bidezko ebazle erreala),
   polimetroa, sare-korronteen metodoa, ariketa-sorgailua mailaka (`overlay/elektrizitatea/`).
+- **Robotikaren Lantegia** — pentsamendu konputazionala, programazioa, elektronika eta robotika
+  DBH 1etik Batxilergora: fluxu-diagramak urratsez urrats, Blockly bidezko bloke-programazioa
+  (euskarazko bloke propioak eta `eval`-ik gabeko exekutatzailea), robot-sareta puzzleekin,
+  Micro:bit birtuala eta kontsola; osagai elektronikoak (LEDa, RC, transistorea), sistema bitarra,
+  ate logikoak eta Karnaugh-en mapak (Quine-McCluskey), RS biegonkorra eta zirkuitu pneumatikoak
+  (sekuentziak, seinale-gatazka eta kaskada-metodoa); Arduino birtuala blokeetatik sortutako C++ kodearekin,
+  robot mugikorra (lerro-jarraitzailea, oztopoak), aplikazio mugikorrak, kontrol-sistemak, robot-besoaren
+  zinematika, gauzen Internet (MQTT) eta adimen artifiziala (k-NN, pertzeptroia) (`overlay/robotika/`).
 - **Etxe adimentsua** — Arduino eta ArduinoBlocks bidezko 8 proiektuko gida.
 - **Paperezko zubia** — zubiaren pisua eta hipotenusa kalkulatzeko.
 - **Simulagailuak** — Higidura parabolikoa, Eguzki-sistema, Lurra eta Eguzkia,
@@ -101,6 +109,6 @@ Ireki <http://localhost:8000>.
 egilea (Beñat Erezuma) aipatuta. Simulagailu batzuk **CC BY-SA 4.0** dira
 (Higidura parabolikoa, Eguzki-sistema, Baserria), bakoitzean adierazten den bezala.
 
-Erabilitako software librea: Three.js (MIT), Chart.js (MIT), Tween.js (MIT), SunCalc (BSD),
+Erabilitako software librea: Three.js (MIT), Chart.js (MIT), Tween.js (MIT), SunCalc (BSD), Blockly (Apache 2.0),
 DM Serif Display eta Lato letra-tipoak (SIL Open Font License).
 Planeten irudiak: NASA (jabari publikoa) eta ESA/MPS OSIRIS (CC BY-SA 3.0 IGO), Wikimedia Commons bidez.

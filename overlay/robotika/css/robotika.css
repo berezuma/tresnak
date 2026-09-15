@@ -1,0 +1,590 @@
+/* ============================================================
+   Robotikaren Lantegia — lantegia.css-en gainean
+   Blokeek beren kategoriaren kolorea dute (js/blokeak/definizioak.js).
+   Simulagailuetan: urdina (--s1) robota eta datuak, arrosa (--s4) exekutatzen ari dena,
+   berdea (--s3) helburua eta hasiera/amaiera, horia (--s2) erabakiak eta izarrak.
+   ============================================================ */
+
+/* ---------- bloke-irudi estatikoak (blokeHTML.js) ---------- */
+.bk-prog{display:inline-grid; justify-items:start; max-width:100%; overflow-x:auto; padding:12px 16px 14px; background:var(--paper); border:1px solid var(--rule); -webkit-print-color-adjust:exact; print-color-adjust:exact}
+.bk{--bk:#315eff; display:block; width:max-content; max-width:100%; margin-top:2px; padding:6px 12px; font:700 14.5px/1.35 var(--font-body); color:#fff; background:var(--bk); border-radius:6px}
+.bk-c{display:grid; justify-items:start; padding:0; background:none}
+.bk-c > .bk-h{min-width:130px; padding:6px 12px; background:var(--bk); border-radius:6px 6px 6px 0}
+.bk-c > .bk-in + .bk-h{border-radius:0 6px 6px 0}
+.bk-c > .bk-in{display:grid; justify-items:start; align-content:start; min-height:14px; padding:1px 0 3px 8px; border-left:14px solid var(--bk)}
+.bk-c > .bk-f{width:72px; height:12px; background:var(--bk); border-radius:0 0 6px 6px}
+.bk-hat > .bk-h:first-child{padding-top:11px; border-radius:20px 20px 6px 0}
+.bk-hutsik{width:64px; height:22px; margin:2px 0; border:1.5px dashed var(--ink3); border-radius:4px}
+.bk-n{display:inline-block; min-width:1.7em; margin:0 2px; padding:0 7px; text-align:center; color:#111; background:#fff; border-radius:999px}
+.bk-v{display:inline-block; margin:0 2px; padding:0 8px; color:#fff; background:#b54d15; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)}
+.bk-b{display:inline-block; margin:0 2px; padding:0 12px; color:#fff; background:rgba(0,0,0,.24); clip-path:polygon(9px 0, calc(100% - 9px) 0, 100% 50%, calc(100% - 9px) 100%, 9px 100%, 0 50%)}
+.bk-row{display:flex; flex-wrap:wrap; gap:14px 22px; align-items:flex-start}
+.bk-row figure{margin:0; display:grid; gap:6px}
+.bk-row figcaption{font-size:14.5px; color:var(--ink2)}
+.ex-fig{margin-top:10px}
+
+/* ---------- kode-simulagailuen egitura (sareta, Micro:bit, kontsola) ---------- */
+.rb{container-type:inline-size}
+.rb-head{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding:8px 12px; background:var(--sheet); border-bottom:1px solid var(--rule)}
+.rb-head-l{font-size:13px; font-weight:700; color:var(--ink3)}
+.rb-head label{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:var(--ink2)}
+.rb-head select{padding:4px 8px; font-size:15px; max-width:250px}
+.rb-puzleak{display:flex; flex-wrap:wrap; gap:5px}
+.rb-pz{min-width:36px; height:32px; padding:0 9px; font:700 15px/1 var(--font-body); color:var(--ink); background:var(--sheet); border:1px solid var(--ink3); cursor:pointer}
+.rb-pz:hover{background:var(--chip)}
+.rb-pz.on{background:var(--chip); border-color:var(--ink); box-shadow:var(--edge)}
+.rb-pz.done{border-bottom:3px solid var(--ok)}
+.rb-pz span{margin-left:3px; font-size:12px; color:var(--ok)}
+.rb-body{display:grid; grid-template-columns:minmax(0, 1.25fr) minmax(0, 1fr)}
+.rb-kodea{display:grid; grid-template-rows:auto 1fr; min-width:0; border-right:1px solid var(--rule)}
+.rb-brief{padding:12px 14px 10px}
+.rb-brief:empty{display:none}
+.rb-brief h4{margin:0; font-family:var(--font-display); font-weight:400; font-size:22px; line-height:1.2}
+.rb-azal{margin:4px 0 0; font-size:15.5px; line-height:1.5; color:var(--ink2)}
+.rb-azal b{color:var(--ink)}
+.rb-pista{margin-top:6px; font-size:14.5px}
+.rb-pista summary{cursor:pointer; font-weight:700; color:var(--ink2)}
+.rb-pista p{margin:4px 0 0; color:var(--ink2)}
+.rb-editorea{position:relative; min-height:400px; border-top:1px solid var(--rule)}
+.rb-editorea > .blk-host{position:absolute; inset:0}
+.rb-kargatzen{display:grid; place-items:center; min-height:220px; font-size:14px; color:var(--ink3)}
+.rb-mundua{display:grid; align-content:start; min-width:0}
+.rb-stage{padding:10px; background:var(--paper); border-bottom:1px solid var(--rule)}
+.rb-stage svg{display:block; width:100%; height:auto; max-height:430px; margin:0 auto}
+.rb-ctl{display:grid; gap:10px; padding:12px 14px 14px}
+.rb-msg{margin:0; min-height:1.45em; font-size:15px; line-height:1.45; color:var(--ink2)}
+.rb-msg.ok{color:var(--ok); font-weight:700}
+.rb-msg.err{color:var(--danger); font-weight:700}
+.rb-msg.warn{color:var(--s2-ink); font-weight:700}
+.rb-count{margin:0; font-size:14px; color:var(--ink3)}
+.rb-count:empty{display:none}
+.rb-count b{color:var(--ink); font-variant-numeric:tabular-nums}
+.rb-count.over b{color:var(--danger)}
+.rb-edit{display:grid; gap:6px}
+.rb-edit .seg{flex-wrap:wrap}
+.rb-edit .seg button{padding:3px 8px; font-size:13px}
+@container (max-width:720px){
+  .rb-body{grid-template-columns:minmax(0, 1fr)}
+  .rb-kodea{border-right:0; border-bottom:1px solid var(--rule)}
+  .rb-editorea{min-height:380px}
+}
+
+/* Blockly lantegiaren letra-tipoarekin */
+.rb-editorea .blocklyText, .rb-editorea .blocklyFlyoutLabelText{font-family:var(--font-body) !important}
+.rb-editorea .blocklyToolboxCategoryLabel, .rb-editorea .blocklyTreeLabel{font-family:var(--font-body); font-weight:700; font-size:14px}
+.blocklyWidgetDiv .blocklyMenu, .blocklyDropDownDiv, .blocklyTooltipDiv{font-family:var(--font-body) !important}
+.rb-editorea .blocklyToolboxDiv, .rb-editorea .blocklyToolbox{border-right:1px solid var(--rule)}
+
+/* ---------- robot-sareta ---------- */
+.rb-lurra{fill:var(--sheet); stroke:var(--grid); stroke-width:1}
+.rb-horma{fill:color-mix(in srgb, var(--ink) 68%, var(--paper)); stroke:var(--paper); stroke-width:1}
+.rb-helmuga{fill:var(--g3-fill)}
+.rb-makila{stroke:var(--ink); stroke-width:2.5; stroke-linecap:round}
+.rb-bandera{fill:var(--s3); stroke:var(--ink); stroke-width:1.5; stroke-linejoin:round}
+.rb-helb{fill:none; stroke:var(--s1); stroke-width:2; stroke-dasharray:5 4}
+.rb-margo{fill:color-mix(in srgb, var(--s1) 50%, var(--sheet)); stroke:var(--s1); stroke-width:2}
+.rb-margo.soberan{fill:color-mix(in srgb, var(--danger) 40%, var(--sheet)); stroke:var(--danger)}
+.rb-izarra{fill:var(--s2); stroke:var(--ink); stroke-width:1.5; stroke-linejoin:round}
+.rb-gorputza{fill:var(--sheet); stroke:var(--ink); stroke-width:2.5}
+.rb-gurpila{fill:var(--ink)}
+.rb-begia{fill:var(--s1)}
+.rb-muturra{fill:var(--s4); stroke:var(--ink); stroke-width:1.5; stroke-linejoin:round}
+.rb-edit ~ * {min-width:0}
+.rb svg rect[data-x]{cursor:default}
+.rb .rb-edit + .rb-msg{margin-top:2px}
+
+/* txartelak */
+.rb-txartelak{display:grid; gap:12px; align-content:start; padding:12px 14px 16px; border-top:1px solid var(--rule)}
+.rb-paleta{display:flex; flex-wrap:wrap; gap:8px}
+.rb-tx-btn{display:grid; justify-items:center; min-width:86px; padding:5px 10px 6px; font:700 13.5px/1.2 var(--font-body); color:#fff; background:#315eff; border:1px solid #1f3fb8; box-shadow:2px 2px 0 var(--ink); cursor:pointer}
+.rb-tx-btn b{font-size:26px; line-height:1.1}
+.rb-tx-btn:active{transform:translate(2px, 2px); box-shadow:none}
+.rb-tx-btn[data-t="r_hartu"]{background:#9a6700; border-color:#6b4800}
+.rb-sekuentzia{display:flex; flex-wrap:wrap; gap:9px 7px; margin:0; padding:12px 10px 10px; min-height:70px; list-style:none; background:var(--paper); border:1px dashed var(--ink3); counter-reset:tx}
+.rb-sekuentzia li{position:relative; counter-increment:tx}
+.rb-sekuentzia li:not(.rb-hutsik)::after{content:counter(tx); position:absolute; top:-8px; right:-6px; min-width:17px; padding:0 3px; font:700 10.5px/15px var(--font-body); text-align:center; color:var(--ink); background:var(--sheet); border:1px solid var(--ink3); border-radius:8px; pointer-events:none}
+.rb-txartela{width:44px; height:44px; font-size:24px; line-height:1; color:#fff; background:#315eff; border:3px solid transparent; border-radius:6px; cursor:pointer}
+.rb-txartela:hover{filter:brightness(1.12)}
+.rb-txartela.on{border-color:var(--s4); box-shadow:0 0 0 3px color-mix(in srgb, var(--s4) 45%, transparent)}
+.rb-txartela.err{background:var(--danger)}
+.rb-hutsik{align-self:center; font-size:14px; color:var(--ink3)}
+
+/* ---------- fluxu-diagramak ---------- */
+.fd .sim-stage{align-items:start}
+.fd .sim-stage svg{max-height:680px}
+.fd-n{fill:var(--sheet); stroke:var(--ink); stroke-width:2.5; stroke-linejoin:round}
+.fd-hasi, .fd-amaiera{fill:var(--g3-fill)}
+.fd-sarrera, .fd-irteera{fill:var(--g1-fill)}
+.fd-erabakia{fill:var(--g2-fill)}
+.fd-n.on{stroke:var(--s4); stroke-width:5}
+.fd-t{font-family:var(--font-body); font-size:15px; font-weight:700; fill:var(--ink)}
+.fd-l{fill:none; stroke:var(--ink2); stroke-width:2; stroke-linejoin:round}
+.fd-l.on{stroke:var(--s4); stroke-width:3.5}
+.fd-gezia{fill:var(--ink2)}
+.fd-gezia.on{fill:var(--s4)}
+.fd-lab{font-family:var(--font-body); font-size:13.5px; font-weight:700; fill:var(--ink2)}
+.fd-hautatu{display:grid; gap:3px; font-size:13px; font-weight:700; color:var(--ink2)}
+.fd-hautatu select{padding:5px 8px; font-size:15px}
+.fd-galdera{display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 12px; font-size:15.5px; background:color-mix(in srgb, var(--s4) 10%, var(--sheet)); border-left:3px solid var(--s4)}
+.fd-galdera label{font-family:var(--font-code); font-weight:700}
+.fd-galdera input{width:96px; padding:5px 8px; font-family:var(--font-code); font-size:16px}
+.fd-galdera .fd-err{flex-basis:100%; margin:0; font-size:14px; color:var(--danger)}
+.fd-info{display:block !important; font-size:14.5px; line-height:1.45; color:var(--ink2)}
+.fd-info b{font-family:var(--font-code); font-weight:700; color:var(--ink)}
+.fd-h{margin:0 0 4px; font-family:var(--font-body); font-size:13px; font-weight:700; color:var(--ink3)}
+.fd-vars{width:100%; border-collapse:collapse; font-size:15px}
+.fd-vars th, .fd-vars td{padding:3px 8px; font-family:var(--font-code); border-bottom:1px solid var(--rule)}
+.fd-vars th{text-align:left; font-weight:700}
+.fd-vars td{text-align:right}
+.fd-vars td.dim{text-align:left; font-family:var(--font-body); color:var(--ink3)}
+.fd-vars tr.berria td{background:color-mix(in srgb, var(--s4) 16%, transparent)}
+.fd-out{margin:0; min-height:2.8em; max-height:150px; overflow:auto; padding:8px 10px; font:14.5px/1.5 var(--font-code); white-space:pre-wrap; color:var(--ink); background:var(--chip); border-left:3px solid var(--ink)}
+.fd-legend{display:flex; flex-wrap:wrap; gap:6px 16px; padding:8px 12px; font-size:13.5px; color:var(--ink2); border-top:1px solid var(--rule)}
+.fd-legend span{display:inline-flex; align-items:center; gap:6px}
+.fd-legend svg{width:36px; height:20px}
+
+/* ---------- Micro:bit ---------- */
+.mb-stage svg{max-width:360px}
+.mb-led{fill:#3b2626}
+.mb-led.on{fill:#ff4b3e; filter:drop-shadow(0 0 3px #ff4b3e)}
+.mb-btn{cursor:pointer}
+.mb-btn:focus-visible{outline:none}
+.mb-btn:focus-visible rect{stroke:var(--s1); stroke-width:3}
+.mb-btn .mb-botoi{fill:#111}
+.mb-btn.sakatuta .mb-botoi{fill:#6b6b6b}
+.mb-p0{fill:#555}
+.mb-p0.on{fill:#34c759; filter:drop-shadow(0 0 4px #34c759)}
+.mb-sarrerak{display:flex; flex-wrap:wrap; gap:6px}
+.mb-sarrerak .btn{min-width:46px}
+.mb-sarrerak .btn.sakatuta{background:var(--chip); transform:translate(1px, 1px); box-shadow:none}
+.mb-ponpa{display:inline-flex; align-items:center; gap:6px}
+.mb-ponpa i{display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--rule)}
+.mb-ponpa.on i{background:var(--s1); box-shadow:0 0 0 3px color-mix(in srgb, var(--s1) 30%, transparent)}
+.rb .check{display:flex; align-items:center; gap:7px; font-size:14.5px; color:var(--ink2); cursor:pointer}
+
+/* ---------- kontsola ---------- */
+.ks-out{margin:0; min-height:120px; max-height:240px; overflow:auto; padding:10px 12px; font:15px/1.5 var(--font-code); white-space:pre-wrap; color:#e8e6df; background:#1d1d1b; border-left:3px solid var(--s3)}
+.ks-out:empty::before{content:'(kontsola hutsik)'; color:#8a887f}
+.ks-kutxak{display:flex; flex-wrap:wrap; gap:10px}
+.ks-kutxa{display:grid; justify-items:center; gap:2px; min-width:78px; padding:6px 10px 8px; background:var(--sheet); border:1.5px solid #b54d15; border-top-width:6px}
+.ks-kutxa span{font-size:12.5px; font-weight:700; color:#b54d15}
+.ks-kutxa b{font:700 19px/1.2 var(--font-code); color:var(--ink); overflow-wrap:anywhere}
+.ks-kutxa.aldatu{animation:ks-flash .5s}
+@keyframes ks-flash{from{background:color-mix(in srgb, #b54d15 30%, var(--sheet))}to{background:var(--sheet)}}
+@media (prefers-reduced-motion:reduce){ .ks-kutxa.aldatu{animation:none} }
+.ks-kutxak:empty::before{content:'Oraindik ez dago aldagairik.'; font-size:14px; color:var(--ink3)}
+
+/* ---------- ariketak ---------- */
+.ex-pseudo{margin:10px 0 0; padding:10px 14px 10px 38px; font-size:15.5px; background:var(--chip); border-left:3px solid var(--ink3)}
+.ex-pseudo li{padding-left:calc(var(--s, 0) * 1.7em)}
+.ex-pseudo code{font-family:var(--font-code); white-space:pre-wrap}
+.ex-seg{margin-top:8px; font:700 22px/1.35 var(--font-code)}
+.ex-leds{display:inline-grid; grid-template-columns:repeat(5, 18px); gap:7px 8px; padding:12px 14px; background:#232427; border-radius:8px; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+.ex-leds.lab{grid-template-columns:14px repeat(5, 18px)}
+.ex-leds i{display:block; width:8px; height:14px; margin:0 auto; background:#3b2626; border-radius:2px}
+.ex-leds i.on{background:#ff4b3e; box-shadow:0 0 5px #ff4b3e}
+.ex-leds b{font:700 11px/14px var(--font-code); text-align:center; color:#c7c7c7}
+.solution .ex-leds{margin-top:4px}
+
+/* bloke-editorea: errorea eman duen blokea */
+.blk-errorea .blocklyPath{stroke:var(--danger) !important; stroke-width:4px !important}
+
+/* ---------- elektronika eta pneumatika: orokorra ---------- */
+.lab-hint{margin:0; font-size:14.5px; line-height:1.45; color:var(--ink2)}
+.ez{text-decoration:overline; text-decoration-thickness:1.5px; text-underline-offset:0}
+.ikurra{display:inline-block; width:90px; height:40px; vertical-align:middle}
+.ikurra.ate{width:110px; height:60px}
+.ikur-taula td, .ate-taula td{vertical-align:middle}
+.table-scroll table.tbl.bit-taula{min-width:0; width:auto}
+.bit-taula th, .bit-taula td{text-align:center; font-family:var(--font-code)}
+.bit-taula td.bat{color:var(--s1); font-weight:700}
+.ex-log{margin-top:10px; font-size:21px}
+.ex-sar{margin:8px 0 0}
+.ex-bin{font-family:var(--font-code); letter-spacing:.06em}
+.ex-rs{margin-top:10px; border-collapse:collapse; font-family:var(--font-code)}
+.ex-rs th, .ex-rs td{padding:3px 10px; text-align:center; border:1px solid var(--rule)}
+.ex-rs th{font-family:var(--font-body); background:var(--chip)}
+
+/* ---------- ate logikoak (logika-marrazkia.js) ---------- */
+.lg text{font-family:var(--font-body)}
+.lg-atea{fill:var(--sheet); stroke:var(--ink); stroke-width:2.5; stroke-linejoin:round}
+.lg-atea.on{fill:color-mix(in srgb, var(--s1) 16%, var(--sheet))}
+.lg-h{fill:none; stroke:var(--ink3); stroke-width:2; stroke-linejoin:round}
+.lg-h.on{stroke:var(--s1); stroke-width:3.5}
+.lg-dot{fill:var(--ink3)}
+.lg-dot.on{fill:var(--s1)}
+.lg-izena{font-size:11.5px; font-weight:700; fill:var(--ink3); letter-spacing:.03em}
+.lg-bal{font:700 13px var(--font-code) !important; fill:var(--ink3)}
+.lg-bal.on{fill:var(--s1)}
+.lg-sar{font-size:16px; font-weight:700; fill:var(--ink)}
+.lg-sar.sm{font-size:14px}
+.lg-in{cursor:pointer}
+.lg-in rect{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.lg-in text{font:700 16px var(--font-code) !important; fill:var(--ink)}
+.lg-in.on rect{fill:var(--s1); stroke:var(--s1)}
+.lg-in.on text{fill:#fff}
+.lg-in:focus{outline:none}
+.lg-in:focus-visible rect{stroke:var(--s4); stroke-width:3.5}
+.lg-lanpara circle{fill:var(--sheet); stroke:var(--ink); stroke-width:2.5}
+.lg-lanpara path{stroke:var(--ink); stroke-width:1.6}
+.lg-lanpara.on circle{fill:var(--s2); filter:drop-shadow(0 0 6px var(--s2))}
+.lg-irt{font-size:15px; font-weight:700; fill:var(--ink)}
+.lgs .sim-stage svg{max-height:420px}
+.lg-ateak{display:flex; flex-wrap:wrap; gap:6px}
+.lg-ateak .btn{display:grid; justify-items:center; min-width:72px; line-height:1.15}
+.lg-ateak small{font-size:11px; font-weight:700; opacity:.7}
+.lg-taula-w{max-height:330px; overflow:auto}
+.lg-taula{border-collapse:collapse; font:15px var(--font-code)}
+.lg-taula th, .lg-taula td{padding:3px 12px; text-align:center; border-bottom:1px solid var(--rule)}
+.lg-taula th{font-family:var(--font-body); font-weight:700; background:var(--chip); position:sticky; top:0; z-index:3}
+.lg-taula .q{border-left:2px solid var(--ink)}
+.lg-taula td.bat{color:var(--s1); font-weight:700}
+.lg-taula .dim{color:var(--ink3); font-size:12.5px}
+.lg-taula tr[data-k]{cursor:pointer}
+.lg-taula tbody tr:hover{background:var(--chip)}
+.lg-taula tr.on td{background:color-mix(in srgb, var(--s4) 16%, transparent)}
+.lg-taula tr:focus-visible{outline:2px solid var(--s4); outline-offset:-2px}
+.lg-taula.mini{font-size:13px}
+.lg-taula.mini th, .lg-taula.mini td{padding:0 7px; position:static}
+.lgs .readouts b, .bts .readouts b{font-family:var(--font-code)}
+
+/* ---------- Karnaugh-en mapa eta biegonkorra ---------- */
+.kn-modua{padding:8px 12px; background:var(--sheet); border-bottom:1px solid var(--rule)}
+.kn-modua .seg button{font-size:14px; padding:5px 10px}
+.kn-stage{align-content:start; justify-items:center; gap:14px}
+.kn-mapa-w{display:grid; justify-items:center; gap:4px}
+.kn-mapa{border-collapse:collapse; font-family:var(--font-code)}
+.kn-mapa th{padding:4px 8px; font-size:14px; font-weight:700; color:var(--ink2)}
+.kn-mapa td{position:relative; width:62px; height:54px; padding:0; text-align:center; background:var(--sheet); border:1.5px solid var(--ink)}
+.kn-mapa td.on{background:color-mix(in srgb, var(--s4) 14%, var(--sheet))}
+.kn-mapa td small{position:absolute; right:4px; bottom:2px; font-size:10px; color:var(--ink3); pointer-events:none}
+.kn-izk{position:relative; width:62px; height:46px; background:linear-gradient(to top right, transparent calc(50% - 1px), var(--ink3) 50%, transparent calc(50% + 1px))}
+.kn-izk span:first-child{position:absolute; left:6px; bottom:3px}
+.kn-izk span:last-child{position:absolute; right:6px; top:3px}
+.kn-q{position:relative; z-index:2; width:100%; height:100%; font:700 18px var(--font-code); color:var(--ink3); background:none; border:0; cursor:pointer}
+.kn-taula .kn-q{width:auto; height:auto; min-width:34px; padding:1px 8px; font-size:15px}
+.kn-mapa.estatikoa .kn-q{display:grid; place-items:center; cursor:default}
+.kn-q.bat{color:var(--s1)}
+.kn-q.x{color:var(--s2-ink)}
+.kn-q:focus-visible{outline:2px solid var(--s4); outline-offset:-3px}
+.kn-g{position:absolute; inset:calc(4px + var(--j) * 5px); border:3px solid var(--c); border-radius:10px; pointer-events:none; opacity:.85}
+.kn-t{padding:0 3px; border-bottom:3px solid var(--c)}
+.readouts .kn-adier b{white-space:normal; font-family:var(--font-code); text-align:right}
+.kn-zirk{width:100%}
+.kn-zirk svg{max-height:540px}
+.kn-konst{margin:0; font-size:15px; color:var(--ink2)}
+.kn-bikotea{display:flex; flex-wrap:wrap; align-items:center; gap:14px 26px}
+.kn-bikotea ul{flex:1 1 240px}
+.kn-ax{stroke:var(--rule); stroke-width:1}
+.kn-uhin{fill:none; stroke:var(--s1); stroke-width:2.5; stroke-linejoin:round}
+.fd-h-svg{font-size:13px; font-weight:700; fill:var(--ink3)}
+.kn-motor circle{fill:var(--sheet); stroke:var(--ink); stroke-width:2.5}
+.kn-motor text{font-size:15px; font-weight:700; fill:var(--ink)}
+.kn-motor.on circle{fill:color-mix(in srgb, var(--s3) 35%, var(--sheet)); stroke:var(--s3)}
+
+/* ---------- sistema bitarra ---------- */
+.bt-stage{display:grid; align-content:center; gap:18px; padding:20px 14px}
+.bt-bitak{display:grid; grid-template-columns:repeat(var(--n, 8), minmax(0, 1fr)); gap:6px}
+.bt-bit{display:grid; justify-items:center; gap:4px; padding:8px 2px 6px; font-family:var(--font-body); color:var(--ink); background:var(--sheet); border:1.5px solid var(--ink); box-shadow:2px 2px 0 var(--ink); cursor:pointer}
+.bt-bit:active{transform:translate(2px, 2px); box-shadow:none}
+.bt-bit b{font:700 clamp(19px, 2.6vw, 30px)/1 var(--font-code)}
+.bt-pisua{font-size:13px; font-weight:700; color:var(--ink2); font-variant-numeric:tabular-nums}
+.bt-ber{font-size:11px; color:var(--ink3)}
+.bt-led{width:18px; height:18px; border-radius:50%; background:var(--grid); border:1.5px solid var(--ink3)}
+.bt-bit.on{background:color-mix(in srgb, var(--s2) 22%, var(--sheet))}
+.bt-bit.on .bt-led{background:var(--s2); border-color:var(--s2-ink); box-shadow:0 0 8px var(--s2)}
+.bt-bit:focus-visible{outline:3px solid var(--s4); outline-offset:2px}
+.bt-batura{text-align:center; font:17px/1.4 var(--font-code); color:var(--ink2); overflow-wrap:anywhere}
+.bt-batura b{font-size:34px; color:var(--ink)}
+.bt-erronka{display:grid; gap:6px}
+
+/* ---------- osagai elektronikoak ---------- */
+.os-motor.on .os-helize{animation:os-bira var(--abiadura) linear infinite}
+@keyframes os-bira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){ .os-motor.on .os-helize{animation:none} }
+
+/* ---------- pneumatika (pneumatika-ikurrak.js) ---------- */
+.pn text{font-family:var(--font-body)}
+.pn-l{fill:none; stroke:var(--ink); stroke-width:2.2; stroke-linejoin:round}
+.pn-l.on{stroke:var(--s1); stroke-width:3.5}
+.pn-l.pil{stroke-dasharray:7 5}
+.pn-kutxa{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.pn-kutxa.on{fill:color-mix(in srgb, var(--s1) 9%, var(--sheet))}
+.pn-gezia line{stroke:var(--ink); stroke-width:2}
+.pn-gezia path{fill:var(--ink)}
+.pn-gezia.on line{stroke:var(--s1); stroke-width:3}
+.pn-gezia.on path{fill:var(--s1)}
+.pn-itxi, .pn-akt{fill:none; stroke:var(--ink); stroke-width:2; stroke-linejoin:round}
+.pn-pil{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.pn-pil.on{fill:color-mix(in srgb, var(--s1) 22%, var(--sheet)); stroke:var(--s1)}
+.pn-pil.err{fill:color-mix(in srgb, var(--danger) 28%, var(--sheet)); stroke:var(--danger); stroke-width:3}
+.pn-piltri{fill:var(--ink)}
+.pn-piltri.on{fill:var(--s1)}
+.pn-iturria circle{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.pn-iturria path{fill:var(--s1)}
+.pn-ihesa line{stroke:var(--ink); stroke-width:2}
+.pn-ihesa path{fill:var(--sheet); stroke:var(--ink); stroke-width:1.8; stroke-linejoin:round}
+.pn-ganbera{fill:var(--sheet)}
+.pn-ganbera.on{fill:color-mix(in srgb, var(--s1) 30%, var(--sheet))}
+.pn-gorputza{fill:none; stroke:var(--ink); stroke-width:2.5}
+.pn-zurtoina{fill:color-mix(in srgb, var(--ink) 50%, var(--sheet)); stroke:var(--ink); stroke-width:1.2}
+.pn-enboloa{fill:var(--ink)}
+.pn-malguki{fill:none; stroke:var(--ink2); stroke-width:1.6}
+.pn-karga{fill:var(--g2-fill); stroke:var(--ink); stroke-width:2}
+.pn-lab{font-size:13px; font-weight:700; fill:var(--ink2)}
+.pn-lab.on{fill:var(--s3)}
+.pn-port{font-size:11.5px; font-weight:700; fill:var(--ink3)}
+.pn-izena{font-family:var(--font-display) !important; font-size:26px; fill:var(--ink)}
+.pn-izena.sm{font-size:20px}
+.pn-muga path{stroke:var(--ink); stroke-width:2}
+.pn-muga circle{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.pn-muga.on circle{fill:var(--s3); stroke:var(--s3)}
+.pn-bola{fill:var(--ink2)}
+.pn-pilet{font:700 13.5px var(--font-code) !important; fill:var(--ink3)}
+.pn-pilet.on{fill:var(--s1)}
+.pn-pilet.err{fill:var(--danger)}
+.pn-txip rect{fill:var(--sheet); stroke:var(--ink3); stroke-width:1.5}
+.pn-txip text{font:700 13.5px var(--font-code) !important; fill:var(--ink2)}
+.pn-txip.on rect{fill:var(--s3); stroke:var(--s3)}
+.pn-txip.on text{fill:#fff}
+.pn-aginte{display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px}
+.pn-sakatu{min-width:150px; touch-action:none; user-select:none; -webkit-user-select:none}
+.pn-sakatu.sakatuta{transform:translate(2px, 2px); box-shadow:none}
+.pz-stage{align-content:start; gap:6px}
+.pz-fase{border-top:1px solid var(--rule)}
+.pz-ax{stroke:var(--ink3); stroke-width:1}
+.pz-ax.dim{stroke:var(--rule); stroke-dasharray:3 4}
+.pz-trazua{fill:none; stroke:var(--s1); stroke-width:2.5; stroke-linejoin:round}
+
+/* ---------- blokeak testu-kode gisa (kodea.js) ---------- */
+.kd-panela{background:var(--sheet); border-top:1px solid var(--rule)}
+.kd-head{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 12px; padding:8px 12px; border-bottom:1px solid var(--rule)}
+.kd-head .seg button{font-size:13px; padding:3px 9px}
+.kd-oharra{font-size:13px; color:var(--ink3)}
+.kd-kodea{margin:0; max-height:360px; overflow:auto; padding:12px 16px; font:14px/1.55 var(--font-code); color:#e8e6df; background:#1d1d1b; white-space:pre; tab-size:4; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+.kd-kodea .kd-g{color:#ff8fb1}
+.kd-kodea .kd-f{color:#8fd3ff}
+.kd-kodea .kd-s{color:#b8e986}
+.kd-kodea .kd-n{color:#ffcf70}
+.kd-kodea .kd-i{color:#9a988f; font-style:italic}
+.bk-row figure .kd-kodea{max-width:100%}
+.kd-hirukoa figure{min-width:0}
+.ex-kodea{margin-top:10px; font-size:15px}
+.ex-seq{display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; margin-top:10px; font-size:15px}
+.ex-seq span{padding:2px 8px; font-weight:700; background:var(--chip); border:1px solid var(--rule); border-radius:4px}
+.ex-seq i{font-style:normal; color:var(--ink3)}
+.btn.sakatuta{transform:translate(1px, 1px); box-shadow:none; background:var(--chip)}
+
+/* ---------- Arduino ---------- */
+.ars .rb-stage svg{max-height:380px}
+.ar-hari{fill:none; stroke:#7b8591; stroke-width:1.6; stroke-linejoin:round}
+.ar-plaka-t{font:700 18px var(--font-body); fill:#fff; letter-spacing:.12em}
+.ar-plaka-t.sm{font-size:12px}
+.ar-pin{fill:#3a3a3a}
+.ar-pin.on{fill:#ffb020}
+.ar-pin-t{font:600 7px var(--font-code); fill:#e6f4f5}
+.ar-led{stroke:rgba(0,0,0,.45); stroke-width:1}
+.ar-hanka{stroke:#9aa0a6; stroke-width:1.5}
+.ar-tag{font:700 10.5px var(--font-body); fill:var(--ink2)}
+.ar-kaxa{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.ar-fan ellipse{fill:var(--s1); opacity:.8}
+.ar-fan circle{fill:var(--ink)}
+.ar-fan.on{animation:os-bira .5s linear infinite}
+.ar-uhinak path{fill:none; stroke:var(--s4); stroke-width:2}
+.ar-btn{cursor:pointer}
+.ar-btn-c{fill:#c62828}
+.ar-btn.sakatuta .ar-btn-c{fill:#7f1d1d}
+.ar-btn:focus{outline:none}
+.ar-btn:focus-visible rect{stroke:var(--s4); stroke-width:3}
+.ar-serie{min-height:64px; max-height:130px}
+
+/* ---------- robot mugikorra ---------- */
+.rms .rb-stage svg{max-height:380px}
+.rm-lurra{fill:#f4f1e8}
+.rm-sareta{stroke:#e2ddd0; stroke-width:.4}
+.rm-lerroa{fill:none; stroke:#1b1b1b; stroke-width:2.2; stroke-linejoin:round}
+.rm-oztopoa{fill:#8d6e63; stroke:#4e342e; stroke-width:.6}
+.rm-eskala{font:600 5px var(--font-body); fill:#555}
+.rm-eskala-l{stroke:#555; stroke-width:.8}
+.rm-arrastoa{fill:none; stroke:#315eff; stroke-width:.8; opacity:.55; stroke-dasharray:2 1.5}
+.rm-izpia{stroke:#d85c8a; stroke-width:.6; stroke-dasharray:1.5 1.5}
+.rm-gurpila{fill:#222}
+.rm-gorputza{fill:#315eff; stroke:#10245e; stroke-width:.6}
+.rm-gorputza.talka{fill:#cf2e2e}
+.rm-us{fill:#cfd8dc; stroke:#37474f; stroke-width:.4}
+.rm-ir{fill:#9e9e9e}
+.rm-ir.on{fill:#ff5252}
+
+/* ---------- aplikazioa ---------- */
+.ap-stage{display:grid; place-items:center; padding:16px}
+.ap-tel{width:220px; padding:12px 10px 18px; background:#1f1f1f; border-radius:28px; box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.ap-pant{display:grid; gap:10px; justify-items:center; align-content:start; min-height:360px; padding:0 12px 14px; color:#111; background:#fff; border-radius:16px; overflow:hidden; transition:background .3s}
+.ap-pant.iluna{color:#f5f5f5}
+.ap-pant.itxita{filter:grayscale(.6); opacity:.75}
+.ap-izenb{justify-self:stretch; margin:0 -12px; padding:8px 12px; font:700 14px var(--font-body); color:#fff; background:#0b6e99}
+.ap-irudia{font-size:64px; line-height:1.1}
+.ap-etiketa{min-height:1.4em; font:700 22px var(--font-body); text-align:center; overflow-wrap:anywhere}
+.ap-botoiak{display:flex; gap:8px}
+.ap-btn{padding:8px 12px; font:700 14px var(--font-body); color:#fff; background:#0b6e99; border:0; border-radius:6px; cursor:pointer}
+.ap-btn:active{transform:translateY(1px)}
+.ap-btn:focus-visible{outline:3px solid #d85c8a; outline-offset:2px}
+.ap-grad{display:grid; gap:4px; justify-self:stretch; font-size:13px}
+.ap-tenp{font-size:12.5px; opacity:.8}
+.ap-log{margin:0; max-height:170px; overflow:auto; padding-left:20px; font-size:14px; color:var(--ink2)}
+.ap-log li.dim{margin-left:-20px; list-style:none; color:var(--ink3)}
+@media (prefers-reduced-motion:reduce){ .ar-fan.on{animation:none} .ap-pant{transition:none} }
+
+/* ---------- sentsoreak eta eragingailuak ---------- */
+.ss text{font-family:var(--font-body)}
+.ss-t{font-size:13px; font-weight:700; fill:var(--ink)}
+.ss-t.sm{font-size:11.5px; fill:var(--ink2)}
+.ss-t.on{fill:var(--s1)}
+.ss-hari path, .ss-hari{fill:none; stroke:var(--ink); stroke-width:2}
+.ss-hari-l{fill:none; stroke:var(--ink); stroke-width:2.2; stroke-linecap:round}
+.ss-hari-l.on{stroke:var(--s1); stroke-width:3}
+.ss-nodoa{fill:var(--ink)}
+.ss-lurra{fill:none; stroke:var(--ink); stroke-width:2}
+.ss-gezia{fill:var(--ink)}
+.ss-osagaia{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.ss-uhina{fill:none; stroke:var(--s2); stroke-width:2}
+.ss-plot{fill:var(--sheet); stroke:var(--rule)}
+.ss-ax{stroke:var(--rule); stroke-width:1}
+.ss-ax.erdia{stroke:var(--ink3); stroke-dasharray:4 4}
+.ss-seinalea{fill:none; stroke:var(--ink2); stroke-width:2; stroke-linejoin:round}
+.ss-seinalea.on{stroke:var(--s1); stroke-width:2.5}
+.ss-media{stroke:var(--s4); stroke-width:2; stroke-dasharray:6 4}
+.ss-neurria{fill:none; stroke:var(--ink3); stroke-width:1.2}
+.ss-us{fill:#1d6fb8; stroke:#0d3b63}
+.ss-us-c{fill:#c0c7cf; stroke:#555}
+.ss-oztopoa{fill:#8d6e63}
+.ss-dirdira{fill:var(--s2)}
+.ss-led{fill:#ffb020; stroke:rgba(0,0,0,.4)}
+.ss-motor{fill:var(--sheet); stroke:var(--ink); stroke-width:2.5}
+.ss-helizea path{stroke:var(--s1); stroke-width:3; stroke-linecap:round}
+.ss-servo{fill:var(--g1-fill); stroke:var(--s1); stroke-width:2}
+.ss-arku{fill:none; stroke:var(--s1); stroke-width:1.5; stroke-dasharray:3 3}
+.ss-besoa{fill:var(--sheet); stroke:var(--ink); stroke-width:1.5}
+.ss-ardatza{fill:var(--chip); stroke:var(--ink)}
+.ss-korrontea{fill:none; stroke:var(--s4); stroke-width:6; opacity:.35; stroke-linejoin:round}
+.ss-txartela{fill:var(--g1-fill); stroke:var(--ink); stroke-width:1.5}
+.ss-bobina{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.ss-bobina.on{fill:color-mix(in srgb, var(--s1) 30%, var(--sheet)); stroke:var(--s1)}
+.ss-lotura{stroke:var(--ink3); stroke-width:1.5; stroke-dasharray:5 4}
+.ss-ac{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.ss-lanpara{fill:var(--sheet); stroke:var(--ink); stroke-width:2.5}
+.ss-lanpara.on{fill:var(--s2)}
+.ss-aukerak{flex-wrap:wrap}
+
+/* ---------- kontrol-sistemak ---------- */
+.ks text{font-family:var(--font-body)}
+.ks-t{font-size:13px; font-weight:700; fill:var(--ink)}
+.ks-t.sm{font-size:11.5px; font-weight:600; fill:var(--ink2)}
+.ks-t.on{fill:var(--s1)}
+.ks-t.err{fill:var(--danger)}
+.ks-t.itzalita{fill:var(--ink3)}
+.ks-kutxa{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.ks-kutxa.bero{fill:color-mix(in srgb, var(--s2) 35%, var(--sheet))}
+.ks-kutxa.itzalita{stroke:var(--ink3); stroke-dasharray:4 3}
+.ks-lerroa{fill:none; stroke:var(--ink); stroke-width:2}
+.ks-lerroa.itzalita{stroke:var(--ink3); stroke-dasharray:5 4}
+.ks-lerroa.nahas{stroke:var(--danger)}
+.ks-punta{fill:var(--ink)}
+.ks-plot{fill:var(--sheet); stroke:var(--rule)}
+.ks-sareta{stroke:var(--grid); stroke-width:1}
+.ks-banda{fill:var(--s3); opacity:.14}
+.ks-konsigna{stroke:var(--s3); stroke-width:2; stroke-dasharray:7 5}
+.ks-kanpoa{stroke:var(--ink3); stroke-width:1.2; stroke-dasharray:2 4}
+.ks-bero{fill:var(--s2)}
+.ks-tenp{fill:none; stroke:var(--s1); stroke-width:2.5; stroke-linejoin:round}
+
+/* ---------- robot-besoa ---------- */
+.rbs text{font-family:var(--font-body)}
+.rbs-t{font-size:13px; font-weight:700; fill:var(--ink)}
+.rbs-t.sm{font-size:11.5px; fill:var(--ink2)}
+.rbs-t.on{fill:var(--s4)}
+.rbs-t.err{fill:var(--danger)}
+.rbs-lurra{fill:var(--chip)}
+.rbs-eremua{fill:var(--s1); fill-opacity:.08; stroke:var(--s1); stroke-opacity:.5; stroke-dasharray:4 4}
+.rbs-sareta{stroke:var(--ink3)}
+.rbs-zona{fill:var(--g3-fill); stroke:var(--s3); stroke-width:2}
+.rbs-kuboa{fill:var(--s2); stroke:var(--ink); stroke-width:1.5}
+.rbs-kuboa.ondo{fill:var(--s3)}
+.rbs-helburua circle{fill:none; stroke:var(--s4); stroke-width:2.5}
+.rbs-helburua path{stroke:var(--s4); stroke-width:1.5}
+.rbs-arrastoa{fill:none; stroke:var(--s1); stroke-width:1.5; opacity:.35}
+.rbs-arku{fill:none; stroke:var(--s4); stroke-width:1.5}
+.rbs-luzapena{stroke:var(--ink3); stroke-width:1; stroke-dasharray:3 3}
+.rbs-oinarria{fill:var(--ink2)}
+.rbs-segmentua{stroke:var(--ink); stroke-width:14; stroke-linecap:round}
+.rbs-segmentua.b{stroke:var(--ink2); stroke-width:11}
+.rbs-pintza{fill:none; stroke:var(--ink); stroke-width:3.5; stroke-linecap:round}
+.rbs-artik{fill:var(--s1); stroke:var(--sheet); stroke-width:2}
+.rbs-muturra{fill:var(--s4)}
+.rbss .sim-stage svg{touch-action:none}
+
+/* ---------- gauzen Internet ---------- */
+.it text{font-family:var(--font-body)}
+.it-t{font-size:13px; font-weight:600; fill:var(--ink)}
+.it-t.b{font-size:14px; font-weight:700}
+.it-t.sm{font-size:11.5px; fill:var(--ink2)}
+.it-t.xs{font-size:9.5px; font-weight:700; fill:#fff}
+.it-t.err{font-size:20px; font-weight:700; fill:var(--danger)}
+.it-t.warn{font-weight:700; fill:var(--s2-ink)}
+.it-bidea{fill:none; stroke:var(--ink3); stroke-width:3; stroke-linejoin:round}
+.it-bidea.wifi{stroke-dasharray:6 5}
+.it-bidea.etena{stroke:var(--danger)}
+.it-kutxa{fill:var(--sheet); stroke:var(--ink); stroke-width:2}
+.it-pantaila{fill:var(--g1-fill)}
+.it-hodeia{fill:var(--g1-fill); stroke:var(--ink); stroke-width:2}
+.it-ponpa{fill:var(--rule)}
+.it-ponpa.on{fill:var(--s1)}
+.it-paketea rect{fill:#1d8a4f}
+.it-paketea.agindua rect{fill:#b8457a}
+.it-paketea.galdua{opacity:.25}
+.it-stage{align-content:start; gap:10px}
+.it-panela{display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px; padding:0 6px 8px}
+.it-txartela{display:grid; align-content:start; gap:4px; padding:8px 10px; background:var(--sheet); border:1px solid var(--rule); border-radius:8px}
+.it-txartela span{font-size:12.5px; font-weight:700; color:var(--ink3)}
+.it-txartela b{font:700 20px var(--font-code)}
+.it-txartela i{display:block; height:6px; background:linear-gradient(to right, var(--s1) var(--h), var(--grid) var(--h)); border-radius:3px}
+.it-txartela.zabala{grid-column:1 / -1}
+.it-txartela svg{display:block; width:100%; height:50px}
+.it-kurba{fill:none; stroke:var(--s1); stroke-width:2; vector-effect:non-scaling-stroke}
+.it-muga{stroke:var(--ink3); stroke-dasharray:3 3; vector-effect:non-scaling-stroke}
+.it-egoera{grid-column:1 / -1; font-size:13px; color:var(--ink2)}
+.it-log{min-height:0; max-height:170px; font-size:12px}
+@media (max-width:520px){ .it-panela{grid-template-columns:1fr 1fr} }
+
+/* ---------- adimen artifiziala ---------- */
+.ia text{font-family:var(--font-body)}
+.ia-t{font-size:13px; font-weight:700; fill:var(--ink)}
+.ia-t.sm{font-size:11px; font-weight:600; fill:var(--ink2)}
+.ia-plot{fill:var(--sheet); stroke:var(--ink3)}
+.ia-sareta{stroke:var(--grid)}
+.ia-mapa.A{fill:var(--s4); opacity:.16}
+.ia-mapa.B{fill:var(--s2); opacity:.2}
+.ia-p{stroke:var(--ink); stroke-width:1.2}
+.ia-p.A{fill:var(--s4)}
+.ia-p.B{fill:var(--s2)}
+.ia-p.proba{fill:var(--sheet); stroke-width:2.5}
+.ia-p.proba.A{stroke:var(--s4)}
+.ia-p.proba.B{stroke:var(--s2)}
+.ia-p.okerra{stroke:var(--danger); stroke-width:3}
+.ia-galdera{fill:var(--ink); stroke:var(--sheet); stroke-width:1.5}
+.ia-galdera.A{fill:var(--s4)}
+.ia-galdera.B{fill:var(--s2)}
+.ia-lerroa{stroke:var(--ink); stroke-width:2.5; stroke-dasharray:8 5}
+.ia-auzo{stroke:var(--ink2); stroke-width:1}
+.ia-leg{display:inline-block; width:10px; height:10px; vertical-align:-1px; border:1px solid var(--ink); border-radius:50%}
+.ia-leg.A{background:var(--s4)}
+.ia-leg.B{background:var(--s2)}
+.ias .sim-stage svg{max-height:520px; cursor:crosshair}
+
+/* ---------- laborategia ---------- */
+.lab-gailuak .seg{flex-wrap:wrap}
+.lab-gailuak{margin-bottom:14px}
+.lab-gailuak .seg button{font-size:15px; padding:6px 12px}
+
+@media print{
+  .rb, .fd{display:none !important}
+}
