@@ -88,6 +88,24 @@ export const PUZLEAK = {
     azalpena: 'Programa honek izar guztiak hartu nahi ditu, baina lehen urratsean gelditzen da. Zergatik?',
     pista: 'Robota hasten den laukian ez dago izarrik. «hartu» egin aurretik, begiratu izarrik dagoen.' },
 
+  // ---------- erronkak (orriak/erronkak.js) ----------
+  e1: { modua: 'blokeak', maila: 1, izena: 'Mendia', norabidea: 'E', blokeak: ['r_aurrera', 'r_biratu', 'kontrol_errepikatu'], max: 10,
+    mapa: ['#########', '####..###', '###....##', '##..##..#', '#R.####H#', '#########'],
+    azalpena: 'Igo mendia eta jaitsi beste aldetik helmugaraino. Gehienez <b>10 bloke</b>: bi patroi daude, bat igotzeko eta bestea jaisteko.',
+    pista: 'Igotzeko maila bat: aurrera, ezkerrera biratu, aurrera, eskuinera biratu (3 aldiz). Jaisteko: aurrera, eskuinera, aurrera, ezkerrera (3 aldiz).' },
+  e2: { modua: 'blokeak', maila: 2, izena: 'Korridore bihurria', norabidea: 'E', blokeak: ['r_aurrera', 'r_biratu', 'kontrol_arte', 'kontrol_baldin_bestela', 'r_bidea', 'r_helmugan'],
+    aldaerak: [
+      ['#########', '#R...####', '####.####', '####...H#', '#########'],
+      ['#########', '#####...#', '#####.#.#', '#R....#H#', '#########'],
+      ['#######', '#R.####', '##.####', '##...H#', '#######']
+    ],
+    azalpena: 'Hiru korridore desberdin, adarrik gabeak. Programa bakar batek hiruetan iritsi behar du helmugara, hormarik jo gabe. Robotak ez daki non dauden bihurguneak.',
+    pista: 'Errepikatu helmugan egon arte: aurrean bidea libre badago, aurrera; bestela, ezkerrean libre badago, biratu ezkerrera; bestela, biratu eskuinera.' },
+  e3: { modua: 'blokeak', maila: 2, izena: 'Bi errenkada', norabidea: 'E', blokeak: ['r_aurrera', 'r_biratu', 'r_hartu', 'kontrol_errepikatu', 'kontrol_baldin', 'r_izarra'], max: 13,
+    mapa: ['#########', '#R?.?.?.#', '#H.?.?.?#', '#########'],
+    azalpena: 'Izarrak ausaz agertzen dira bi errenkadatan. Hartu guztiak eta amaitu helmugan, errenkadak joan-etorrian ibiliz. Programa 64 kasutan probatzen da. Gehienez <b>13 bloke</b>.',
+    pista: 'Errenkada bakoitzean 6 aldiz: baldin izarra hemen bada, hartu; gero aurrera. Errenkaden artean: eskuinera biratu, aurrera, eskuinera biratu.' },
+
   // ---------- sareta librea (laborategia) ----------
   libre: { modua: 'blokeak', maila: 1, izena: 'Sareta librea', norabidea: 'E', blokeak: null,
     mapa: ['##########', '#R.......#', '#........#', '#...*....#', '#........#', '#.......H#', '##########'] }
@@ -257,7 +275,7 @@ export default function mount(box, opts = {}) {
   const modua = opts.modua || 'blokeak';
   const libre = !!opts.libre;
   const P = 'rb' + Math.random().toString(36).slice(2, 7);
-  const zerrenda = libre ? ['libre'] : (opts.puzleak || Object.keys(PUZLEAK).filter(k => PUZLEAK[k].modua === modua && k !== 'libre' && !k.startsWith('a')));
+  const zerrenda = libre ? ['libre'] : (opts.puzleak || Object.keys(PUZLEAK).filter(k => PUZLEAK[k].modua === modua && k !== 'libre' && !/^[ae]\d/.test(k)));
   const GAKOA = opts.gorde || 'robotika:sareta:v1';
   const egoera = { ebatziak: [], programak: {}, libreMapa: null, ...irakurri(GAKOA, {}) };
   let pid = zerrenda.find(k => !egoera.ebatziak.includes(k)) || zerrenda[0];

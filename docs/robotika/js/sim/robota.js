@@ -312,6 +312,7 @@ export default function mount(box, opts = {}) {
   })).then(editorea => {
     if (hilda) { editorea.dispose(); return; }
     ed = editorea;
+    opts.onEditorea?.(editorea);
   }).catch(err => {
     console.error(err);
     $(`#${P}-ed`).innerHTML = '<div class="notice err">Bloke-editorea ezin izan da kargatu. Freskatu orria.</div>';

@@ -49,8 +49,8 @@ export const TALDEAK = [
     izena: 'Aplikatu eta errepasatu',
     unitateak: [
       { id: 'laborategia', izena: 'Programazio-laborategia', desk: 'Programatu libreki robotak, Micro:bit, Arduino eta aplikazioak, eta diseinatu zirkuitu logikoak', orria: true },
-      { id: 'erronkak', izena: 'Erronkak', desk: 'Programatu baldintzak betetzen dituen irtenbidea', orria: true, laster: true },
-      { id: 'glosarioa', izena: 'Glosarioa', desk: 'Hitzak euskaraz, gaztelaniaz eta ingelesez', orria: true, laster: true },
+      { id: 'erronkak', izena: 'Erronkak', desk: 'Programatu baldintzak betetzen dituen irtenbidea: saretan, kontsolan, Arduinon eta robot mugikorrean', orria: true },
+      { id: 'glosarioa', izena: 'Glosarioa', desk: 'Hitzak euskaraz, gaztelaniaz eta ingelesez', orria: true },
       { id: 'irakaslea', izena: 'Irakasleentzat', desk: 'Ariketa-fitxa inprimagarriak, erantzunekin', orria: true }
     ]
   }

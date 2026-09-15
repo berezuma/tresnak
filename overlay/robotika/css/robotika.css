@@ -580,6 +580,32 @@
 .ia-leg.B{background:var(--s2)}
 .ias .sim-stage svg{max-height:520px; cursor:crosshair}
 
+/* ---------- erronkak ---------- */
+.er-talde{margin:18px 0 8px; font-size:22px}
+.er-talde:first-child{margin-top:0}
+.er-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:10px; margin-bottom:10px}
+.er-card{position:relative; display:grid; align-content:start; gap:3px; padding:12px 14px 10px; font:inherit; text-align:left; color:inherit; background:var(--sheet); border:1px solid var(--ink3); cursor:pointer}
+.er-card:hover{background:var(--chip)}
+.er-card.on{border-color:var(--ink); box-shadow:var(--edge)}
+.er-card.done{border-left:4px solid var(--ok)}
+.er-card b{padding-right:22px; font-family:var(--font-display); font-weight:400; font-size:19px; line-height:1.2}
+.er-card span{font-size:14px; color:var(--ink2)}
+.er-card .state{margin-top:4px; font-size:12.5px; font-weight:700; color:var(--ink3)}
+.er-card.done .state{color:var(--ok)}
+.er-card .er-num{position:absolute; top:10px; right:12px; font-family:var(--font-code); font-size:13px; color:var(--ink3)}
+.er-cur{margin-top:18px; scroll-margin-top:56px}
+.er-cur .challenge-body{display:grid; gap:12px; padding:14px 18px 16px}
+.er-cur .brief{margin:0; font-size:17px; line-height:1.55}
+.er-crit{display:grid; gap:4px; margin:0; padding:0; list-style:none}
+.er-crit li{display:flex; gap:8px; font-size:15.5px; color:var(--ink2)}
+.er-crit li i{flex:0 0 1.2em; font-style:normal; font-weight:700; color:var(--ink3)}
+.er-crit li.ok{color:var(--ink)}
+.er-crit li.ok i{color:var(--ok)}
+.er-crit li.no i{color:var(--danger)}
+.er-cur .ch-hint{margin:0; padding:8px 12px; font-size:15.5px; background:var(--chip); border-left:3px solid var(--s2)}
+.er-oharra{margin:0; font-size:14.5px; color:var(--ink3)}
+.er-sim{margin-top:14px}
+
 /* ---------- laborategia ---------- */
 .lab-gailuak .seg{flex-wrap:wrap}
 .lab-gailuak{margin-bottom:14px}

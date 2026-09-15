@@ -22,6 +22,7 @@ lantegia({
   unitatea: id => import(`./unitateak/${id}.js`),
   sim: izena => import(`./sim/${izena}.js`),
   orriak: {
-    laborategia: () => import('./orriak/laborategia.js')
+    laborategia: () => import('./orriak/laborategia.js'),
+    erronkak: () => import('./orriak/erronkak.js')
   }
 });

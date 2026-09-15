@@ -358,6 +358,7 @@ export default function mount(box, opts = {}) {
   })).then(editorea => {
     if (hilda) { editorea.dispose(); return; }
     ed = editorea;
+    opts.onEditorea?.(editorea);
     kodea();
   }).catch(err => {
     console.error(err);
