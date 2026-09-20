@@ -89,6 +89,13 @@ while IFS= read -r -d '' f; do
   pre=""
   for ((i=0; i<depth; i++)); do pre+="../"; done
   tag="<script src=\"${pre}nav.js\" data-root=\"${pre:-./}\"></script>"
+  # Diseinu berria (leuna): orri guztietan, beste estiloen ONDOREN (</head> aurretik)
+  css="<link rel=\"stylesheet\" href=\"${pre}oinarria/css/berria.css\">"
+  # (</head> gabeko orriak, adib. Gantt ikasgaia, diseinu propioa dute: saltatu)
+  if grep -qi '</head>' "$f" && ! grep -q 'oinarria/css/berria.css' "$f"; then
+    sed -i "0,/<\/head>/Is##${css}\n</head>#" "$f"
+    grep -q 'oinarria/css/berria.css' "$f" || { echo "ERROREA: berria.css ez da txertatu: $f"; exit 1; }
+  fi
   # </body> eta </html> aukerakoak dira HTMLn: lehena dagoena erabili, bestela amaieran
   if grep -qi "</body>" "$f"; then
     sed -i "0,/<\/body>/Is##${tag}\n</body>#" "$f"

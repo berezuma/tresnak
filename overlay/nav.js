@@ -53,13 +53,13 @@
     style.textContent =
       "#tresnak-nav{display:flex;align-items:center;gap:6px 20px;padding:9px 20px;" +
         "background:#f9f8f5;color:#000;border-bottom:1px solid #dedede;" +
-        "font:400 15px/1.3 Lato,system-ui,-apple-system,'Segoe UI',sans-serif;" +
+        "font:500 15px/1.3 Raleway,system-ui,-apple-system,'Segoe UI',sans-serif;" +
         "position:relative;z-index:45}" +
       "#tresnak-nav a{color:inherit;text-decoration:none;padding:2px 0;white-space:nowrap;border-bottom:1px solid transparent}" +
       "#tresnak-nav a:hover{border-bottom-color:#000}" +
       "#tresnak-nav a.on{font-weight:700;border-bottom-color:#000}" +
-      "#tresnak-nav .tn-home{font-family:'DM Serif Display',Georgia,serif;font-size:19px;flex:0 0 auto}" +
-      "#tresnak-nav .tn-home.on{font-weight:400}" +
+      "#tresnak-nav .tn-home{font-weight:700;font-size:18px;letter-spacing:-.01em;flex:0 0 auto}" +
+      "#tresnak-nav .tn-home.on{font-weight:700}" +
       "#tresnak-nav .tn-links{display:flex;gap:20px;overflow-x:auto;min-width:0;scrollbar-width:none}" +
       "#tresnak-nav .tn-links::-webkit-scrollbar{display:none}" +
       "#tresnak-nav .tn-site{margin-left:auto;color:#666;flex:0 0 auto}" +
