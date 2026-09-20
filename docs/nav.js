@@ -59,13 +59,13 @@
     style.textContent =
       "#tresnak-nav{display:flex;align-items:center;gap:6px 16px;padding:9px 20px;" +
         "background:#f9f8f5;color:#000;border-bottom:1px solid #dedede;" +
-        "font:400 15px/1.3 Lato,system-ui,-apple-system,'Segoe UI',sans-serif;" +
+        "font:500 15px/1.3 Raleway,system-ui,-apple-system,'Segoe UI',sans-serif;" +
         "position:relative;z-index:45}" +
       "#tresnak-nav a{color:inherit;text-decoration:none;padding:2px 0;white-space:nowrap;border-bottom:1px solid transparent}" +
       "#tresnak-nav a:hover{border-bottom-color:#000}" +
       "#tresnak-nav a.on{font-weight:700;border-bottom-color:#000}" +
-      "#tresnak-nav .tn-home{font-family:'DM Serif Display',Georgia,serif;font-size:19px;flex:0 0 auto}" +
-      "#tresnak-nav .tn-home.on{font-weight:400}" +
+      "#tresnak-nav .tn-home{font-weight:700;font-size:18px;letter-spacing:-.01em;flex:0 0 auto}" +
+      "#tresnak-nav .tn-home.on{font-weight:700}" +
       "#tresnak-nav .tn-current{flex:0 0 auto;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:38vw}" +
       "#tresnak-nav .tn-current::before{content:'/';margin-right:16px;color:#b8b6ac;font-weight:400}" +
       "#tresnak-nav .tn-menu{position:relative;flex:0 0 auto}" +
