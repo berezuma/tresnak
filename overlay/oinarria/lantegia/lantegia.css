@@ -34,7 +34,7 @@
 .menu-foot .bar{height:4px; margin:6px 0 2px; background:var(--grid)}
 .menu-foot .bar span{display:block; height:100%; background:var(--s3)}
 
-.edukia{padding:34px 40px 0; max-width:900px; width:100%}
+.edukia{padding:34px 40px 0; max-width:900px; width:100%; margin-inline:auto}
 .edukia:focus{outline:none}
 
 /* ---------- unitatearen goiburua ---------- */
